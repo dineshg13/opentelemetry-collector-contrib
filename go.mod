@@ -40,6 +40,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sapmexporter v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sentryexporter v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxexporter v0.56.0
+    github.com/open-telemetry/opentelemetry-collector-contrib/exporter/simpleexporter v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/skywalkingexporter v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/splunkhecexporter v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sumologicexporter v0.56.0
@@ -696,6 +697,8 @@ replace github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sapme
 replace github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sentryexporter => ./exporter/sentryexporter
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxexporter => ./exporter/signalfxexporter
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/exporter/simpleexporter => ./exporter/simpleexporter
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/exporter/skywalkingexporter => ./exporter/skywalkingexporter
 
