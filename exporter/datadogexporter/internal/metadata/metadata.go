@@ -65,7 +65,7 @@ type HostMetadata struct {
 
 	SystemStats *host.SystemStats `json:"systemStats"`
 
-	Gohai *gohai.Gohai `json:"gohai"`
+	GohaiPayload
 }
 
 // HostTags are the host tags.
@@ -100,6 +100,47 @@ type Meta struct {
 
 	//Timezones of the host
 	Timezones []string `json:"timezones"`
+}
+
+// GohaiPayload wraps Payload from the gohai package
+// As weird as it sounds, in the v5 payload the value of the "gohai" field
+// is a JSON-formatted string. So this struct contains a MarshalledGohaiPayload
+// which will be marshalled as a JSON-formatted string.
+type GohaiPayload struct {
+	Marshalled MarshalledGohaiPayload `json:"gohai"`
+}
+
+// MarshalledGohaiPayload contains the marshalled payload
+type MarshalledGohaiPayload struct {
+	gohai *gohai.Gohai
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+// It marshals the gohai struct twice (to a string) to comply with
+// the v5 payload format
+func (m MarshalledGohaiPayload) MarshalJSON() ([]byte, error) {
+	marshalledPayload, err := json.Marshal(m.gohai)
+	if err != nil {
+		return []byte(""), err
+	}
+	doubleMarshalledPayload, err := json.Marshal(string(marshalledPayload))
+	if err != nil {
+		return []byte(""), err
+	}
+	return doubleMarshalledPayload, nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+// Unmarshals the passed bytes twice (first to a string, then to gohai.Gohai)
+func (m *MarshalledGohaiPayload) UnmarshalJSON(bytes []byte) error {
+	firstUnmarshall := ""
+	err := json.Unmarshal(bytes, &firstUnmarshall)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(firstUnmarshall), &(m.gohai))
+	return err
 }
 
 // metadataFromAttributes gets metadata info from attributes following
@@ -237,8 +278,11 @@ func Pusher(ctx context.Context, params component.ExporterCreateSettings, pcfg P
 	}
 	fillHostMetadata(params, pcfg, p, hostMetadata)
 	hostMetadata.SystemStats = host.GetSystemStats(params.Logger)
-	hostMetadata.Gohai = gohai.GetPayload(params.Logger)
-
+	hostMetadata.GohaiPayload = GohaiPayload{
+		Marshalled: MarshalledGohaiPayload{
+			gohai: gohai.GetPayload(params.Logger),
+		},
+	}
 	// Run one first time at startup
 	pushMetadataWithRetry(retrier, params, pcfg, hostMetadata)
 
