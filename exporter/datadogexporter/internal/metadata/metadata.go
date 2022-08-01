@@ -35,6 +35,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata/internal/ec2"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata/internal/gohai"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata/internal/host"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata/internal/system"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/scrub"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/utils"
@@ -60,6 +62,10 @@ type HostMetadata struct {
 
 	// Tags includes the host tags
 	Tags *HostTags `json:"host-tags"`
+
+	SystemStats *host.SystemStats `json:"systemStats"`
+
+	Gohai *gohai.Gohai `json:"gohai"`
 }
 
 // HostTags are the host tags.
@@ -91,6 +97,9 @@ type Meta struct {
 
 	// HostAliases are other available host names
 	HostAliases []string `json:"host_aliases,omitempty"`
+
+	//Timezones of the host
+	Timezones []string `json:"timezones"`
 }
 
 // metadataFromAttributes gets metadata info from attributes following
@@ -208,7 +217,7 @@ func pushMetadataWithRetry(retrier *utils.Retrier, params component.ExporterCrea
 // Pusher pushes host metadata payloads periodically to Datadog intake
 func Pusher(ctx context.Context, params component.ExporterCreateSettings, pcfg PusherConfig, p source.Provider, attrs pcommon.Map) {
 	// Push metadata every 30 minutes
-	ticker := time.NewTicker(30 * time.Minute)
+	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
 	defer params.Logger.Debug("Shut down host metadata routine")
 	retrier := utils.NewRetrier(params.Logger, pcfg.RetrySettings, scrub.NewScrubber())
@@ -221,10 +230,14 @@ func Pusher(ctx context.Context, params component.ExporterCreateSettings, pcfg P
 	// do not change over time. If this ever changes `hostMetadata`
 	// *must* be deep copied before calling `fillHostMetadata`.
 	hostMetadata := &HostMetadata{Meta: &Meta{}, Tags: &HostTags{}}
+	tz, _ := time.Now().Zone()
+	hostMetadata.Meta.Timezones = []string{tz}
 	if pcfg.UseResourceMetadata {
 		hostMetadata = metadataFromAttributes(attrs)
 	}
 	fillHostMetadata(params, pcfg, p, hostMetadata)
+	hostMetadata.SystemStats = host.GetSystemStats(params.Logger)
+	hostMetadata.Gohai = gohai.GetPayload(params.Logger)
 
 	// Run one first time at startup
 	pushMetadataWithRetry(retrier, params, pcfg, hostMetadata)
