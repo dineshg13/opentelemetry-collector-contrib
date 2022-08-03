@@ -14,14 +14,14 @@ require (
 	github.com/openzipkin/zipkin-go v0.4.0
 	github.com/stretchr/testify v1.8.0
 	go.opencensus.io v0.23.0
-	go.opentelemetry.io/collector v0.56.0
-	go.opentelemetry.io/collector/pdata v0.56.0
-	go.opentelemetry.io/collector/semconv v0.56.0
+	go.opentelemetry.io/collector v0.56.1-0.20220803125008-a585d0de68c4
+	go.opentelemetry.io/collector/pdata v0.56.1-0.20220803125008-a585d0de68c4
+	go.opentelemetry.io/collector/semconv v0.56.1-0.20220803125008-a585d0de68c4
 	go.uber.org/zap v1.21.0
 )
 
 require (
-	github.com/aws/aws-sdk-go v1.44.62 // indirect
+	github.com/aws/aws-sdk-go v1.44.67 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -69,7 +69,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 	google.golang.org/grpc v1.48.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

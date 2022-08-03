@@ -4,16 +4,16 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.35.0
-	github.com/aws/aws-sdk-go v1.44.62
+	github.com/aws/aws-sdk-go v1.44.67
 	github.com/gogo/protobuf v1.3.2
 	github.com/jaegertracing/jaeger v1.36.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.56.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.56.0
 	github.com/stretchr/testify v1.8.0
 	github.com/xdg-go/scram v1.1.1
-	go.opentelemetry.io/collector v0.56.0
-	go.opentelemetry.io/collector/pdata v0.56.0
-	go.opentelemetry.io/collector/semconv v0.56.0
+	go.opentelemetry.io/collector v0.56.1-0.20220803125008-a585d0de68c4
+	go.opentelemetry.io/collector/pdata v0.56.1-0.20220803125008-a585d0de68c4
+	go.opentelemetry.io/collector/semconv v0.56.1-0.20220803125008-a585d0de68c4
 	go.uber.org/multierr v1.8.0
 	go.uber.org/zap v1.21.0
 )
@@ -63,7 +63,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 	google.golang.org/grpc v1.48.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

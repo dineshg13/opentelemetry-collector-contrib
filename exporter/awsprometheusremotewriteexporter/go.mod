@@ -4,10 +4,10 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awspro
 go 1.17
 
 require (
-	github.com/aws/aws-sdk-go v1.44.62
+	github.com/aws/aws-sdk-go v1.44.67
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter v0.56.0
 	github.com/stretchr/testify v1.8.0
-	go.opentelemetry.io/collector v0.56.0
+	go.opentelemetry.io/collector v0.56.1-0.20220803125008-a585d0de68c4
 )
 
 require (
@@ -44,8 +44,8 @@ require (
 	github.com/tidwall/tinylru v1.1.0 // indirect
 	github.com/tidwall/wal v1.1.7 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	go.opentelemetry.io/collector/pdata v0.56.0 // indirect
-	go.opentelemetry.io/collector/semconv v0.56.0 // indirect
+	go.opentelemetry.io/collector/pdata v0.56.1-0.20220803125008-a585d0de68c4 // indirect
+	go.opentelemetry.io/collector/semconv v0.56.1-0.20220803125008-a585d0de68c4 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.33.0 // indirect
 	go.opentelemetry.io/otel v1.8.0 // indirect
 	go.opentelemetry.io/otel/metric v0.31.0 // indirect
@@ -58,7 +58,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220628213854-d9e0b6570c03 // indirect
 	google.golang.org/grpc v1.48.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
