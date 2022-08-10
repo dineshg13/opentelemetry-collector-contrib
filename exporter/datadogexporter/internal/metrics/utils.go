@@ -115,6 +115,16 @@ func shouldPrepend(name string) bool {
 func addNamespace(metrics []datadog.Metric, namespace string) {
 	for i := range metrics {
 		if shouldPrepend(*metrics[i].Metric) {
+			dupe := false
+			for _, t := range metrics[i].Tags {
+				if t == "dd_dupe_metric:1" {
+					dupe = true
+					break
+				}
+			}
+			if dupe {
+				continue
+			}
 			newName := namespace + "." + *metrics[i].Metric
 			metrics[i].Metric = &newName
 		}

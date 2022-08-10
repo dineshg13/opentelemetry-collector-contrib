@@ -123,6 +123,7 @@ func TestAddNamespace(t *testing.T) {
 		NewGauge("test.metric", 0, 1.0, []string{}),
 		NewGauge("system.cpu.time", 0, 2.0, []string{}),
 		NewGauge("process.memory.physical_usage", 0, 3.0, []string{}),
+		NewGauge("system.cpu.idle", 0, 2.0, []string{"dd_dupe_metric:1"}),
 	}
 
 	addNamespace(ms, "namespace")
@@ -130,4 +131,5 @@ func TestAddNamespace(t *testing.T) {
 	assert.Equal(t, "test.metric", *ms[0].Metric)
 	assert.Equal(t, "namespace.system.cpu.time", *ms[1].Metric)
 	assert.Equal(t, "namespace.process.memory.physical_usage", *ms[2].Metric)
+	assert.Equal(t, "system.cpu.idle", *ms[3].Metric)
 }
