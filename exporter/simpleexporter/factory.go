@@ -17,6 +17,8 @@ import (
 const (
 	// The value of "type" key in configuration.
 	typeStr = "simpleexporter"
+
+	stability = component.StabilityLevelInDevelopment
 )
 
 // NewFactory creates a factory for Logging exporter
@@ -24,9 +26,9 @@ func NewFactory() component.ExporterFactory {
 	return component.NewExporterFactory(
 		typeStr,
 		createDefaultConfig,
-		component.WithTracesExporterAndStabilityLevel(createTracesExporter, component.StabilityLevelInDevelopment),
-		component.WithMetricsExporterAndStabilityLevel(createMetricsExporter, component.StabilityLevelInDevelopment),
-		component.WithLogsExporterAndStabilityLevel(createLogsExporter, component.StabilityLevelInDevelopment),
+		component.WithTracesExporter(createTracesExporter, stability),
+		component.WithMetricsExporter(createMetricsExporter, stability),
+		component.WithLogsExporter(createLogsExporter, stability),
 	)
 }
 
