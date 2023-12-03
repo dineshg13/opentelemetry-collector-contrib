@@ -6,12 +6,15 @@ package datadogexporter // import "github.com/open-telemetry/opentelemetry-colle
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/DataDog/datadog-agent/pkg/trace/agent"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/inframetadata"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes/source"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/consumer"
@@ -23,10 +26,10 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/hostmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry"
 )
 
 var mertricExportNativeClientFeatureGate = featuregate.GlobalRegistry().MustRegister(
@@ -329,7 +332,37 @@ func (f *factory) createTracesExporter(
 		cancel()
 		return nil, fmt.Errorf("failed to build host metadata reporter: %w", err)
 	}
+	var service string
+	var env string
+	if v, ok := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES"); ok {
+		for _, attr := range strings.Split(v, ",") {
+			if strings.HasPrefix(attr, "service.name") {
+				service = strings.Split(attr, "=")[1]
+			}
+			if strings.HasPrefix(attr, "deployment.environment") {
+				env = strings.Split(attr, "=")[1]
+			}
+		}
+	}
 
+	err = profiler.Start(
+		profiler.WithService(service),
+		profiler.WithEnv(env),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+
+			profiler.BlockProfile,
+			profiler.MutexProfile,
+			profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("error creating profiler %v", err)
+	}
 	if cfg.OnlyMetadata {
 		// only host metadata needs to be sent, once.
 		pusher = func(_ context.Context, td ptrace.Traces) error {
@@ -363,6 +396,7 @@ func (f *factory) createTracesExporter(
 		stop = func(context.Context) error {
 			cancel() // first cancel context
 			f.StopReporter()
+			profiler.Stop()
 			return nil
 		}
 	}
