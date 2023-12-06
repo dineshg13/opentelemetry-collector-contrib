@@ -205,6 +205,14 @@ func (exp *metricsExporter) PushMetricsData(ctx context.Context, md pmetric.Metr
 	} else {
 		consumer = metrics.NewZorkianConsumer()
 	}
+
+	keyAPMStats := "_dd.apm_stats"
+	for i := 0; i < md.ResourceMetrics().Len(); i++ {
+		res := md.ResourceMetrics().At(i).Resource()
+		if _, ok := res.Attributes().Get(keyAPMStats); ok {
+			res.Attributes().PutBool(keyAPMStats, true)
+		}
+	}
 	metadata, err := exp.tr.MapMetrics(ctx, md, consumer)
 	if err != nil {
 		return fmt.Errorf("failed to map metrics: %w", err)
