@@ -1,0 +1,77 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: "otelcol"
+          scrape_interval: 10s
+          static_configs:
+            - targets: ["0.0.0.0:8888"]
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: ".*grpc_io.*"
+              action: drop
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+connectors:
+  spanmetrics:
+    histogram:
+      exponential:
+        max_size: 80
+    dimensions:
+      - name: deployment.environment
+processors:
+  batch:
+  resource/stats:
+    attributes:
+      - key: "_dd.apm_stats"
+        value: "true"
+        action: insert
+  resource/env:
+    attributes:
+      - key: "deployment.environment"
+        value: "${env:DD_ENV}"
+        action: upsert
+  resourcedetection:
+    detectors: [env, gcp]
+    timeout: 2s
+    override: false
+extensions:
+  health_check:
+exporters:
+  debug:
+    verbosity: detailed
+  datadog:
+    hostname: my-machine
+    traces:
+      trace_buffer: 500
+    metrics:
+      resource_attributes_as_tags: true
+      histograms:
+        mode: "counters"
+        send_count_sum_metrics: true
+    api:
+      key: "${env:DD_API_KEY}"
+service:
+  extensions:
+    - health_check
+  telemetry:
+    logs:
+      initial_fields:
+        - service: "otel-collector"
+  pipelines:
+    metrics/span:
+      receivers: [spanmetrics]
+      processors: [resource/stats, batch]
+      exporters: [datadog, debug]
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [resourcedetection, resource/env, batch]
+      exporters: [datadog]
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, resource/env, batch]
+      exporters: [datadog, spanmetrics]
