@@ -1,0 +1,15 @@
+FROM debian:bookworm-slim
+USER root
+
+RUN apt-get update && \
+apt-get -y install default-jre-headless --no-install-recommends && \
+apt-get clean && \ 
+rm -rf /var/lib/apt/lists/*
+
+
+COPY  /bin/otelcontribcol_* /otelcol-contrib
+USER 1001
+ENTRYPOINT ["/otelcol-contrib"]
+EXPOSE 4317 4318 55680 55679
+
+

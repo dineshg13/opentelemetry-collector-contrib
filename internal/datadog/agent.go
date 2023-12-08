@@ -22,7 +22,10 @@ import (
 
 // keyStatsComputed specifies the resource attribute key which indicates if stats have been
 // computed for the resource spans.
-const keyStatsComputed = "_dd.stats_computed"
+const (
+	keyStatsComputed = "_dd.stats_computed"
+	ststsPayload     = "dd.statsPayload"
+)
 
 // TraceAgent specifies a minimal trace agent instance that is able to process traces and output stats.
 type TraceAgent struct {

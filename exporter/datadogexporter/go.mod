@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/DataDog/agent-payload/v5 v5.0.89
-	github.com/DataDog/datadog-agent/pkg/proto v0.50.0-rc.1
+	github.com/DataDog/datadog-agent/pkg/proto v0.50.0-rc.4
 	github.com/DataDog/datadog-agent/pkg/trace v0.50.0-rc.1
 	github.com/DataDog/datadog-api-client-go/v2 v2.18.0
 	github.com/DataDog/gohai v0.0.0-20220718130825-1776f9beb9cc
@@ -12,7 +12,7 @@ require (
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes v0.8.3
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/logs v0.8.3
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics v0.8.1
-	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.8.1
+	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.8.3
 	github.com/DataDog/sketches-go v1.4.3
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.21.0
 	github.com/aws/aws-sdk-go v1.48.12
@@ -56,12 +56,12 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.4-0.20230617002413-005d2dfb6b68 // indirect
 	contrib.go.opencensus.io/exporter/prometheus v0.4.2 // indirect
 	github.com/DataDog/appsec-internal-go v1.0.2 // indirect
-	github.com/DataDog/datadog-agent/pkg/obfuscate v0.50.0-rc.1 // indirect
-	github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.50.0-rc.1 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/cgroups v0.50.0-rc.1 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/log v0.50.0-rc.1 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/pointer v0.50.0-rc.1 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/scrubber v0.50.0-rc.1 // indirect
+	github.com/DataDog/datadog-agent/pkg/obfuscate v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/cgroups v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/log v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/pointer v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/scrubber v0.50.0-rc.4 // indirect
 	github.com/DataDog/datadog-go/v5 v5.3.0 // indirect
 	github.com/DataDog/go-libddwaf/v2 v2.1.0 // indirect
 	github.com/DataDog/go-sqllexer v0.0.8 // indirect
@@ -298,3 +298,11 @@ replace github.com/open-telemetry/opentelemetry-collector-contrib/receiver/docke
 replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/docker => ../../internal/docker
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden => ../../pkg/golden
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/logs => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/logs
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/metrics
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/attributes
+
+replace github.com/DataDog/datadog-agent/pkg/trace => /home/dinesh/dd/datadog-agent/pkg/trace

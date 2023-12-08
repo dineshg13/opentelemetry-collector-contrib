@@ -8,13 +8,21 @@ import (
 
 	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 )
+
+const (
+	keyAPMStats     = "_dd.apm_stats"
+	keyStatsPayload = "dd.statsPayload"
+)
+
+var marshaler = jsonpb.Marshaler{}
 
 // connectorImp is the schema for connector
 type connectorImp struct {
@@ -106,11 +114,30 @@ func (c *connectorImp) run() {
 				continue
 			}
 			// APM stats as metrics
-			mx := c.translator.StatsPayloadToMetrics(stats)
+			//			mx := c.translator.StatsPayloadToMetrics(stats)
+			payload, err := marshaler.MarshalToString(stats)
+			if err != nil {
+				c.logger.Error("Failed to marshal stats payload", zap.Error(err))
+				continue
+			}
+			mmx := pmetric.NewMetrics()
+			rmx := mmx.ResourceMetrics().AppendEmpty()
+			attr := rmx.Resource().Attributes()
+			attr.PutBool(keyAPMStats, true)
+
+			smx := rmx.ScopeMetrics().AppendEmpty()
+			mslice := smx.Metrics()
+			mx := mslice.AppendEmpty()
+			mx.SetName("datadog.apm.stats")
+			sum := mx.SetEmptySum()
+			sum.SetIsMonotonic(false)
+			dp := sum.DataPoints().AppendEmpty()
+			dp.Attributes().PutStr("dd.stats.payload", payload)
+
 			ctx := context.TODO()
 
 			// send metrics to the consumer or next component in pipeline
-			if err := c.metricsConsumer.ConsumeMetrics(ctx, mx); err != nil {
+			if err := c.metricsConsumer.ConsumeMetrics(ctx, mmx); err != nil {
 				c.logger.Error("Failed ConsumeMetrics", zap.Error(err))
 				return
 			}

@@ -1,0 +1,74 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: "otelcol"
+          scrape_interval: 10s
+          static_configs:
+            - targets: ["0.0.0.0:8888"]
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: ".*grpc_io.*"
+              action: drop
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+connectors:
+  datadog/connector:
+  spanmetrics:
+    histogram:
+      exponential:
+        max_size: 80
+    dimensions:
+      - name: deployment.environment
+processors:
+  batch:
+  resourcedetection:
+    detectors: [env, gcp]
+    timeout: 2s
+    override: false
+extensions:
+  health_check:
+exporters:
+  file:
+    path: ./dd.json
+    format: json
+  debug:
+    verbosity: detailed
+  datadog:
+    hostname: my-machine
+    traces:
+      trace_buffer: 500
+      span_name_as_resource_name: true
+    metrics:
+      resource_attributes_as_tags: true
+      histograms:
+        mode: "counters"
+        send_count_sum_metrics: true
+    api:
+      key: "${env:DD_API_KEY}"
+service:
+  extensions:
+    - health_check
+  telemetry:
+    logs:
+      initial_fields:
+        - service: "otel-collector"
+  pipelines:
+    metrics/dd:
+      receivers: [datadog/connector]
+      exporters: [datadog, file]
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [resourcedetection, batch]
+      exporters: [datadog]
+    traces/1:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [datadog/connector]
+    traces/2:
+      receivers: [datadog/connector]
+      exporters: [datadog]

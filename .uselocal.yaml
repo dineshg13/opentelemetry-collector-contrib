@@ -1,0 +1,13 @@
+targets:
+  - ./cmd/otelcontribcol
+  - ./exporter/datadogexporter
+  - ./connector/datadogconnector
+replace:
+  - from: github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/logs
+    to: ../../dd/opentelemetry-mapping-go/pkg/otlp/logs/
+  - from: github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics
+    to: ../../dd/opentelemetry-mapping-go/pkg/otlp/metrics/
+  - from: github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes
+    to: ../../dd/opentelemetry-mapping-go/pkg/otlp/attributes/
+  - from: github.com/DataDog/datadog-agent/pkg/trace
+    to: ../../dd/datadog-agent/pkg/trace/
