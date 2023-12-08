@@ -114,7 +114,7 @@ func (c *connectorImp) run() {
 				continue
 			}
 			// APM stats as metrics
-			//			mx := c.translator.StatsPayloadToMetrics(stats)
+			// mx := c.translator.StatsPayloadToMetrics(stats)
 			payload, err := marshaler.MarshalToString(stats)
 			if err != nil {
 				c.logger.Error("Failed to marshal stats payload", zap.Error(err))
