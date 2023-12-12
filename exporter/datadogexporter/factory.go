@@ -7,13 +7,16 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
 
+	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/DataDog/datadog-agent/pkg/trace/agent"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/inframetadata"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes/source"
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confignet"
@@ -219,6 +222,35 @@ func checkAndCastConfig(c component.Config, logger *zap.Logger) *Config {
 	return cfg
 }
 
+var unmarshaler = &jsonpb.Unmarshaler{}
+
+func (f *factory) doWork(ctx context.Context, out chan string, traceagent *agent.Agent, tracerVersion string) {
+	for i := 0; i < runtime.NumCPU(); i++ {
+		f.wg.Add(1)
+		go func() {
+			defer f.wg.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case msg := <-out:
+
+					sp := &pb.StatsPayload{}
+
+					err := unmarshaler.Unmarshal(strings.NewReader(msg), sp)
+					if err != nil {
+						continue
+					}
+					for _, sc := range sp.Stats {
+						// add the hostname to the stats payload
+						traceagent.ProcessStats(sc, "", tracerVersion)
+					}
+				}
+			}
+		}()
+	}
+}
+
 // createMetricsExporter creates a metrics exporter based on this config.
 func (f *factory) createMetricsExporter(
 	ctx context.Context,
@@ -235,11 +267,16 @@ func (f *factory) createMetricsExporter(
 	ctx, cancel := context.WithCancel(ctx)
 	// cancel() runs on shutdown
 	var pushMetricsFn consumer.ConsumeMetricsFunc
+
+	out := make(chan string, 1000)
+	statsv := set.BuildInfo.Command + set.BuildInfo.Version
+
 	traceagent, err := f.TraceAgent(ctx, set, cfg, hostProvider)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
 	}
+	f.doWork(ctx, out, traceagent, statsv)
 
 	pcfg := newMetadataConfigfromConfig(cfg)
 	metadataReporter, err := f.Reporter(set, pcfg)
@@ -267,7 +304,7 @@ func (f *factory) createMetricsExporter(
 			return nil
 		}
 	} else {
-		exp, metricsErr := newMetricsExporter(ctx, set, cfg, &f.onceMetadata, hostProvider, traceagent, metadataReporter)
+		exp, metricsErr := newMetricsExporter(ctx, set, cfg, &f.onceMetadata, hostProvider, out, metadataReporter)
 		if metricsErr != nil {
 			cancel()    // first cancel context
 			f.wg.Wait() // then wait for shutdown

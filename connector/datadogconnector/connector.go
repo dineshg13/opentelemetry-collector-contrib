@@ -8,21 +8,12 @@ import (
 
 	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics"
-	"github.com/gogo/protobuf/jsonpb"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
-	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
 )
-
-const (
-	keyAPMStats     = "_dd.apm_stats"
-	keyStatsPayload = "dd.statsPayload"
-)
-
-var marshaler = jsonpb.Marshaler{}
 
 // connectorImp is the schema for connector
 type connectorImp struct {
@@ -49,7 +40,7 @@ type connectorImp struct {
 var _ component.Component = (*connectorImp)(nil) // testing that the connectorImp properly implements the type Component interface
 
 // function to create a new connector
-func newConnector(logger *zap.Logger, _ component.Config, metricsConsumer consumer.Metrics, tracesConsumer consumer.Traces) (*connectorImp, error) {
+func newConnector(logger *zap.Logger, cfg component.Config, metricsConsumer consumer.Metrics, tracesConsumer consumer.Traces) (*connectorImp, error) {
 	logger.Info("Building datadog connector")
 
 	in := make(chan *pb.StatsPayload, 100)
@@ -61,7 +52,7 @@ func newConnector(logger *zap.Logger, _ component.Config, metricsConsumer consum
 	}
 	return &connectorImp{
 		logger:          logger,
-		agent:           datadog.NewAgent(ctx, in),
+		agent:           datadog.NewAgent(ctx, in, nil, cfg.(*Config).TraceBuffer, ""),
 		translator:      trans,
 		in:              in,
 		metricsConsumer: metricsConsumer,
@@ -114,30 +105,15 @@ func (c *connectorImp) run() {
 				continue
 			}
 			// APM stats as metrics
-			// mx := c.translator.StatsPayloadToMetrics(stats)
-			payload, err := marshaler.MarshalToString(stats)
+			mx, err := c.translator.StatsToMetrics(stats)
 			if err != nil {
-				c.logger.Error("Failed to marshal stats payload", zap.Error(err))
+				c.logger.Error("Failed to convert StatsPayload to Metrics", zap.Error(err))
 				continue
 			}
-			mmx := pmetric.NewMetrics()
-			rmx := mmx.ResourceMetrics().AppendEmpty()
-			attr := rmx.Resource().Attributes()
-			attr.PutBool(keyAPMStats, true)
-
-			smx := rmx.ScopeMetrics().AppendEmpty()
-			mslice := smx.Metrics()
-			mx := mslice.AppendEmpty()
-			mx.SetName("datadog.apm.stats")
-			sum := mx.SetEmptySum()
-			sum.SetIsMonotonic(false)
-			dp := sum.DataPoints().AppendEmpty()
-			dp.Attributes().PutStr("dd.stats.payload", payload)
-
 			ctx := context.TODO()
 
 			// send metrics to the consumer or next component in pipeline
-			if err := c.metricsConsumer.ConsumeMetrics(ctx, mmx); err != nil {
+			if err := c.metricsConsumer.ConsumeMetrics(ctx, mx); err != nil {
 				c.logger.Error("Failed ConsumeMetrics", zap.Error(err))
 				return
 			}

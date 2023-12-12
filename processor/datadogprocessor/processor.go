@@ -9,13 +9,12 @@ import (
 
 	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/exporter"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 )
 
 type datadogProcessor struct {
@@ -61,7 +60,7 @@ func newProcessor(ctx context.Context, logger *zap.Logger, config component.Conf
 	return &datadogProcessor{
 		logger:       logger,
 		nextConsumer: nextConsumer,
-		agent:        datadog.NewAgent(ctx, in),
+		agent:        datadog.NewAgent(ctx, in, nil, 0, ""),
 		translator:   trans,
 		in:           in,
 		cfg:          cfg,
@@ -151,7 +150,11 @@ func (p *datadogProcessor) run() {
 			if len(stats.Stats) == 0 {
 				continue
 			}
-			mx := p.translator.StatsPayloadToMetrics(stats)
+			mx, err := p.translator.StatsToMetrics(stats)
+			if err != nil {
+				p.logger.Error("Error converting stats to metrics.", zap.Error(err))
+				continue
+			}
 			ctx := context.TODO()
 			p.logger.Debug("Exporting APM Stats metrics.", zap.Int("count", mx.MetricCount()))
 			if err := p.metricsExporter.ConsumeMetrics(ctx, mx); err != nil {

@@ -5,8 +5,10 @@ package datadog // import "github.com/open-telemetry/opentelemetry-collector-con
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,6 +19,7 @@ import (
 	"github.com/DataDog/datadog-agent/pkg/trace/stats"
 	"github.com/DataDog/datadog-agent/pkg/trace/telemetry"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics"
+	"github.com/gogo/protobuf/jsonpb"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
@@ -40,16 +43,22 @@ type TraceAgent struct {
 
 	// exit signals the agent to shut down.
 	exit chan struct{}
+
+	// statsPayload specifies the channel that will be used to output Datadog Stats Payloads
+	// resulting from ingested OpenTelemetry spans.
+	statsPayload <-chan string
+
+	tracerVersion string
 }
 
 // newAgent creates a new unstarted traceagent using the given context. Call Start to start the traceagent.
 // The out channel will receive outoing stats payloads resulting from spans ingested using the Ingest method.
-func NewAgent(ctx context.Context, out chan *pb.StatsPayload) *TraceAgent {
-	return NewAgentWithConfig(ctx, traceconfig.New(), out)
+func NewAgent(ctx context.Context, out chan *pb.StatsPayload, statspayload <-chan string, traceBuffer int, tracerVersion string) *TraceAgent {
+	return NewAgentWithConfig(ctx, traceconfig.New(), out, statspayload, traceBuffer, tracerVersion)
 }
 
 // newAgentWithConfig creates a new traceagent with the given config cfg. Used in tests; use newAgent instead.
-func NewAgentWithConfig(ctx context.Context, cfg *traceconfig.AgentConfig, out chan *pb.StatsPayload) *TraceAgent {
+func NewAgentWithConfig(ctx context.Context, cfg *traceconfig.AgentConfig, out chan *pb.StatsPayload, statspayload <-chan string, traceBuffer int, tracerVersion string) *TraceAgent {
 	// disable the HTTP receiver
 	cfg.ReceiverPort = 0
 	// set the API key to succeed startup; it is never used nor needed
@@ -71,10 +80,16 @@ func NewAgentWithConfig(ctx context.Context, cfg *traceconfig.AgentConfig, out c
 	// lastly, start the OTLP receiver, which will be used to introduce ResourceSpans into the traceagent,
 	// so that we can transform them to Datadog spans and receive stats.
 	a.OTLPReceiver = api.NewOTLPReceiver(pchan, cfg)
+	if traceBuffer > 0 {
+		cfg.TraceBuffer = traceBuffer
+	}
+
 	return &TraceAgent{
-		Agent: a,
-		exit:  make(chan struct{}),
-		pchan: pchan,
+		Agent:         a,
+		exit:          make(chan struct{}),
+		pchan:         pchan,
+		statsPayload:  statspayload,
+		tracerVersion: tracerVersion,
 	}
 }
 
@@ -149,6 +164,8 @@ func (p *TraceAgent) Ingest(ctx context.Context, traces ptrace.Traces) {
 	}
 }
 
+var unmarshaler = &jsonpb.Unmarshaler{}
+
 // goProcesses runs the main loop which takes incoming payloads, processes them and generates stats.
 // It then picks up those stats and converts them to metrics.
 func (p *TraceAgent) goProcess() {
@@ -162,6 +179,18 @@ func (p *TraceAgent) goProcess() {
 					p.Process(payload)
 					// ...the call processes the payload and outputs stats via the 'out' channel
 					// provided to newAgent
+				case st := <-p.statsPayload:
+					fmt.Printf("### stats payload: %s\n", st)
+					sp := &pb.StatsPayload{}
+
+					err := unmarshaler.Unmarshal(strings.NewReader(st), sp)
+					if err != nil {
+						continue
+					}
+					for _, sc := range sp.Stats {
+						// add the hostname to the stats payload
+						p.ProcessStats(sc, "", p.tracerVersion)
+					}
 				case <-p.exit:
 					return
 				}

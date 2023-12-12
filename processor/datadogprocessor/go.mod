@@ -4,7 +4,7 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/processor/datad
 go 1.20
 
 require (
-	github.com/DataDog/datadog-agent/pkg/proto v0.50.0-devel
+	github.com/DataDog/datadog-agent/pkg/proto v0.50.0-rc.4
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics v0.8.1
 	github.com/DataDog/sketches-go v1.4.3
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog v0.90.1
@@ -20,17 +20,18 @@ require (
 )
 
 require (
-	github.com/DataDog/datadog-agent/pkg/obfuscate v0.49.0-rc.2 // indirect
-	github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.49.0-rc.2 // indirect
+	github.com/DataDog/datadog-agent/pkg/obfuscate v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.50.0-rc.4 // indirect
 	github.com/DataDog/datadog-agent/pkg/trace v0.50.0-devel.0.20231030140030-aa8a206e6ac7 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/cgroups v0.49.0-rc.2 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/log v0.49.0-rc.2 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/pointer v0.49.0-rc.2 // indirect
-	github.com/DataDog/datadog-agent/pkg/util/scrubber v0.49.0-rc.2 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/cgroups v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/log v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/pointer v0.50.0-rc.4 // indirect
+	github.com/DataDog/datadog-agent/pkg/util/scrubber v0.50.0-rc.4 // indirect
 	github.com/DataDog/datadog-go/v5 v5.1.1 // indirect
+	github.com/DataDog/go-sqllexer v0.0.8 // indirect
 	github.com/DataDog/go-tuf v1.0.2-0.5.2 // indirect
-	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes v0.8.1 // indirect
-	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.8.1 // indirect
+	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes v0.8.3 // indirect
+	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.8.3 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cihub/seelog v0.0.0-20170130134532-f561c5e57575 // indirect
@@ -87,7 +88,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.4.0 // indirect
 	golang.org/x/tools v0.15.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
 	google.golang.org/grpc v1.59.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -102,3 +103,11 @@ retract (
 	v0.76.2
 	v0.76.1
 )
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/logs => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/logs
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/metrics
+
+replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/attributes
+
+replace github.com/DataDog/datadog-agent/pkg/trace => /home/dinesh/dd/datadog-agent/pkg/trace

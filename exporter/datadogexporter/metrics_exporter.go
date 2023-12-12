@@ -12,8 +12,6 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
-	"github.com/DataDog/datadog-agent/pkg/trace/api"
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV2"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/inframetadata"
 	"github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes/source"
@@ -45,8 +43,8 @@ type metricsExporter struct {
 	metadataReporter *inframetadata.Reporter
 	// getPushTime returns a Unix time in nanoseconds, representing the time pushing metrics.
 	// It will be overwritten in tests.
-	getPushTime       func() uint64
-	apmStatsProcessor api.StatsProcessor
+	getPushTime func() uint64
+	out         chan string
 }
 
 // translatorFromConfig creates a new metrics translator from the exporter
@@ -95,7 +93,7 @@ func newMetricsExporter(
 	cfg *Config,
 	onceMetadata *sync.Once,
 	sourceProvider source.Provider,
-	apmStatsProcessor api.StatsProcessor,
+	out chan string,
 	metadataReporter *inframetadata.Reporter,
 ) (*metricsExporter, error) {
 	tr, err := translatorFromConfig(params.Logger, cfg, sourceProvider)
@@ -105,17 +103,17 @@ func newMetricsExporter(
 
 	scrubber := scrub.NewScrubber()
 	exporter := &metricsExporter{
-		params:            params,
-		cfg:               cfg,
-		ctx:               ctx,
-		tr:                tr,
-		scrubber:          scrubber,
-		retrier:           clientutil.NewRetrier(params.Logger, cfg.RetrySettings, scrubber),
-		onceMetadata:      onceMetadata,
-		sourceProvider:    sourceProvider,
-		getPushTime:       func() uint64 { return uint64(time.Now().UTC().UnixNano()) },
-		apmStatsProcessor: apmStatsProcessor,
-		metadataReporter:  metadataReporter,
+		params:           params,
+		cfg:              cfg,
+		ctx:              ctx,
+		tr:               tr,
+		scrubber:         scrubber,
+		retrier:          clientutil.NewRetrier(params.Logger, cfg.RetrySettings, scrubber),
+		onceMetadata:     onceMetadata,
+		sourceProvider:   sourceProvider,
+		getPushTime:      func() uint64 { return uint64(time.Now().UTC().UnixNano()) },
+		out:              out,
+		metadataReporter: metadataReporter,
 	}
 	errchan := make(chan error)
 	if isMetricExportV2Enabled() {
@@ -205,7 +203,7 @@ func (exp *metricsExporter) PushMetricsData(ctx context.Context, md pmetric.Metr
 	} else {
 		consumer = metrics.NewZorkianConsumer()
 	}
-	metadata, err := exp.tr.MapMetrics(ctx, md, consumer)
+	metadata, err := exp.tr.MapMetrics(ctx, md, consumer, exp.out)
 	if err != nil {
 		return fmt.Errorf("failed to map metrics: %w", err)
 	}
@@ -219,11 +217,10 @@ func (exp *metricsExporter) PushMetricsData(ctx context.Context, md pmetric.Metr
 	}
 
 	var sl sketches.SketchSeriesList
-	var sp []*pb.ClientStatsPayload
 	var errs []error
 	if isMetricExportV2Enabled() {
 		var ms []datadogV2.MetricSeries
-		ms, sl, sp = consumer.(*metrics.Consumer).All(exp.getPushTime(), exp.params.BuildInfo, tags, metadata)
+		ms, sl, _ = consumer.(*metrics.Consumer).All(exp.getPushTime(), exp.params.BuildInfo, tags, metadata)
 		if len(ms) > 0 {
 			exp.params.Logger.Debug("exporting native Datadog payload", zap.Any("metric", ms))
 			_, experr := exp.retrier.DoWithRetries(ctx, func(context.Context) error {
@@ -235,7 +232,7 @@ func (exp *metricsExporter) PushMetricsData(ctx context.Context, md pmetric.Metr
 		}
 	} else {
 		var ms []zorkian.Metric
-		ms, sl, sp = consumer.(*metrics.ZorkianConsumer).All(exp.getPushTime(), exp.params.BuildInfo, tags)
+		ms, sl, _ = consumer.(*metrics.ZorkianConsumer).All(exp.getPushTime(), exp.params.BuildInfo, tags)
 		if len(ms) > 0 {
 			exp.params.Logger.Debug("exporting Zorkian Datadog payload", zap.Any("metric", ms))
 			_, experr := exp.retrier.DoWithRetries(ctx, func(context.Context) error {
@@ -251,14 +248,6 @@ func (exp *metricsExporter) PushMetricsData(ctx context.Context, md pmetric.Metr
 			return exp.pushSketches(ctx, sl)
 		})
 		errs = append(errs, experr)
-	}
-
-	if len(sp) > 0 {
-		exp.params.Logger.Debug("exporting APM stats payloads", zap.Any("stats_payloads", sp))
-		statsv := exp.params.BuildInfo.Command + exp.params.BuildInfo.Version
-		for _, p := range sp {
-			exp.apmStatsProcessor.ProcessStats(p, "", statsv)
-		}
 	}
 
 	return errors.Join(errs...)

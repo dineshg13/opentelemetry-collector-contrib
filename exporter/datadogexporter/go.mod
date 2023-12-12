@@ -19,6 +19,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil v0.90.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.90.1
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog v0.0.0-00010101000000-000000000000
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.90.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/metadataproviders v0.90.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.90.1
@@ -306,3 +307,5 @@ replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics => /home/di
 replace github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes => /home/dinesh/dd/opentelemetry-mapping-go/pkg/otlp/attributes
 
 replace github.com/DataDog/datadog-agent/pkg/trace => /home/dinesh/dd/datadog-agent/pkg/trace
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog => ../../internal/datadog

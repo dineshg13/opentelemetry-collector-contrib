@@ -18,6 +18,7 @@ receivers:
         endpoint: 0.0.0.0:4318
 connectors:
   datadog/connector:
+    trace_buffer: 500
   spanmetrics:
     histogram:
       exponential:
@@ -55,6 +56,7 @@ service:
     - health_check
   telemetry:
     logs:
+      level: "info"
       initial_fields:
         - service: "otel-collector"
   pipelines:

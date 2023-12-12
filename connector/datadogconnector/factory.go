@@ -27,10 +27,16 @@ func NewFactory() connector.Factory {
 
 var _ component.Config = (*Config)(nil)
 
-type Config struct{}
+type Config struct {
+	// TraceBuffer specifies the number of Datadog Agent TracerPayloads to buffer before dropping.
+	// The default value is 0, meaning the Datadog Agent TracerPayloads are unbuffered.
+	TraceBuffer int `mapstructure:"trace_buffer"`
+}
 
 func createDefaultConfig() component.Config {
-	return &Config{}
+	return &Config{
+		TraceBuffer: 10,
+	}
 }
 
 // defines the consumer type of the connector

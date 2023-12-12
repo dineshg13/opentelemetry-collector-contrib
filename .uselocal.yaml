@@ -2,6 +2,7 @@ targets:
   - ./cmd/otelcontribcol
   - ./exporter/datadogexporter
   - ./connector/datadogconnector
+  - ./processor/datadogprocessor
 replace:
   - from: github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/logs
     to: ../../dd/opentelemetry-mapping-go/pkg/otlp/logs/
