@@ -6,7 +6,9 @@ package datadogexporter // import "github.com/open-telemetry/opentelemetry-colle
 import (
 	"context"
 	"fmt"
+	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -31,6 +33,7 @@ import (
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/hostmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata"
@@ -289,6 +292,46 @@ func (f *factory) createMetricsExporter(
 		cancel()
 		return nil, err
 	}
+	traceAgent, err := f.TraceAgent(ctx, set, cfg, hostProvider)
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
+	}
+	go traceAgent.Run()
+
+	// Setup DD profiler
+	var service string
+	var env string
+	if v, ok := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES"); ok {
+		for _, attr := range strings.Split(v, ",") {
+			if strings.HasPrefix(attr, "service.name") {
+				service = strings.Split(attr, "=")[1]
+			}
+			if strings.HasPrefix(attr, "deployment.environment") {
+				env = strings.Split(attr, "=")[1]
+			}
+		}
+	}
+
+	err = profiler.Start(
+		profiler.WithService(service),
+		profiler.WithEnv(env),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+
+			profiler.BlockProfile,
+			profiler.MutexProfile,
+			profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("error creating profiler %v", err)
+	}
+
 	statsToAgent := make(chan *pb.StatsPayload)
 	statsWriter := writer.NewStatsWriter(acfg, statsToAgent, telemetry.NewNoopCollector())
 
