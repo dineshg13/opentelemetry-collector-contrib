@@ -414,6 +414,7 @@ func (f *factory) createMetricsExporter(
 			if statsToAgent != nil {
 				close(statsToAgent)
 			}
+			profiler.Stop()
 			return nil
 		}),
 	)
