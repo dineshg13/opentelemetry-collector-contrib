@@ -292,7 +292,7 @@ func (f *factory) createMetricsExporter(
 		cancel()
 		return nil, err
 	}
-	_, err = f.TraceAgent(ctx, set, cfg, hostProvider, 8126)
+	_, err = f.TraceAgent(ctx, set, cfg, hostProvider, 18126)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
@@ -322,6 +322,7 @@ func (f *factory) createMetricsExporter(
 
 	err = profiler.Start(
 		profiler.WithService(service),
+		profiler.WithAgentAddr("localhost:18126"),
 		profiler.WithEnv(env),
 		profiler.WithProfileTypes(
 			profiler.CPUProfile,
