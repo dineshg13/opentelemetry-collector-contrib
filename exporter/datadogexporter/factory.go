@@ -143,9 +143,9 @@ func (f *factory) StopReporter() {
 	})
 }
 
-func (f *factory) TraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*agent.Agent, error) {
+func (f *factory) TraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
 	datadog.InitializeMetricClient(params.MeterProvider)
-	agnt, err := newTraceAgent(ctx, params, cfg, sourceProvider)
+	agnt, err := newTraceAgent(ctx, params, cfg, sourceProvider, port)
 	if err != nil {
 		return nil, err
 	}
@@ -287,17 +287,16 @@ func (f *factory) createMetricsExporter(
 	ctx, cancel := context.WithCancel(ctx)
 	// cancel() runs on shutdown
 	var pushMetricsFn consumer.ConsumeMetricsFunc
-	acfg, err := newTraceAgentConfig(ctx, set, cfg, hostProvider)
+	acfg, err := newTraceAgentConfig(ctx, set, cfg, hostProvider, 0)
 	if err != nil {
 		cancel()
 		return nil, err
 	}
-	traceAgent, err := f.TraceAgent(ctx, set, cfg, hostProvider)
+	_, err = f.TraceAgent(ctx, set, cfg, hostProvider, 8126)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
 	}
-	go traceAgent.Run()
 
 	// Setup DD profiler
 	var service string
@@ -310,6 +309,14 @@ func (f *factory) createMetricsExporter(
 			if strings.HasPrefix(attr, "deployment.environment") {
 				env = strings.Split(attr, "=")[1]
 			}
+		}
+		if service == "" {
+			set.Logger.Warn("service.name not found in OTEL_RESOURCE_ATTRIBUTES")
+			service = "otel-collector"
+		}
+		if env == "" {
+			set.Logger.Warn("deployment.environment not found in OTEL_RESOURCE_ATTRIBUTES")
+			env = "experimental"
 		}
 	}
 
@@ -436,7 +443,7 @@ func (f *factory) createTracesExporter(
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	// cancel() runs on shutdown
-	traceagent, err := f.TraceAgent(ctx, set, cfg, hostProvider)
+	traceagent, err := f.TraceAgent(ctx, set, cfg, hostProvider, 0)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)

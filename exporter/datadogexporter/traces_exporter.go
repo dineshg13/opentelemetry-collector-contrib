@@ -181,15 +181,15 @@ func (exp *traceExporter) exportUsageMetrics(ctx context.Context, hosts map[stri
 	}
 }
 
-func newTraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*agent.Agent, error) {
-	acfg, err := newTraceAgentConfig(ctx, params, cfg, sourceProvider)
+func newTraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
+	acfg, err := newTraceAgentConfig(ctx, params, cfg, sourceProvider, port)
 	if err != nil {
 		return nil, err
 	}
 	return agent.NewAgent(ctx, acfg, telemetry.NewNoopCollector()), nil
 }
 
-func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*traceconfig.AgentConfig, error) {
+func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*traceconfig.AgentConfig, error) {
 	acfg := traceconfig.New()
 	src, err := sourceProvider.Source(ctx)
 	if err != nil {
@@ -208,6 +208,8 @@ func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cf
 	acfg.PeerServiceAggregation = cfg.Traces.PeerServiceAggregation
 	acfg.PeerTagsAggregation = cfg.Traces.PeerTagsAggregation
 	acfg.PeerTags = cfg.Traces.PeerTags
+	acfg.ReceiverPort = port
+	acfg.ReceiverHost = "localhost"
 	if v := cfg.Traces.flushInterval; v > 0 {
 		acfg.TraceWriter.FlushPeriodSeconds = v
 	}
