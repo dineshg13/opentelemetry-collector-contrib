@@ -143,6 +143,20 @@ func (f *factory) StopReporter() {
 	})
 }
 
+func (f *factory) TraceAgentWithSite(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
+	datadog.InitializeMetricClient(params.MeterProvider)
+	agnt, err := newTraceAgentWithSite(ctx, params, cfg, sourceProvider, port)
+	if err != nil {
+		return nil, err
+	}
+	f.wg.Add(1)
+	go func() {
+		defer f.wg.Done()
+		agnt.Run()
+	}()
+	return agnt, nil
+}
+
 func (f *factory) TraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
 	datadog.InitializeMetricClient(params.MeterProvider)
 	agnt, err := newTraceAgent(ctx, params, cfg, sourceProvider, port)
@@ -292,7 +306,7 @@ func (f *factory) createMetricsExporter(
 		cancel()
 		return nil, err
 	}
-	_, err = f.TraceAgent(ctx, set, cfg, hostProvider, 18126)
+	_, err = f.TraceAgentWithSite(ctx, set, cfg, hostProvider, 18126)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
