@@ -310,20 +310,21 @@ func (f *factory) createMetricsExporter(
 				env = strings.Split(attr, "=")[1]
 			}
 		}
-		if service == "" {
-			set.Logger.Warn("service.name not found in OTEL_RESOURCE_ATTRIBUTES")
-			service = "otel-collector"
-		}
-		if env == "" {
-			set.Logger.Warn("deployment.environment not found in OTEL_RESOURCE_ATTRIBUTES")
-			env = "experimental"
-		}
+	}
+	if service == "" {
+		set.Logger.Warn("service.name not found in OTEL_RESOURCE_ATTRIBUTES")
+		service = "otel-collector"
+	}
+	if env == "" {
+		set.Logger.Warn("deployment.environment not found in OTEL_RESOURCE_ATTRIBUTES")
+		env = "experimental"
 	}
 
 	err = profiler.Start(
 		profiler.WithService(service),
 		profiler.WithAgentAddr("localhost:18126"),
 		profiler.WithEnv(env),
+		profiler.WithLogStartup(true),
 		profiler.WithProfileTypes(
 			profiler.CPUProfile,
 			profiler.HeapProfile,

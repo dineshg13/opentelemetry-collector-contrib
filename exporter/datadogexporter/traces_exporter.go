@@ -210,6 +210,7 @@ func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cf
 	acfg.PeerTags = cfg.Traces.PeerTags
 	acfg.ReceiverPort = port
 	acfg.ReceiverHost = "localhost"
+	acfg.Site = cfg.API.Site
 	if v := cfg.Traces.flushInterval; v > 0 {
 		acfg.TraceWriter.FlushPeriodSeconds = v
 	}
@@ -217,6 +218,7 @@ func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cf
 		acfg.TraceBuffer = v
 	}
 	if addr := cfg.Traces.Endpoint; addr != "" {
+
 		acfg.Endpoints[0].Host = addr
 	}
 	tracelog.SetLogger(&zaplogger{params.Logger}) // TODO: This shouldn't be a singleton
