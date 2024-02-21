@@ -181,15 +181,15 @@ func (exp *traceExporter) exportUsageMetrics(ctx context.Context, hosts map[stri
 	}
 }
 
-func newTraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
-	acfg, err := newTraceAgentConfig(ctx, params, cfg, sourceProvider, port)
+func newTraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*agent.Agent, error) {
+	acfg, err := newTraceAgentConfig(ctx, params, cfg, sourceProvider)
 	if err != nil {
 		return nil, err
 	}
 	return agent.NewAgent(ctx, acfg, telemetry.NewNoopCollector()), nil
 }
 
-func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*traceconfig.AgentConfig, error) {
+func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*traceconfig.AgentConfig, error) {
 	acfg := traceconfig.New()
 	src, err := sourceProvider.Source(ctx)
 	if err != nil {
@@ -202,14 +202,13 @@ func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cf
 	acfg.OTLPReceiver.SpanNameAsResourceName = cfg.Traces.SpanNameAsResourceName
 	acfg.Endpoints[0].APIKey = string(cfg.API.Key)
 	acfg.Ignore["resource"] = cfg.Traces.IgnoreResources
+	acfg.ReceiverPort = 0 // disable HTTP receiver
 	acfg.AgentVersion = fmt.Sprintf("datadogexporter-%s-%s", params.BuildInfo.Command, params.BuildInfo.Version)
 	acfg.SkipSSLValidation = cfg.LimitedClientConfig.TLSSetting.InsecureSkipVerify
 	acfg.ComputeStatsBySpanKind = cfg.Traces.ComputeStatsBySpanKind
 	acfg.PeerServiceAggregation = cfg.Traces.PeerServiceAggregation
 	acfg.PeerTagsAggregation = cfg.Traces.PeerTagsAggregation
 	acfg.PeerTags = cfg.Traces.PeerTags
-	acfg.ReceiverPort = port
-	acfg.ReceiverHost = "localhost"
 	if v := cfg.Traces.flushInterval; v > 0 {
 		acfg.TraceWriter.FlushPeriodSeconds = v
 	}
@@ -219,6 +218,6 @@ func newTraceAgentConfig(ctx context.Context, params exporter.CreateSettings, cf
 	if addr := cfg.Traces.Endpoint; addr != "" {
 		acfg.Endpoints[0].Host = addr
 	}
-	tracelog.SetLogger(&zaplogger{params.Logger}) // TODO: This shouldn't be a singleton
+	tracelog.SetLogger(&zaplogger{params.Logger}) //TODO: This shouldn't be a singleton
 	return acfg, nil
 }

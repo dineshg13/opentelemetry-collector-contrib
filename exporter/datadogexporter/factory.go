@@ -33,12 +33,13 @@ import (
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
-	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/hostmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/internal/metadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry"
+
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 )
 
 var metricExportNativeClientFeatureGate = featuregate.GlobalRegistry().MustRegister(
@@ -143,9 +144,9 @@ func (f *factory) StopReporter() {
 	})
 }
 
-func (f *factory) TraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider, port int) (*agent.Agent, error) {
+func (f *factory) TraceAgent(ctx context.Context, params exporter.CreateSettings, cfg *Config, sourceProvider source.Provider) (*agent.Agent, error) {
 	datadog.InitializeMetricClient(params.MeterProvider)
-	agnt, err := newTraceAgent(ctx, params, cfg, sourceProvider, port)
+	agnt, err := newTraceAgent(ctx, params, cfg, sourceProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -287,59 +288,11 @@ func (f *factory) createMetricsExporter(
 	ctx, cancel := context.WithCancel(ctx)
 	// cancel() runs on shutdown
 	var pushMetricsFn consumer.ConsumeMetricsFunc
-	acfg, err := newTraceAgentConfig(ctx, set, cfg, hostProvider, 0)
+	acfg, err := newTraceAgentConfig(ctx, set, cfg, hostProvider)
 	if err != nil {
 		cancel()
 		return nil, err
 	}
-	_, err = f.TraceAgent(ctx, set, cfg, hostProvider, 18126)
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
-	}
-
-	// Setup DD profiler
-	var service string
-	var env string
-	if v, ok := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES"); ok {
-		for _, attr := range strings.Split(v, ",") {
-			if strings.HasPrefix(attr, "service.name") {
-				service = strings.Split(attr, "=")[1]
-			}
-			if strings.HasPrefix(attr, "deployment.environment") {
-				env = strings.Split(attr, "=")[1]
-			}
-		}
-		if service == "" {
-			set.Logger.Warn("service.name not found in OTEL_RESOURCE_ATTRIBUTES")
-			service = "otel-collector"
-		}
-		if env == "" {
-			set.Logger.Warn("deployment.environment not found in OTEL_RESOURCE_ATTRIBUTES")
-			env = "experimental"
-		}
-	}
-
-	err = profiler.Start(
-		profiler.WithService(service),
-		profiler.WithAgentAddr("localhost:18126"),
-		profiler.WithEnv(env),
-		profiler.WithProfileTypes(
-			profiler.CPUProfile,
-			profiler.HeapProfile,
-			// The profiles below are disabled by default to keep overhead
-			// low, but can be enabled as needed.
-
-			profiler.BlockProfile,
-			profiler.MutexProfile,
-			profiler.GoroutineProfile,
-		),
-	)
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("error creating profiler %v", err)
-	}
-
 	statsToAgent := make(chan *pb.StatsPayload)
 	statsWriter := writer.NewStatsWriter(acfg, statsToAgent, telemetry.NewNoopCollector())
 
@@ -393,6 +346,47 @@ func (f *factory) createMetricsExporter(
 		pushMetricsFn = exp.PushMetricsDataScrubbed
 	}
 
+	// Setup agentless datadog profiler
+	var service string
+	var env string
+	if v, ok := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES"); ok {
+		for _, attr := range strings.Split(v, ",") {
+			if strings.HasPrefix(attr, "service.name") {
+				service = strings.Split(attr, "=")[1]
+			}
+			if strings.HasPrefix(attr, "deployment.environment") {
+				env = strings.Split(attr, "=")[1]
+			}
+		}
+	}
+	if service == "" {
+		set.Logger.Warn("service.name not found in OTEL_RESOURCE_ATTRIBUTES")
+		service = "otel-collector"
+	}
+	if env == "" {
+		set.Logger.Warn("deployment.environment not found in OTEL_RESOURCE_ATTRIBUTES")
+		env = "experimental"
+	}
+	if err = profiler.Start(
+		profiler.WithService(service),
+		profiler.WithEnv(env),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+			profiler.BlockProfile,
+			profiler.MutexProfile,
+			profiler.GoroutineProfile,
+		),
+		profiler.WithAgentlessUpload(),
+		profiler.WithAPIKey(string(cfg.API.Key)),
+		profiler.WithSite(cfg.API.Site),
+	); err != nil {
+		cancel()
+		return nil, fmt.Errorf("error creating profiler %v", err)
+	}
+
 	exporter, err := exporterhelper.NewMetricsExporter(
 		ctx,
 		set,
@@ -415,6 +409,7 @@ func (f *factory) createMetricsExporter(
 			if statsToAgent != nil {
 				close(statsToAgent)
 			}
+			profiler.Stop()
 			return nil
 		}),
 	)
@@ -444,7 +439,7 @@ func (f *factory) createTracesExporter(
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	// cancel() runs on shutdown
-	traceagent, err := f.TraceAgent(ctx, set, cfg, hostProvider, 0)
+	traceagent, err := f.TraceAgent(ctx, set, cfg, hostProvider)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to start trace-agent: %w", err)
