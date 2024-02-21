@@ -380,8 +380,9 @@ func (f *factory) createMetricsExporter(
 			profiler.GoroutineProfile,
 		),
 		profiler.WithAgentlessUpload(),
+		profiler.WithLogStartup(true),
 		profiler.WithAPIKey(string(cfg.API.Key)),
-		profiler.WithSite(cfg.API.Site),
+		profiler.WithURL("https://intake.profile.us5.datadoghq.com/api/v2/profile"),
 	); err != nil {
 		cancel()
 		return nil, fmt.Errorf("error creating profiler %v", err)
