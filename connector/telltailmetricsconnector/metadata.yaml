@@ -1,0 +1,13 @@
+type: telltailmetrics
+display_name: Telltail Metrics Connector
+
+status:
+  class: connector
+  stability:
+    alpha: [traces_to_metrics, traces_to_traces]
+  distributions: [contrib]
+  codeowners:
+    active: [dineshg13]
+
+tests:
+  config:
