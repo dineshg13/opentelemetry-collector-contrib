@@ -1,0 +1,8 @@
+telltailmetrics/default:
+
+telltailmetrics/with_routing:
+  move_to_traces:
+    - color
+    - shape
+  move_to_metrics:
+    - http.method
