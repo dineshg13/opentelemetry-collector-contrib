@@ -81,6 +81,7 @@ exporters:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/cassandraexporter v0.154.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/coralogixexporter v0.154.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter v0.154.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogwideexporter v0.154.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datasetexporter v0.154.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/dorisexporter v0.154.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/elasticsearchexporter v0.154.0
