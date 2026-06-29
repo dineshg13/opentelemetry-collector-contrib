@@ -1,0 +1,33 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+// Taken from dd-source/domains/evp-workers/libs/rust/evp-workers-runtime/proto/wide_telemetry.proto
+
+syntax = "proto3";
+
+package datadog.evp.wide;
+
+option go_package = "github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogwideexporter/internal/widepb;widepb";
+
+message WideTelemetryEnvelope {
+  uint32 version = 1;
+  string host = 2;
+  string service = 3;
+  uint64 flush_window_start_ms = 7;
+  uint64 flush_window_end_ms = 8;
+  repeated WideTable tables = 9;
+  map<string, string> tags = 10;
+}
+
+message WideTable {
+  string event_type = 1;
+  TableKind kind = 2;
+  string schema_json = 3;
+  bytes arrow_ipc = 4;
+}
+
+enum TableKind {
+  TABLE_KIND_UNSPECIFIED = 0;
+  TABLE_KIND_AGGREGATED = 1;
+  TABLE_KIND_SAMPLED = 2;
+}

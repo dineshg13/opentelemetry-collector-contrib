@@ -1,0 +1,21 @@
+type: datadogwide
+display_name: Datadog Wide Events Exporter
+
+status:
+  class: exporter
+  stability:
+    alpha: [traces, metrics, logs]
+  distributions: [contrib]
+  codeowners:
+    active: [mx-psi, dineshg13, liustanley, songy23, mackjmr, jade-guiton-dd, IbraheemA]
+
+tests:
+  config:
+    api:
+      key: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      site: datadoghq.eu
+    sending_queue:
+      enabled: false
+    retry_on_failure:
+      enabled: false
+  expect_consumer_error: true
