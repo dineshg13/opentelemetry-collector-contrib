@@ -50,4 +50,32 @@ func TestConfigValidateErrors(t *testing.T) {
 		cfg.Correlation.OrphanTimeout = -time.Second
 		require.ErrorContains(t, cfg.Validate(), "orphan_timeout")
 	})
+
+	t.Run("negative accumulation caps", func(t *testing.T) {
+		for _, tc := range []struct {
+			name   string
+			mutate func(*Config)
+			substr string
+		}{
+			{"max_sampled_rows", func(c *Config) { c.Wide.MaxSampledRows = -1 }, "wide.max_sampled_rows"},
+			{"max_aggregate_buckets", func(c *Config) { c.Wide.MaxAggregateBuckets = -1 }, "wide.max_aggregate_buckets"},
+			{"max_schemas", func(c *Config) { c.Wide.MaxSchemas = -1 }, "wide.max_schemas"},
+			{"max_retry_buffer_bytes", func(c *Config) { c.Wide.MaxRetryBufferBytes = -1 }, "wide.max_retry_buffer_bytes"},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				cfg := createDefaultConfig().(*Config)
+				cfg.API.Key = configopaque.String("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+				tc.mutate(cfg)
+				require.ErrorContains(t, cfg.Validate(), tc.substr)
+			})
+		}
+	})
+}
+
+func TestConfigDefaultsHaveCaps(t *testing.T) {
+	cfg := createDefaultConfig().(*Config)
+	require.Equal(t, defaultMaxSampledRows, cfg.Wide.MaxSampledRows)
+	require.Equal(t, defaultMaxAggregateBuckets, cfg.Wide.MaxAggregateBuckets)
+	require.Equal(t, defaultMaxSchemas, cfg.Wide.MaxSchemas)
+	require.Equal(t, defaultMaxRetryBufferBytes, cfg.Wide.MaxRetryBufferBytes)
 }

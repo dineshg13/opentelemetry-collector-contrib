@@ -31,6 +31,13 @@ type wideExporter struct {
 	mu       sync.Mutex
 	identity EnvelopeIdentity
 
+	// flushMu serializes flushes (ticker vs shutdown) so serialization and the
+	// blocking HTTP send run without holding mu, keeping the ingest path and the
+	// correlator sweep unblocked during network I/O. retry is only touched under
+	// flushMu.
+	flushMu sync.Mutex
+	retry   *retryBuffer
+
 	startOnce    sync.Once
 	shutdownOnce sync.Once
 	stop         chan struct{}
@@ -53,12 +60,20 @@ func newWideExporter(set exporter.Settings, cfg *Config) (*wideExporter, error) 
 		identity.Host, _ = os.Hostname()
 	}
 	exp := &wideExporter{
-		cfg:          cfg,
-		set:          set,
-		materializer: NewMaterializer(),
-		identity:     identity,
-		stop:         make(chan struct{}),
-		done:         make(chan struct{}),
+		cfg: cfg,
+		set: set,
+		materializer: NewMaterializer(
+			WithLimits(MaterializerLimits{
+				MaxSampledRows:      cfg.Wide.MaxSampledRows,
+				MaxAggregateBuckets: cfg.Wide.MaxAggregateBuckets,
+				MaxSchemas:          cfg.Wide.MaxSchemas,
+			}),
+			WithLogger(set.Logger),
+		),
+		retry:    newRetryBuffer(cfg.Wide.MaxRetryBufferBytes),
+		identity: identity,
+		stop:     make(chan struct{}),
+		done:     make(chan struct{}),
 	}
 	exp.sender = newHTTPEnvelopeSender(cfg.wideEndpoint(), string(cfg.API.Key), cfg.TimeoutSettings.Timeout, set.Logger)
 	exp.correlator = newCorrelator(cfg.Correlation, exp.exportObservationBatch)
@@ -124,8 +139,8 @@ func (e *wideExporter) consumeTraces(ctx context.Context, td ptrace.Traces) erro
 			return err
 		}
 	}
-	for _, span := range spans {
-		e.correlator.onSpan(span)
+	for i := range spans {
+		e.correlator.onSpan(spans[i])
 	}
 	return e.correlator.forceFlush(ctx)
 }
@@ -163,7 +178,8 @@ func (e *wideExporter) exportObservationBatch(ctx context.Context, batch observa
 
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	for _, event := range events {
+	for i := range events {
+		event := events[i]
 		e.observeIdentity(event)
 		if err := e.materializer.Add(event); err != nil {
 			e.lastErr = err
@@ -177,17 +193,69 @@ func (e *wideExporter) forceFlush(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	// flushMu serializes concurrent flushes (ticker vs shutdown). Serialization
+	// and the blocking send happen without holding e.mu so the ingest path and
+	// the correlator sweep are never blocked on network I/O.
+	e.flushMu.Lock()
+	defer e.flushMu.Unlock()
+
+	// Short critical section: surface any background error, snapshot the window,
+	// and reset the materializer regardless of send outcome. Retention of failed
+	// sends lives in the bounded retry buffer, not the (unbounded) materializer.
 	e.mu.Lock()
-	defer e.mu.Unlock()
 	var pending error
 	if e.lastErr != nil {
 		pending = e.lastErr
 		e.lastErr = nil
 	}
-	// Always attempt the flush and surface any background error alongside its
-	// result. flushLocked retains the materializer state when a send fails, so
-	// the next tick retries instead of permanently wedging the loop.
-	return errors.Join(pending, e.flushLocked(ctx))
+	tables, windowEnd, snapErr := e.materializer.flushSnapshot(ctx)
+	if snapErr == nil {
+		e.materializer.reset(windowEnd)
+	}
+	identity := e.identity
+	e.mu.Unlock()
+
+	if snapErr != nil {
+		return errors.Join(pending, snapErr)
+	}
+
+	var current []SerializedEnvelope
+	if len(tables) > 0 {
+		if identity.Service == "" {
+			identity.Service = unknownService
+		}
+		serializer := NewSerializer(identity, WithMaxEnvelopeBytes(e.cfg.Wide.MaxEnvelopeBytes))
+		envelopes, err := serializer.Serialize(ctx, tables)
+		if err != nil {
+			// Serialization failures are permanent (e.g. a single oversized
+			// table); drop the window and surface the error rather than retrying
+			// forever.
+			return errors.Join(pending, err)
+		}
+		current = envelopes
+	}
+	return errors.Join(pending, e.sendWithRetry(ctx, current))
+}
+
+// sendWithRetry drains the retry buffer (oldest first), appends the current
+// window, and sends each batch. On the first send failure it re-enqueues the
+// failed batch and everything after it (oldest first) into the bounded retry
+// buffer and returns the error. Only called under flushMu, so retry needs no
+// additional locking.
+func (e *wideExporter) sendWithRetry(ctx context.Context, current []SerializedEnvelope) error {
+	batches := e.retry.take()
+	if len(current) > 0 {
+		batches = append(batches, current)
+	}
+	for i := range batches {
+		if err := e.sender.Send(ctx, batches[i]); err != nil {
+			for _, remaining := range batches[i:] {
+				e.retry.enqueue(remaining, e.set.Logger)
+			}
+			return err
+		}
+	}
+	return nil
 }
 
 func (e *wideExporter) loop() {
@@ -204,31 +272,6 @@ func (e *wideExporter) loop() {
 			return
 		}
 	}
-}
-
-func (e *wideExporter) flushLocked(ctx context.Context) error {
-	tables, windowEnd, err := e.materializer.flushSnapshot(ctx)
-	if err != nil {
-		return err
-	}
-	if len(tables) == 0 {
-		e.materializer.reset(windowEnd)
-		return nil
-	}
-	identity := e.identity
-	if identity.Service == "" {
-		identity.Service = unknownService
-	}
-	serializer := NewSerializer(identity, WithMaxEnvelopeBytes(e.cfg.Wide.MaxEnvelopeBytes))
-	envelopes, err := serializer.Serialize(ctx, tables)
-	if err != nil {
-		return err
-	}
-	if err := e.sender.Send(ctx, envelopes); err != nil {
-		return err
-	}
-	e.materializer.reset(windowEnd)
-	return nil
 }
 
 func (e *wideExporter) observeIdentity(event WideEvent) {

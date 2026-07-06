@@ -65,6 +65,13 @@ func (c *correlator) onSpan(span spanObservation) {
 	b := c.pendingSpan(span.Ref)
 	span.Metrics = append(span.Metrics, b.samples...)
 	span.Logs = append(span.Logs, b.logs...)
+	if b.span != nil {
+		// Duplicate span for the same ref: preserve anything already attached to
+		// the previously-seen span object (metrics/logs correlated between the two
+		// onSpan calls) instead of clobbering it.
+		span.Metrics = append(span.Metrics, b.span.Metrics...)
+		span.Logs = append(span.Logs, b.span.Logs...)
+	}
 	b.samples = nil
 	b.logs = nil
 	b.span = &span
@@ -177,20 +184,27 @@ func (c *correlator) loop() {
 	}
 }
 
+// keyedBundle pairs a pending bundle with its map key so a failed sink call can
+// re-insert it rather than dropping the data.
+type keyedBundle struct {
+	key spanRef
+	b   *pendingSpan
+}
+
 func (c *correlator) flushDue(ctx context.Context) error {
 	now := time.Now()
-	var ready []*pendingSpan
-	var orphans []*pendingSpan
+	var ready []keyedBundle
+	var orphans []keyedBundle
 
 	c.mu.Lock()
 	for key, b := range c.pending {
 		if b.span != nil && !b.spanArrivedAt.IsZero() {
 			if now.Sub(b.spanArrivedAt) >= c.grace {
-				ready = append(ready, b)
+				ready = append(ready, keyedBundle{key, b})
 				delete(c.pending, key)
 			}
 		} else if now.Sub(b.firstSignalAt) >= c.orphanTimeout {
-			orphans = append(orphans, b)
+			orphans = append(orphans, keyedBundle{key, b})
 			delete(c.pending, key)
 		}
 	}
@@ -198,32 +212,19 @@ func (c *correlator) flushDue(ctx context.Context) error {
 	c.orphanLogs = nil
 	c.mu.Unlock()
 
-	if len(ready) > 0 {
-		if err := c.emit(ctx, ready); err != nil {
-			return err
-		}
-	}
-	if len(orphans) > 0 {
-		if err := c.exportOrphanBundles(ctx, orphans); err != nil {
-			return err
-		}
-	}
-	if len(orphanLogs) > 0 {
-		return c.sink(ctx, observationBatch{Logs: orphanLogs})
-	}
-	return nil
+	return c.emitBundles(ctx, ready, orphans, orphanLogs)
 }
 
 func (c *correlator) drainAll(ctx context.Context) error {
-	var ready []*pendingSpan
-	var orphans []*pendingSpan
+	var ready []keyedBundle
+	var orphans []keyedBundle
 
 	c.mu.Lock()
 	for key, b := range c.pending {
 		if b.span != nil {
-			ready = append(ready, b)
+			ready = append(ready, keyedBundle{key, b})
 		} else {
-			orphans = append(orphans, b)
+			orphans = append(orphans, keyedBundle{key, b})
 		}
 		delete(c.pending, key)
 	}
@@ -231,20 +232,62 @@ func (c *correlator) drainAll(ctx context.Context) error {
 	c.orphanLogs = nil
 	c.mu.Unlock()
 
+	return c.emitBundles(ctx, ready, orphans, orphanLogs)
+}
+
+// emitBundles sinks ready bundles, orphan bundles, and orphan logs in order. On
+// the first sink error it re-queues everything not yet successfully sent so a
+// transient failure (e.g. context cancellation) doesn't drop captured data.
+func (c *correlator) emitBundles(ctx context.Context, ready, orphans []keyedBundle, orphanLogs []logObservation) error {
 	if len(ready) > 0 {
-		if err := c.emit(ctx, ready); err != nil {
+		if err := c.emit(ctx, bundlesOf(ready)); err != nil {
+			c.requeue(ready, orphans, orphanLogs)
 			return err
 		}
 	}
 	if len(orphans) > 0 {
-		if err := c.exportOrphanBundles(ctx, orphans); err != nil {
+		if err := c.exportOrphanBundles(ctx, bundlesOf(orphans)); err != nil {
+			c.requeue(nil, orphans, orphanLogs)
 			return err
 		}
 	}
 	if len(orphanLogs) > 0 {
-		return c.sink(ctx, observationBatch{Logs: orphanLogs})
+		if err := c.sink(ctx, observationBatch{Logs: orphanLogs}); err != nil {
+			c.requeue(nil, nil, orphanLogs)
+			return err
+		}
 	}
 	return nil
+}
+
+func bundlesOf(kbs []keyedBundle) []*pendingSpan {
+	out := make([]*pendingSpan, 0, len(kbs))
+	for _, kb := range kbs {
+		out = append(out, kb.b)
+	}
+	return out
+}
+
+// requeue re-inserts un-sent bundles and prepends un-sent orphan logs. Bundles
+// are only restored when no newer bundle already occupies the key (a newer one
+// arrived while we were flushing); in that rare race the flushed copy is
+// dropped in favor of the fresher entry.
+func (c *correlator) requeue(ready, orphans []keyedBundle, orphanLogs []logObservation) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, kb := range ready {
+		if _, exists := c.pending[kb.key]; !exists {
+			c.pending[kb.key] = kb.b
+		}
+	}
+	for _, kb := range orphans {
+		if _, exists := c.pending[kb.key]; !exists {
+			c.pending[kb.key] = kb.b
+		}
+	}
+	if len(orphanLogs) > 0 {
+		c.orphanLogs = append(orphanLogs, c.orphanLogs...)
+	}
 }
 
 func (c *correlator) emit(ctx context.Context, bundles []*pendingSpan) error {

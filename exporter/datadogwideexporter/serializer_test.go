@@ -5,7 +5,6 @@ package datadogwideexporter
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -51,7 +50,7 @@ func TestSerializerEmitsWideV2AggregatedSchema(t *testing.T) {
 		Host:    "worker-pod-abc",
 		Service: "event-workers-netflow-worker",
 		Tags:    map[string]string{"env": "prod", "empty": ""},
-	}).Serialize(context.Background(), []WideTable{table})
+	}).Serialize(t.Context(), []WideTable{table})
 	require.NoError(t, err)
 	require.Len(t, envelopes, 1)
 
@@ -229,7 +228,7 @@ func assertWrappedSchemaJSON(t *testing.T, schemaJSON string, columns map[string
 	require.Equal(t, children, schema.Children)
 }
 
-func readSingleArrowRecord(t *testing.T, payload []byte) arrow.Record {
+func readSingleArrowRecord(t *testing.T, payload []byte) arrow.RecordBatch {
 	t.Helper()
 	reader, err := ipc.NewReader(bytes.NewReader(payload))
 	require.NoError(t, err)

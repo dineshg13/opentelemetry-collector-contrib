@@ -30,3 +30,24 @@ service:
       receivers: [otlp]
       exporters: [datadogwide]
 ```
+
+## Memory bounds
+
+Because the exporter aggregates and correlates signals in memory per flush
+window, its accumulation and egress-retry buffers are explicitly bounded so an
+intake slowdown or outage degrades gracefully (drop-oldest / drop-new with a
+throttled warning) instead of growing without limit. All caps live under `wide:`
+and default to non-zero values; `0` means "unbounded" for the accumulation caps
+and "no buffering" for the retry buffer.
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `wide.max_sampled_rows` | `100000` | Max sampled rows retained per flush window (drop-new). |
+| `wide.max_aggregate_buckets` | `100000` | Max distinct aggregate buckets (dimension cardinality) per window (drop-new; existing buckets keep aggregating). |
+| `wide.max_schemas` | `10000` | Max distinct table identities tracked per window (drop-new). |
+| `wide.max_retry_buffer_bytes` | `33554432` | Max bytes of serialized envelopes held for retry after a failed intake send (drop-oldest). |
+
+> Note: `sending_queue` and `retry_on_failure` govern ingestion into the
+> aggregation window — they wrap the consume path, which returns before any wide
+> intake POST. They do **not** retry the intake delivery. Wide-intake egress
+> durability is governed solely by `wide.max_retry_buffer_bytes`.

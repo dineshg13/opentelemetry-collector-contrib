@@ -5,11 +5,15 @@ package datadogwideexporter
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"maps"
 	"math"
 	"sort"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 const DefaultHistogramReservoirSize = 1028
@@ -32,6 +36,28 @@ func WithWindowStart(start time.Time) MaterializerOption {
 	}
 }
 
+// MaterializerLimits bounds the in-memory accumulation of a single flush window.
+// A zero value for any field means that dimension is unbounded.
+type MaterializerLimits struct {
+	MaxSampledRows      int
+	MaxAggregateBuckets int
+	MaxSchemas          int
+}
+
+func WithLimits(limits MaterializerLimits) MaterializerOption {
+	return func(m *Materializer) {
+		m.limits = limits
+	}
+}
+
+func WithLogger(logger *zap.Logger) MaterializerOption {
+	return func(m *Materializer) {
+		if logger != nil {
+			m.logger = logger
+		}
+	}
+}
+
 // Materializer accumulates normalized WideEvent records, keeps aggregate state
 // over the full stream, and retains sampled rows for the same flush window.
 //
@@ -41,15 +67,23 @@ type Materializer struct {
 	windowStart time.Time
 	seq         uint64
 
+	limits MaterializerLimits
+	logger *zap.Logger
+
 	sampledRows []WideRow
 	buckets     map[string]*aggregateBucket
 	schemas     map[string]map[string]FieldSchema
 	children    map[string]map[string]struct{}
+
+	droppedSampledRows uint64
+	droppedBuckets     uint64
+	droppedSchemas     uint64
 }
 
 func NewMaterializer(opts ...MaterializerOption) *Materializer {
 	m := &Materializer{
 		clock:    time.Now,
+		logger:   zap.NewNop(),
 		buckets:  make(map[string]*aggregateBucket),
 		schemas:  make(map[string]map[string]FieldSchema),
 		children: make(map[string]map[string]struct{}),
@@ -69,6 +103,14 @@ func (m *Materializer) Add(event WideEvent) error {
 	}
 
 	identity := identityFor(event)
+	// Cap distinct table identities. A new identity we can't track would produce a
+	// table with no dynamic schema, so drop the whole event (drop-new).
+	if _, exists := m.schemas[identity.key()]; !exists {
+		if m.limits.MaxSchemas > 0 && len(m.schemas) >= m.limits.MaxSchemas {
+			m.droppedSchemas++
+			return nil
+		}
+	}
 	if err := m.recordSchema(identity, event); err != nil {
 		return err
 	}
@@ -76,7 +118,11 @@ func (m *Materializer) Add(event WideEvent) error {
 
 	m.seq++
 	if event.Sampled {
-		m.sampledRows = append(m.sampledRows, sampledRow(event))
+		if m.limits.MaxSampledRows > 0 && len(m.sampledRows) >= m.limits.MaxSampledRows {
+			m.droppedSampledRows++
+		} else {
+			m.sampledRows = append(m.sampledRows, sampledRow(event))
+		}
 	}
 
 	if len(event.Facts) == 0 {
@@ -86,6 +132,12 @@ func (m *Materializer) Add(event WideEvent) error {
 	key := aggregateKey(identity, path, event.Dimensions)
 	bucket := m.buckets[key]
 	if bucket == nil {
+		// Cap distinct aggregate buckets (drop-new). Existing buckets keep
+		// aggregating so admitted series stay correct.
+		if m.limits.MaxAggregateBuckets > 0 && len(m.buckets) >= m.limits.MaxAggregateBuckets {
+			m.droppedBuckets++
+			return nil
+		}
 		bucket = &aggregateBucket{
 			identity:   identity,
 			path:       path,
@@ -94,8 +146,8 @@ func (m *Materializer) Add(event WideEvent) error {
 		}
 		m.buckets[key] = bucket
 	}
-	for name, fact := range event.Facts {
-		if err := bucket.addFact(name, fact, event.Timestamp, m.seq); err != nil {
+	for name := range event.Facts {
+		if err := bucket.addFact(name, event.Facts[name], event.Timestamp, m.seq); err != nil {
 			return err
 		}
 	}
@@ -126,7 +178,22 @@ func (m *Materializer) flushSnapshot(ctx context.Context) ([]WideTable, time.Tim
 	if err != nil {
 		return nil, time.Time{}, err
 	}
+	m.logDrops()
 	return tables, windowEnd, nil
+}
+
+// logDrops emits an aggregated warning for anything shed by the accumulation
+// caps during the window. It is called once per flush (throttling log volume to
+// the flush cadence); the counters are zeroed by reset.
+func (m *Materializer) logDrops() {
+	if m.droppedSampledRows == 0 && m.droppedBuckets == 0 && m.droppedSchemas == 0 {
+		return
+	}
+	m.logger.Warn("Datadog wide exporter dropped telemetry due to accumulation caps",
+		zap.Uint64("dropped_sampled_rows", m.droppedSampledRows),
+		zap.Uint64("dropped_aggregate_buckets", m.droppedBuckets),
+		zap.Uint64("dropped_schemas", m.droppedSchemas),
+	)
 }
 
 func (m *Materializer) reset(windowStart time.Time) {
@@ -135,6 +202,9 @@ func (m *Materializer) reset(windowStart time.Time) {
 	m.schemas = make(map[string]map[string]FieldSchema)
 	m.children = make(map[string]map[string]struct{})
 	m.windowStart = windowStart
+	m.droppedSampledRows = 0
+	m.droppedBuckets = 0
+	m.droppedSchemas = 0
 }
 
 func (m *Materializer) buildTables(ctx context.Context, windowStart, windowEnd time.Time) ([]WideTable, error) {
@@ -156,7 +226,8 @@ func (m *Materializer) buildTables(ctx context.Context, windowStart, windowEnd t
 		table.Rows = append(table.Rows, bucket.row(windowStart, windowEnd))
 	}
 
-	for _, row := range m.sampledRows {
+	for i := range m.sampledRows {
+		row := m.sampledRows[i]
 		identity := TableIdentity{EventType: row.EventType}
 		tableKey := tableKey(TableKindSampled, identity)
 		table := tablesByKey[tableKey]
@@ -198,18 +269,18 @@ func validateEvent(event WideEvent) error {
 		return fmt.Errorf("invalid event kind %q", event.Kind)
 	}
 	if event.EventType == "" && event.SpanName == "" {
-		return fmt.Errorf("event_type or span_name is required")
+		return errors.New("event_type or span_name is required")
 	}
 	if event.Sampled {
 		if event.TraceID == "" {
-			return fmt.Errorf("trace_id is required for sampled rows")
+			return errors.New("trace_id is required for sampled rows")
 		}
 		if event.SpanID == "" {
-			return fmt.Errorf("span_id is required for sampled rows")
+			return errors.New("span_id is required for sampled rows")
 		}
 	}
 	if event.Timestamp.IsZero() {
-		return fmt.Errorf("timestamp is required")
+		return errors.New("timestamp is required")
 	}
 	if math.IsNaN(event.SampleProbability) || event.SampleProbability < 0 || event.SampleProbability > 1 {
 		return fmt.Errorf("sample_probability must be between 0 and 1, got %v", event.SampleProbability)
@@ -230,11 +301,11 @@ func validateEvent(event WideEvent) error {
 			return fmt.Errorf("attribute %q has invalid value kind %q", name, value.Kind)
 		}
 	}
-	for name, fact := range event.Facts {
+	for name := range event.Facts {
 		if err := validateFieldName(name); err != nil {
 			return fmt.Errorf("fact %q: %w", name, err)
 		}
-		if err := fact.validate(); err != nil {
+		if err := event.Facts[name].validate(); err != nil {
 			return fmt.Errorf("fact %q: %w", name, err)
 		}
 	}
@@ -267,10 +338,10 @@ var reservedColumns = map[string]struct{}{
 
 func validateFieldName(name string) error {
 	if name == "" {
-		return fmt.Errorf("name is required")
+		return errors.New("name is required")
 	}
 	if _, ok := reservedColumns[name]; ok {
-		return fmt.Errorf("reserved column name")
+		return errors.New("reserved column name")
 	}
 	return nil
 }
@@ -296,9 +367,7 @@ func (m *Materializer) recordSchema(identity TableIdentity, event WideEvent) err
 	key := identity.key()
 	existing := m.schemas[key]
 	fields := make(map[string]FieldSchema, len(existing)+len(event.Dimensions)+len(event.Attributes)+len(event.Facts))
-	for name, field := range existing {
-		fields[name] = field
-	}
+	maps.Copy(fields, existing)
 
 	for name, value := range event.Dimensions {
 		if err := recordField(fields, FieldSchema{Name: name, Role: FieldRoleDimension, Type: value.Kind}); err != nil {
@@ -310,7 +379,8 @@ func (m *Materializer) recordSchema(identity TableIdentity, event WideEvent) err
 			return err
 		}
 	}
-	for name, fact := range event.Facts {
+	for name := range event.Facts {
+		fact := event.Facts[name]
 		valueType := ValueFloat64
 		if fact.Kind().logLike() {
 			valueType = ValueString
@@ -395,7 +465,8 @@ func roleOrder(role FieldRole) int {
 func sampledRow(event WideEvent) WideRow {
 	facts := make(map[string]float64, len(event.Facts))
 	logFacts := make(map[string]Fact)
-	for name, fact := range event.Facts {
+	for name := range event.Facts {
+		fact := event.Facts[name]
 		if fact.Kind().logLike() {
 			logFacts[name] = fact
 			continue
@@ -468,8 +539,7 @@ func eventPath(event WideEvent) string {
 func aggregateKey(identity TableIdentity, path string, dimensions map[string]TypedValue) string {
 	keys := sortedValueKeys(dimensions)
 	parts := make([]string, 0, len(keys)+2)
-	parts = append(parts, identity.key())
-	parts = append(parts, path)
+	parts = append(parts, identity.key(), path)
 	for _, key := range keys {
 		parts = append(parts, key+"="+dimensions[key].key())
 	}
@@ -494,9 +564,7 @@ func copyValues(values map[string]TypedValue) map[string]TypedValue {
 		return nil
 	}
 	out := make(map[string]TypedValue, len(values))
-	for key, value := range values {
-		out[key] = value
-	}
+	maps.Copy(out, values)
 	return out
 }
 

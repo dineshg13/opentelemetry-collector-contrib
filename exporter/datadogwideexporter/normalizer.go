@@ -5,6 +5,7 @@ package datadogwideexporter // import "github.com/open-telemetry/opentelemetry-c
 
 import (
 	"hash/fnv"
+	"maps"
 	"math"
 	"sort"
 	"strconv"
@@ -22,7 +23,8 @@ const (
 
 func wideEventsFromBatch(batch observationBatch) []WideEvent {
 	spanNames := make(map[spanRef]string, len(batch.Spans))
-	for _, span := range batch.Spans {
+	for i := range batch.Spans {
+		span := batch.Spans[i]
 		if span.Ref.valid() {
 			spanNames[span.Ref] = span.Name
 		}
@@ -30,8 +32,8 @@ func wideEventsFromBatch(batch observationBatch) []WideEvent {
 
 	exportedSamples := make(map[string]struct{})
 	events := make([]WideEvent, 0, len(batch.Spans)+len(batch.Metrics)+len(batch.Logs))
-	for _, span := range batch.Spans {
-		events = append(events, spanWideEvents(span, exportedSamples)...)
+	for i := range batch.Spans {
+		events = append(events, spanWideEvents(batch.Spans[i], exportedSamples)...)
 	}
 	for _, metric := range batch.Metrics {
 		events = append(events, linkedMetricWideEvents(metric, spanNames, exportedSamples)...)
@@ -407,21 +409,17 @@ func sanitizeWideName(name string) string {
 
 func cloneWideValues(values map[string]TypedValue) map[string]TypedValue {
 	out := make(map[string]TypedValue, len(values))
-	for key, value := range values {
-		out[key] = value
-	}
+	maps.Copy(out, values)
 	return out
 }
 
-func mergeWideValues(dst map[string]TypedValue, src map[string]TypedValue) map[string]TypedValue {
+func mergeWideValues(dst, src map[string]TypedValue) map[string]TypedValue {
 	if len(src) == 0 {
 		return dst
 	}
 	if dst == nil {
 		dst = make(map[string]TypedValue, len(src))
 	}
-	for key, value := range src {
-		dst[key] = value
-	}
+	maps.Copy(dst, src)
 	return dst
 }

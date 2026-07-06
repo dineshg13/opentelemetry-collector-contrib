@@ -5,6 +5,7 @@ package datadogwideexporter
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func TestCorrelatorLinksMetricSampleToLateSpan(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	var batches []observationBatch
 	c := newCorrelator(CorrelationConfig{
 		GraceWindow:   time.Nanosecond,
@@ -60,7 +61,7 @@ func TestCorrelatorLinksMetricSampleToLateSpan(t *testing.T) {
 }
 
 func TestCorrelatorEmitsOrphanLogsForMissingSpan(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	var batches []observationBatch
 	c := newCorrelator(CorrelationConfig{
 		GraceWindow:   time.Nanosecond,
@@ -89,8 +90,70 @@ func TestCorrelatorEmitsOrphanLogsForMissingSpan(t *testing.T) {
 	require.Equal(t, ref, batches[0].Logs[0].Ref)
 }
 
+// A duplicate span for the same ref must not clobber metrics/logs already
+// correlated onto the previously-seen span object.
+func TestCorrelatorDuplicateSpanPreservesMetrics(t *testing.T) {
+	ctx := t.Context()
+	var batches []observationBatch
+	c := newCorrelator(CorrelationConfig{
+		GraceWindow:   0,
+		OrphanTimeout: time.Hour,
+		SweepInterval: time.Hour,
+	}, func(_ context.Context, batch observationBatch) error {
+		batches = append(batches, batch)
+		return nil
+	})
+
+	ref := spanRef{traceID: "01020300000000000000000000000000", spanID: "0405060000000000"}
+	c.onSpan(spanObservation{Ref: ref, Name: "op", Sampled: true, SampleProbability: 1})
+	require.NoError(t, c.onMetric(ctx, linkedMetricObservation{
+		Metric: metricDescriptor{Name: "m", Type: metricTypeCounter},
+		Samples: []linkedMetricSample{{
+			Span:   ref,
+			Sample: metricSampleFact{Value: 1, Timestamp: time.Unix(9, 0)},
+		}},
+	}))
+	// Duplicate span for the same ref.
+	c.onSpan(spanObservation{Ref: ref, Name: "op", Sampled: true, SampleProbability: 1})
+	require.NoError(t, c.drainAll(ctx))
+
+	require.Len(t, batches, 1)
+	require.Len(t, batches[0].Spans, 1)
+	require.Len(t, batches[0].Spans[0].Metrics, 1)
+}
+
+// A transient sink error must re-queue captured data instead of dropping it, so
+// a later flush still exports it.
+func TestCorrelatorRequeuesOnSinkError(t *testing.T) {
+	ctx := t.Context()
+	failNext := true
+	var batches []observationBatch
+	c := newCorrelator(CorrelationConfig{
+		GraceWindow:   0,
+		OrphanTimeout: 0,
+		SweepInterval: time.Hour,
+	}, func(_ context.Context, batch observationBatch) error {
+		if failNext {
+			failNext = false
+			return errors.New("sink boom")
+		}
+		batches = append(batches, batch)
+		return nil
+	})
+
+	ref := spanRef{traceID: "01020300000000000000000000000000", spanID: "0405060000000000"}
+	c.onLog(logObservation{Ref: ref, Timestamp: time.Unix(9, 0), Severity: "INFO", Body: "hello"})
+
+	require.Error(t, c.flushDue(ctx))   // orphan bundle sink fails → re-queued
+	require.NoError(t, c.flushDue(ctx)) // retried successfully
+
+	require.Len(t, batches, 1)
+	require.Len(t, batches[0].Logs, 1)
+	require.Equal(t, "hello", batches[0].Logs[0].Body)
+}
+
 func TestCorrelatorKeepsOrphanAggregateAndDropsSample(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	var batches []observationBatch
 	c := newCorrelator(CorrelationConfig{
 		GraceWindow:   time.Nanosecond,

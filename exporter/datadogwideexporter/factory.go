@@ -44,8 +44,12 @@ func createDefaultConfig() component.Config {
 			Site: defaultSite,
 		},
 		Wide: WideConfig{
-			FlushInterval:    defaultFlushInterval,
-			MaxEnvelopeBytes: DefaultWideEnvelopeMaxBytes,
+			FlushInterval:       defaultFlushInterval,
+			MaxEnvelopeBytes:    DefaultWideEnvelopeMaxBytes,
+			MaxSampledRows:      defaultMaxSampledRows,
+			MaxAggregateBuckets: defaultMaxAggregateBuckets,
+			MaxSchemas:          defaultMaxSchemas,
+			MaxRetryBufferBytes: defaultMaxRetryBufferBytes,
 		},
 		Correlation: CorrelationConfig{
 			GraceWindow:   defaultGraceWindow,
@@ -67,7 +71,7 @@ func (f *factory) createTracesExporter(ctx context.Context, set exporter.Setting
 		cfg,
 		exp.consumeTraces,
 		exporterhelper.WithStart(exp.start),
-		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(set.ID, ctx) }),
+		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(ctx, set.ID) }),
 		exporterhelper.WithCapabilities(consumer.Capabilities{MutatesData: false}),
 		exporterhelper.WithTimeout(oCfg.TimeoutSettings),
 		exporterhelper.WithRetry(oCfg.BackOffConfig),
@@ -87,7 +91,7 @@ func (f *factory) createMetricsExporter(ctx context.Context, set exporter.Settin
 		cfg,
 		exp.consumeMetrics,
 		exporterhelper.WithStart(exp.start),
-		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(set.ID, ctx) }),
+		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(ctx, set.ID) }),
 		exporterhelper.WithCapabilities(consumer.Capabilities{MutatesData: false}),
 		exporterhelper.WithTimeout(oCfg.TimeoutSettings),
 		exporterhelper.WithRetry(oCfg.BackOffConfig),
@@ -107,7 +111,7 @@ func (f *factory) createLogsExporter(ctx context.Context, set exporter.Settings,
 		cfg,
 		exp.consumeLogs,
 		exporterhelper.WithStart(exp.start),
-		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(set.ID, ctx) }),
+		exporterhelper.WithShutdown(func(ctx context.Context) error { return f.release(ctx, set.ID) }),
 		exporterhelper.WithCapabilities(consumer.Capabilities{MutatesData: false}),
 		exporterhelper.WithTimeout(oCfg.TimeoutSettings),
 		exporterhelper.WithRetry(oCfg.BackOffConfig),
@@ -131,7 +135,7 @@ func (f *factory) acquire(set exporter.Settings, cfg *Config) (*wideExporter, er
 	return exp, nil
 }
 
-func (f *factory) release(id component.ID, ctx context.Context) error {
+func (f *factory) release(ctx context.Context, id component.ID) error {
 	f.mu.Lock()
 	exp := f.exporters[id]
 	if exp == nil {

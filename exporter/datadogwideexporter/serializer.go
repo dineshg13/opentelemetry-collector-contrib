@@ -6,6 +6,7 @@ package datadogwideexporter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -69,18 +70,19 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 		return nil, nil
 	}
 	if s.identity.Service == "" {
-		return nil, fmt.Errorf("envelope service is required")
+		return nil, errors.New("envelope service is required")
 	}
 
 	windowStart := tables[0].WindowStart
 	windowEnd := tables[0].WindowEnd
 	pbTables := make([]*widepb.WideTable, 0, len(tables))
-	for _, table := range tables {
+	for i := range tables {
+		table := tables[i]
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
 		if !table.WindowStart.Equal(windowStart) || !table.WindowEnd.Equal(windowEnd) {
-			return nil, fmt.Errorf("all tables in one serialization call must share a flush window")
+			return nil, errors.New("all tables in one serialization call must share a flush window")
 		}
 		pbTable, err := s.serializeTable(table)
 		if err != nil {
@@ -112,7 +114,7 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 	return out, nil
 }
 
-func (s *Serializer) serializeTable(table WideTable) (*widepb.WideTable, error) {
+func (*Serializer) serializeTable(table WideTable) (*widepb.WideTable, error) {
 	kind, err := protoTableKind(table.Kind)
 	if err != nil {
 		return nil, err

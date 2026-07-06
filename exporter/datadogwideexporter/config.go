@@ -25,6 +25,11 @@ const (
 	defaultSweepInterval    = 50 * time.Millisecond
 	defaultHTTPTimeout      = 15 * time.Second
 	defaultWideEndpointTmpl = "https://wide-intake.%s/api/v2/wide/events"
+
+	defaultMaxSampledRows      = 100_000
+	defaultMaxAggregateBuckets = 100_000
+	defaultMaxSchemas          = 10_000
+	defaultMaxRetryBufferBytes = 32 * 1024 * 1024
 )
 
 var (
@@ -42,7 +47,24 @@ type WideConfig struct {
 	Endpoint         string        `mapstructure:"endpoint"`
 	FlushInterval    time.Duration `mapstructure:"flush_interval"`
 	MaxEnvelopeBytes int           `mapstructure:"max_envelope_bytes"`
-	_                struct{}
+	// MaxSampledRows bounds the number of sampled rows retained per flush window.
+	// Excess rows are dropped (drop-new). 0 means unbounded.
+	MaxSampledRows int `mapstructure:"max_sampled_rows"`
+	// MaxAggregateBuckets bounds the number of distinct aggregate buckets
+	// (identity+path+dimensions cardinality) per flush window. Excess new buckets
+	// are dropped (drop-new); existing buckets keep aggregating. 0 means unbounded.
+	MaxAggregateBuckets int `mapstructure:"max_aggregate_buckets"`
+	// MaxSchemas bounds the number of distinct table identities whose schema is
+	// tracked per flush window. Excess new identities are dropped. 0 means unbounded.
+	MaxSchemas int `mapstructure:"max_schemas"`
+	// MaxRetryBufferBytes bounds the in-memory buffer of serialized envelopes held
+	// for retry after a failed wide-intake send. When exceeded, the oldest batches
+	// are dropped. 0 disables retry buffering (failed sends are dropped immediately).
+	//
+	// Note: this governs wide-intake egress. The sending_queue/retry_on_failure
+	// settings only govern ingestion into the aggregation window, not the intake POST.
+	MaxRetryBufferBytes int `mapstructure:"max_retry_buffer_bytes"`
+	_                   struct{}
 }
 
 type CorrelationConfig struct {
@@ -88,6 +110,18 @@ func (c *Config) Validate() error {
 	}
 	if c.Wide.MaxEnvelopeBytes < 0 {
 		return errors.New("wide.max_envelope_bytes must be non-negative")
+	}
+	if c.Wide.MaxSampledRows < 0 {
+		return errors.New("wide.max_sampled_rows must be non-negative")
+	}
+	if c.Wide.MaxAggregateBuckets < 0 {
+		return errors.New("wide.max_aggregate_buckets must be non-negative")
+	}
+	if c.Wide.MaxSchemas < 0 {
+		return errors.New("wide.max_schemas must be non-negative")
+	}
+	if c.Wide.MaxRetryBufferBytes < 0 {
+		return errors.New("wide.max_retry_buffer_bytes must be non-negative")
 	}
 	if c.Correlation.GraceWindow < 0 {
 		return errors.New("correlation.grace_window must be non-negative")

@@ -5,6 +5,7 @@ package datadogwideexporter
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -64,7 +65,8 @@ func encodeArrowIPC(table WideTable, schemaJSON string) ([]byte, error) {
 		}
 	}()
 
-	for rowIndex, row := range table.Rows {
+	for rowIndex := range table.Rows {
+		row := table.Rows[rowIndex]
 		offset := appendReserved(builders, table.Kind, row)
 		for i, field := range table.Schema.Fields {
 			if err := appendWideDynamic(builders[offset+i], table.Kind, row, field); err != nil {
@@ -83,7 +85,7 @@ func encodeArrowIPC(table WideTable, schemaJSON string) ([]byte, error) {
 		}
 	}()
 
-	record := array.NewRecord(schema, columns, int64(len(table.Rows)))
+	record := array.NewRecordBatch(schema, columns, int64(len(table.Rows)))
 	defer record.Release()
 
 	var out bytes.Buffer
@@ -321,7 +323,7 @@ func appendHistogramAggregate(builder array.Builder, value HistogramAggregate) e
 
 func encodeDDSketch(value HistogramAggregate) ([]byte, error) {
 	if value.Count == 0 {
-		return nil, fmt.Errorf("histogram aggregate count is zero")
+		return nil, errors.New("histogram aggregate count is zero")
 	}
 	sketch, err := ddsketch.NewDefaultDDSketch(wideDDSketchRelativeAccuracy)
 	if err != nil {
@@ -361,14 +363,6 @@ func roundedInt64(value float64) (int64, error) {
 
 func appendString(builder array.Builder, value string) {
 	builder.(*array.StringBuilder).Append(value)
-}
-
-func appendNullableString(builder array.Builder, value string) {
-	if value == "" {
-		builder.AppendNull()
-		return
-	}
-	appendString(builder, value)
 }
 
 func appendUint64(builder array.Builder, value uint64) {

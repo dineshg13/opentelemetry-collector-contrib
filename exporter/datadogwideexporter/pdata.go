@@ -15,7 +15,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-func (e *wideExporter) tracesToObservations(td ptrace.Traces) ([]spanObservation, []linkedMetricObservation) {
+func (*wideExporter) tracesToObservations(td ptrace.Traces) ([]spanObservation, []linkedMetricObservation) {
 	var spans []spanObservation
 	var metrics []linkedMetricObservation
 
@@ -70,7 +70,7 @@ func (e *wideExporter) tracesToObservations(td ptrace.Traces) ([]spanObservation
 	return spans, metrics
 }
 
-func (e *wideExporter) metricsToObservations(md pmetric.Metrics) []linkedMetricObservation {
+func (*wideExporter) metricsToObservations(md pmetric.Metrics) []linkedMetricObservation {
 	var out []linkedMetricObservation
 	for i := 0; i < md.ResourceMetrics().Len(); i++ {
 		rm := md.ResourceMetrics().At(i)
@@ -86,7 +86,7 @@ func (e *wideExporter) metricsToObservations(md pmetric.Metrics) []linkedMetricO
 	return out
 }
 
-func (e *wideExporter) logsToObservations(ld plog.Logs) []logObservation {
+func (*wideExporter) logsToObservations(ld plog.Logs) []logObservation {
 	var out []logObservation
 	for i := 0; i < ld.ResourceLogs().Len(); i++ {
 		rl := ld.ResourceLogs().At(i)
@@ -194,12 +194,12 @@ func histogramPointObservation(name, unit string, point pmetric.HistogramDataPoi
 		ExplicitBounds: float64Slice(point.ExplicitBounds()),
 	}
 	if point.HasMin() {
-		min := point.Min()
-		hist.Min = &min
+		minValue := point.Min()
+		hist.Min = &minValue
 	}
 	if point.HasMax() {
-		max := point.Max()
-		hist.Max = &max
+		maxValue := point.Max()
+		hist.Max = &maxValue
 	}
 	obs := linkedMetricObservation{
 		Metric: metricDescriptor{
@@ -250,12 +250,12 @@ func expHistogramPointObservation(name, unit string, point pmetric.ExponentialHi
 		},
 	}
 	if point.HasMin() {
-		min := point.Min()
-		hist.Min = &min
+		minValue := point.Min()
+		hist.Min = &minValue
 	}
 	if point.HasMax() {
-		max := point.Max()
-		hist.Max = &max
+		maxValue := point.Max()
+		hist.Max = &maxValue
 	}
 	obs := linkedMetricObservation{
 		Metric: metricDescriptor{

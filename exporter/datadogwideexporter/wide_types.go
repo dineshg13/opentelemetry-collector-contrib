@@ -4,6 +4,7 @@
 package datadogwideexporter
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -263,10 +264,10 @@ func (f Fact) validate() error {
 	}
 	if f.kind.logLike() {
 		if f.logPattern == "" {
-			return fmt.Errorf("log-like fact pattern is required")
+			return errors.New("log-like fact pattern is required")
 		}
 		if f.logTimestamp.IsZero() {
-			return fmt.Errorf("log-like fact timestamp is required")
+			return errors.New("log-like fact timestamp is required")
 		}
 		return nil
 	}
@@ -278,7 +279,7 @@ func (f Fact) validate() error {
 	}
 	if f.kind == FactKindHistogram {
 		if f.histogramCount == 0 {
-			return fmt.Errorf("histogram count must be positive")
+			return errors.New("histogram count must be positive")
 		}
 		for _, sample := range f.histogramSamples {
 			if math.IsNaN(sample) || math.IsInf(sample, 0) {
