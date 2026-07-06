@@ -85,6 +85,19 @@ Notes:
 - If a `sink()` call fails (e.g. context cancellation during flush), `requeue` puts everything back into `pending` unless a fresher entry has already taken that key — so correlation state survives transient errors.
 - `shutdown()` stops the sweep loop and does one final `drainAll` (emits everything regardless of grace/orphan timers) so nothing is silently lost on collector shutdown.
 
+### Arrival order is (mostly) irrelevant — same spanRef, span arrives first
+
+Walking `span → metric → log` for one `spanRef`:
+
+1. **`onSpan`** (`correlator.go:59-79`): creates the bucket `b`, sets `b.span = &span`, `b.spanArrivedAt = now`. `b.samples`/`b.logs` are empty since nothing arrived earlier.
+2. **`onMetric`** (`correlator.go:98-137`): `pendingSpan(sample.Span)` returns the same bucket; since `b.span != nil`, the sample is appended **directly** to `b.span.Metrics` (the `b.samples` queue is bypassed — that queue only exists for metrics that beat the span). A datapoint `Aggregate`, if present, is stored separately on `b.aggregates` — it is *never* attached to `b.span.Metrics`, per the "aggregates are never parented to a span" rule.
+3. **`onLog`** (`correlator.go:81-96`): `b.span != nil`, so the log is appended straight to `b.span.Logs`.
+4. **On flush** (grace window elapses after `spanArrivedAt`): `emit()` ships the span (now carrying the metric sample and the log inline) plus `b.aggregates` as separate top-level metric entries. The normalizer turns this into: one span row, one metric-sample row parented to the span, one log row parented to the span, and one standalone metric-aggregate row with no trace/span linkage.
+
+If the metric/log had arrived **before** the span instead, they'd queue into `b.samples`/`b.logs`, and `onSpan` merges those queues into `span.Metrics`/`span.Logs` on arrival (`correlator.go:66-67`). Same end state either way — only the intermediate storage path (direct append vs. queue-then-merge) differs, as long as everything lands within `grace_window` of the span's arrival.
+
+**Edge case — late arrival after the bundle already flushed:** if a metric sample or log shows up *after* `spanArrivedAt + grace_window` has already swept and emitted the bundle, `pendingSpan` allocates a brand-new empty bucket for it — it can never rejoin the already-emitted span. If that new bucket then times out as an orphan with no span ever showing up, `exportOrphanBundles` (`correlator.go:305-317`) exports its `aggregates` and `logs`, but explicitly **drops** any queued exemplar samples (`b.samples`) — they have no span to parent to and are silently discarded.
+
 ## 5. Flush lifecycle (ticker-driven, `wide.flush_interval`, default 10s)
 
 ```mermaid
