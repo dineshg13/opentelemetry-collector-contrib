@@ -7,7 +7,14 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
 )
+
+// correlatorStatsLogInterval throttles the "flushed without correlation"
+// warning so a sustained trickle of orphaned bundles logs at most once per
+// interval instead of once per sweep tick.
+const correlatorStatsLogInterval = 10 * time.Second
 
 type pendingSpan struct {
 	span          *spanObservation
@@ -23,22 +30,34 @@ type correlator struct {
 	grace         time.Duration
 	orphanTimeout time.Duration
 	sweep         time.Duration
+	logger        *zap.Logger
 
 	mu         sync.Mutex
 	pending    map[spanRef]*pendingSpan
 	orphanLogs []logObservation
+
+	// Stats accumulated since the last logged report; guarded by mu.
+	correlatedBundles    uint64
+	orphanBundles        uint64
+	orphanSamplesDropped uint64
+	orphanLogsFlushed    uint64
+	lastStatsLogAt       time.Time
 
 	stop    chan struct{}
 	done    chan struct{}
 	running bool
 }
 
-func newCorrelator(cfg CorrelationConfig, sink func(context.Context, observationBatch) error) *correlator {
+func newCorrelator(cfg CorrelationConfig, sink func(context.Context, observationBatch) error, logger *zap.Logger) *correlator {
+	if logger == nil {
+		logger = zap.NewNop()
+	}
 	return &correlator{
 		sink:          sink,
 		grace:         cfg.GraceWindow,
 		orphanTimeout: cfg.OrphanTimeout,
 		sweep:         cfg.SweepInterval,
+		logger:        logger,
 		pending:       make(map[spanRef]*pendingSpan),
 		stop:          make(chan struct{}),
 		done:          make(chan struct{}),
@@ -244,20 +263,91 @@ func (c *correlator) emitBundles(ctx context.Context, ready, orphans []keyedBund
 			c.requeue(ready, orphans, orphanLogs)
 			return err
 		}
+		c.recordCorrelated(len(ready))
 	}
 	if len(orphans) > 0 {
-		if err := c.exportOrphanBundles(ctx, bundlesOf(orphans)); err != nil {
+		bundles := bundlesOf(orphans)
+		if err := c.exportOrphanBundles(ctx, bundles); err != nil {
 			c.requeue(nil, orphans, orphanLogs)
 			return err
 		}
+		c.recordOrphans(bundles)
 	}
 	if len(orphanLogs) > 0 {
 		if err := c.sink(ctx, observationBatch{Logs: orphanLogs}); err != nil {
 			c.requeue(nil, nil, orphanLogs)
 			return err
 		}
+		c.recordOrphanLogs(len(orphanLogs))
 	}
 	return nil
+}
+
+// recordCorrelated tracks bundles flushed with their span successfully
+// correlated, for context alongside the orphan stats below.
+func (c *correlator) recordCorrelated(n int) {
+	c.mu.Lock()
+	c.correlatedBundles += uint64(n)
+	c.mu.Unlock()
+	c.maybeLogStats()
+}
+
+// recordOrphans tracks bundles flushed without ever seeing their span, plus
+// the exemplar samples that go with them (exportOrphanBundles never sinks
+// b.samples, so once these bundles are sunk the samples are gone for good).
+func (c *correlator) recordOrphans(bundles []*pendingSpan) {
+	dropped := 0
+	for _, b := range bundles {
+		dropped += len(b.samples)
+	}
+	c.mu.Lock()
+	c.orphanBundles += uint64(len(bundles))
+	c.orphanSamplesDropped += uint64(dropped)
+	c.mu.Unlock()
+	c.maybeLogStats()
+}
+
+// recordOrphanLogs tracks logs exported standalone because they never
+// correlated to any span (invalid ref, or the ref's span never arrived).
+func (c *correlator) recordOrphanLogs(n int) {
+	c.mu.Lock()
+	c.orphanLogsFlushed += uint64(n)
+	c.mu.Unlock()
+	c.maybeLogStats()
+}
+
+// maybeLogStats emits a throttled warning summarizing flushes that happened
+// without span correlation since the last report. It is a no-op when there is
+// nothing to report, and at most one report is emitted per
+// correlatorStatsLogInterval.
+func (c *correlator) maybeLogStats() {
+	c.mu.Lock()
+	if c.orphanBundles == 0 && c.orphanSamplesDropped == 0 && c.orphanLogsFlushed == 0 {
+		c.mu.Unlock()
+		return
+	}
+	now := time.Now()
+	if !c.lastStatsLogAt.IsZero() && now.Sub(c.lastStatsLogAt) < correlatorStatsLogInterval {
+		c.mu.Unlock()
+		return
+	}
+	orphanBundles := c.orphanBundles
+	orphanSamplesDropped := c.orphanSamplesDropped
+	orphanLogsFlushed := c.orphanLogsFlushed
+	correlatedBundles := c.correlatedBundles
+	c.orphanBundles = 0
+	c.orphanSamplesDropped = 0
+	c.orphanLogsFlushed = 0
+	c.correlatedBundles = 0
+	c.lastStatsLogAt = now
+	c.mu.Unlock()
+
+	c.logger.Warn("Datadog wide exporter flushed telemetry without span correlation",
+		zap.Uint64("orphan_bundles", orphanBundles),
+		zap.Uint64("orphan_samples_dropped", orphanSamplesDropped),
+		zap.Uint64("orphan_logs", orphanLogsFlushed),
+		zap.Uint64("correlated_bundles", correlatedBundles),
+	)
 }
 
 func bundlesOf(kbs []keyedBundle) []*pendingSpan {

@@ -6,6 +6,7 @@ package datadogwideexporter
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -226,6 +227,43 @@ func assertWrappedSchemaJSON(t *testing.T, schemaJSON string, columns map[string
 		require.Equal(t, typ, schema.Columns[name].Type)
 	}
 	require.Equal(t, children, schema.Children)
+}
+
+func TestSerializerCountsWideEventRows(t *testing.T) {
+	start := time.UnixMilli(1000).UTC()
+	end := time.UnixMilli(11000).UTC()
+	newTable := func(eventType string, rows int) WideTable {
+		table := WideTable{
+			Kind:        TableKindAggregated,
+			Identity:    TableIdentity{EventType: eventType},
+			WindowStart: start,
+			WindowEnd:   end,
+			Schema: TableSchema{
+				Fields: []FieldSchema{
+					{Name: "region", Role: FieldRoleDimension, Type: ValueString},
+					{Name: "requests", Role: FieldRoleFact, Type: ValueFloat64, FactKind: FactKindCounter},
+				},
+			},
+		}
+		for i := range rows {
+			table.Rows = append(table.Rows, WideRow{
+				EventType:  eventType,
+				Dimensions: map[string]TypedValue{"region": StringValue(fmt.Sprintf("r%d", i))},
+				Facts:      map[string]float64{"requests": float64(i)},
+			})
+		}
+		return table
+	}
+
+	envelopes, err := NewSerializer(EnvelopeIdentity{Host: "h", Service: "svc"}).
+		Serialize(t.Context(), []WideTable{newTable("a", 3), newTable("b", 2)})
+	require.NoError(t, err)
+
+	total := 0
+	for _, envelope := range envelopes {
+		total += envelope.RowCount
+	}
+	require.Equal(t, 5, total)
 }
 
 func readSingleArrowRecord(t *testing.T, payload []byte) arrow.RecordBatch {

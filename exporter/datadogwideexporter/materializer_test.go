@@ -97,6 +97,60 @@ func TestMaterializerLogsDropsOncePerWindow(t *testing.T) {
 	require.Equal(t, 1, logs.FilterMessageSnippet("dropped telemetry").Len())
 }
 
+func TestMaterializerDropsDimensionTypeConflict(t *testing.T) {
+	m := NewMaterializer()
+
+	// First-seen type wins; the conflicting event is dropped whole and counted,
+	// with no error surfaced to the caller (so the batch is not abandoned).
+	require.NoError(t, m.Add(aggEvent("t", map[string]TypedValue{"dimensions.cpu": StringValue("cpu0")})))
+	require.NoError(t, m.Add(aggEvent("t", map[string]TypedValue{"dimensions.cpu": Int64Value(0)})))
+
+	require.Equal(t, uint64(1), m.droppedConflicts)
+	require.Equal(t, ValueString, m.schemas["t"]["dimensions.cpu"].Type)
+	require.Len(t, m.buckets, 1)
+}
+
+func TestMaterializerDropsUnitConflict(t *testing.T) {
+	m := NewMaterializer()
+
+	unitEvent := func(unit string) WideEvent {
+		return WideEvent{
+			Kind:      EventKindMetric,
+			EventType: "t",
+			Timestamp: time.Unix(10, 0),
+			Facts:     map[string]Fact{"count": CounterFact(1, unit)},
+		}
+	}
+
+	require.NoError(t, m.Add(unitEvent("connections")))
+	require.NoError(t, m.Add(unitEvent("1")))
+
+	require.Equal(t, uint64(1), m.droppedConflicts)
+	require.Equal(t, "connections", m.schemas["t"]["count"].Unit)
+	require.Len(t, m.buckets, 1)
+}
+
+func TestMaterializerLogsSchemaConflictsOncePerWindow(t *testing.T) {
+	core, logs := observer.New(zap.WarnLevel)
+	m := NewMaterializer(WithLogger(zap.New(core)))
+
+	require.NoError(t, m.Add(aggEvent("t", map[string]TypedValue{"dimensions.cpu": StringValue("cpu0")})))
+	require.NoError(t, m.Add(aggEvent("t", map[string]TypedValue{"dimensions.cpu": Int64Value(0)}))) // conflict
+
+	_, windowEnd, err := m.flushSnapshot(t.Context())
+	require.NoError(t, err)
+	entries := logs.FilterField(zap.Uint64("dropped_schema_conflicts", 1))
+	require.Equal(t, 1, entries.Len())
+
+	// reset zeroes the conflict counter; a clean window logs nothing new.
+	m.reset(windowEnd)
+	require.Zero(t, m.droppedConflicts)
+	require.NoError(t, m.Add(aggEvent("t", map[string]TypedValue{"dimensions.cpu": StringValue("cpu0")})))
+	_, _, err = m.flushSnapshot(t.Context())
+	require.NoError(t, err)
+	require.Equal(t, 1, logs.FilterMessageSnippet("dropped telemetry").Len())
+}
+
 func TestMaterializerUnboundedByDefault(t *testing.T) {
 	m := NewMaterializer()
 	for i := range 50 {

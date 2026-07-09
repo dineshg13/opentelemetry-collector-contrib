@@ -74,7 +74,7 @@ stateDiagram-v2
     Pending --> Pending: more onMetric/onLog\n(span not yet seen)
     Pending --> SpanSeen: onSpan arrives\n(spanArrivedAt = now)
     SpanSeen --> SpanSeen: late onMetric/onLog\nattach directly to b.span
-    SpanSeen --> Emitted: sweep tick,\nnow - spanArrivedAt >= grace_window\n(default 300ms)
+    SpanSeen --> Emitted: sweep tick,\nnow - spanArrivedAt >= grace_window\n(default 10s)
     Pending --> Orphaned: sweep tick,\nnow - firstSignalAt >= orphan_timeout\n(default 5s)
     Orphaned --> Emitted: exportOrphanBundles\n(aggregates + logs only;\nspan-linked samples dropped, no carrier)
     Emitted --> [*]: sink() = exporter.exportObservationBatch
@@ -97,6 +97,20 @@ Walking `span → metric → log` for one `spanRef`:
 If the metric/log had arrived **before** the span instead, they'd queue into `b.samples`/`b.logs`, and `onSpan` merges those queues into `span.Metrics`/`span.Logs` on arrival (`correlator.go:66-67`). Same end state either way — only the intermediate storage path (direct append vs. queue-then-merge) differs, as long as everything lands within `grace_window` of the span's arrival.
 
 **Edge case — late arrival after the bundle already flushed:** if a metric sample or log shows up *after* `spanArrivedAt + grace_window` has already swept and emitted the bundle, `pendingSpan` allocates a brand-new empty bucket for it — it can never rejoin the already-emitted span. If that new bucket then times out as an orphan with no span ever showing up, `exportOrphanBundles` (`correlator.go:305-317`) exports its `aggregates` and `logs`, but explicitly **drops** any queued exemplar samples (`b.samples`) — they have no span to parent to and are silently discarded.
+
+### Observability: flushing without correlation
+
+The correlator tracks, in-process, how much it is flushing via the orphan path vs. the normal span-correlated path, and reports it through a throttled warning log (mirrors `materializer.logDrops`, `correlatorStatsLogInterval` = 10s):
+
+```
+"Datadog wide exporter flushed telemetry without span correlation"
+  orphan_bundles=<N>            # bundles emitted via exportOrphanBundles (no span ever arrived)
+  orphan_samples_dropped=<N>    # exemplar samples in those bundles that had no span to parent to (silently lost)
+  orphan_logs=<N>               # logs with no valid trace/span ref at all, sunk standalone
+  correlated_bundles=<N>        # bundles that did correlate to a span, for context/ratio
+```
+
+Counters accumulate under `correlator.mu` across every `flushDue`/`drainAll` call and reset once logged; the log itself is skipped entirely when there is nothing to report, and rate-limited to at most one line per `correlatorStatsLogInterval` even under a sustained trickle of orphaned bundles.
 
 ## 5. Flush lifecycle (ticker-driven, `wide.flush_interval`, default 10s)
 

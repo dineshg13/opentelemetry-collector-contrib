@@ -297,19 +297,63 @@ func weightedWideHistogramCount(count uint64, weight float64) uint64 {
 	return uint64(weighted)
 }
 
+// normalizedWideUnit canonicalizes a metric unit so that semantically-identical
+// units compare equal in the schema. UCUM annotations (the "{...}" runs) carry no
+// dimension, so an annotation-only unit is dimensionless and collapses to "1"
+// (e.g. "{thread}" and "{connections}" both become "1"). Annotations attached to a
+// real unit are stripped (e.g. "s{cpu}" -> "s"). An empty unit is dimensionless.
 func normalizedWideUnit(unit string) string {
-	if unit == "" {
+	stripped := stripUCUMAnnotations(unit)
+	if stripped == "" {
 		return "1"
 	}
-	return unit
+	return stripped
+}
+
+// stripUCUMAnnotations removes every UCUM annotation ("{...}" run) from a unit and
+// trims surrounding whitespace.
+func stripUCUMAnnotations(unit string) string {
+	unit = strings.TrimSpace(unit)
+	if !strings.ContainsRune(unit, '{') {
+		return unit
+	}
+	var b strings.Builder
+	depth := 0
+	for _, r := range unit {
+		switch r {
+		case '{':
+			depth++
+		case '}':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if depth == 0 {
+				b.WriteRune(r)
+			}
+		}
+	}
+	return strings.TrimSpace(b.String())
 }
 
 func dimensionName(name string) string {
-	return prefixedWideName(defaultWideDimensionPrefix, name)
+	return unprefixedWideName(defaultWideDimensionPrefix, name)
 }
 
 func attributeName(name string) string {
-	return prefixedWideName(defaultWideAttributePrefix, name)
+	return unprefixedWideName(defaultWideAttributePrefix, name)
+}
+
+// unprefixedWideName strips the OTel-side classification prefix (e.g. "dimensions.")
+// from a key so the wide event column carries the bare name. The prefix is only a
+// transport hint on the incoming OTel attribute for how to classify a field's role;
+// it is not part of the wide event schema.
+func unprefixedWideName(prefix, name string) string {
+	prefix = strings.Trim(prefix, ".")
+	if prefix != "" {
+		name = strings.TrimPrefix(name, prefix+".")
+	}
+	return sanitizeWideName(name)
 }
 
 func factName(name string) string {

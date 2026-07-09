@@ -4,14 +4,24 @@
 package datadogwideexporter
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
+	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/config/configopaque"
 	"go.opentelemetry.io/collector/exporter/exportertest"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
+	"google.golang.org/protobuf/proto"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogwideexporter/internal/widepb"
 )
 
 type recordingSender struct {
@@ -57,8 +67,7 @@ func (s *blockingSender) Send(_ context.Context, _ []SerializedEnvelope) error {
 
 func (*blockingSender) Close() error { return nil }
 
-func newTestExporter(t *testing.T) *wideExporter {
-	t.Helper()
+func newTestConfig() *Config {
 	cfg := createDefaultConfig().(*Config)
 	cfg.API.Key = configopaque.String("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 	cfg.Service = "calendar"
@@ -67,8 +76,23 @@ func newTestExporter(t *testing.T) *wideExporter {
 	cfg.Correlation.GraceWindow = 0
 	cfg.Correlation.SweepInterval = time.Hour
 	cfg.Correlation.OrphanTimeout = time.Hour
+	return cfg
+}
 
-	exp, err := newWideExporter(exportertest.NewNopSettings(exportertest.NopType), cfg)
+func newTestExporter(t *testing.T) *wideExporter {
+	t.Helper()
+	exp, err := newWideExporter(exportertest.NewNopSettings(exportertest.NopType), newTestConfig())
+	require.NoError(t, err)
+	return exp
+}
+
+// newTestExporterWithLogger builds an exporter whose settings logger is the provided
+// zap logger, so tests can assert on emitted log records.
+func newTestExporterWithLogger(t *testing.T, cfg *Config, logger *zap.Logger) *wideExporter {
+	t.Helper()
+	set := exportertest.NewNopSettings(exportertest.NopType)
+	set.Logger = logger
+	exp, err := newWideExporter(set, cfg)
 	require.NoError(t, err)
 	return exp
 }
@@ -131,6 +155,128 @@ func TestExporterForceFlushSurfacesPriorErrorButStillFlushes(t *testing.T) {
 	require.NotEmpty(t, sender.envelopes)
 
 	require.NoError(t, exp.forceFlush(t.Context()))
+}
+
+// A deterministic schema conflict (e.g. the hostmetrics "cpu" attribute arriving
+// as a string on one metric and an int on another) must not propagate an error out
+// of the ingest path. If it did, the collector would treat it as transient and retry
+// the identical batch forever. The conflicting event is dropped-and-counted and the
+// good data still flushes.
+func TestExporterDoesNotErrorOnSchemaConflict(t *testing.T) {
+	exp := newTestExporter(t)
+	sender := &recordingSender{}
+	exp.sender = sender
+
+	metricWithCPU := func(cpu TypedValue) linkedMetricObservation {
+		return linkedMetricObservation{
+			Metric: metricDescriptor{
+				Name:       "calendar.requests",
+				Type:       metricTypeCounter,
+				Dimensions: map[string]TypedValue{"dimensions.cpu": cpu},
+			},
+			Aggregate: &metricAggregateFact{Value: 3, Timestamp: time.Unix(10, 0)},
+		}
+	}
+
+	// First-seen type (string) wins; the int-typed follow-up conflicts.
+	require.NoError(t, exp.correlator.onMetric(t.Context(), metricWithCPU(StringValue("cpu0"))))
+	require.NoError(t, exp.correlator.onMetric(t.Context(), metricWithCPU(Int64Value(0))))
+
+	require.Equal(t, uint64(1), exp.materializer.droppedConflicts)
+
+	// The good window still flushes, and no error was surfaced to the pipeline.
+	require.NoError(t, exp.forceFlush(t.Context()))
+	require.NotEmpty(t, sender.envelopes)
+}
+
+// The wide.log_wide_events_json toggle emits the flushed payload as JSON at debug
+// level; when it is off (default), no such record is written.
+func TestExporterLogsWideEventsJSONWhenEnabled(t *testing.T) {
+	t.Run("enabled", func(t *testing.T) {
+		core, logs := observer.New(zap.DebugLevel)
+		cfg := newTestConfig()
+		cfg.Wide.LogWideEventsJSON = true
+		exp := newTestExporterWithLogger(t, cfg, zap.New(core))
+		exp.sender = &recordingSender{}
+
+		materializeSampleData(t, exp)
+		require.NoError(t, exp.forceFlush(t.Context()))
+
+		entries := logs.FilterMessage("Datadog wide events payload")
+		require.NotZero(t, entries.Len())
+		require.NotEmpty(t, entries.All()[0].ContextMap()["envelope"])
+	})
+
+	t.Run("disabled by default", func(t *testing.T) {
+		core, logs := observer.New(zap.DebugLevel)
+		exp := newTestExporterWithLogger(t, newTestConfig(), zap.New(core))
+		exp.sender = &recordingSender{}
+
+		materializeSampleData(t, exp)
+		require.NoError(t, exp.forceFlush(t.Context()))
+
+		require.Zero(t, logs.FilterMessage("Datadog wide events payload").Len())
+	})
+}
+
+// The wide.wide_events_json_file option appends each flush's wide events to a file
+// as one JSON array per line, independent of the collector log level.
+func TestExporterWritesWideEventsJSONFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "wide_events.ndjson")
+	cfg := newTestConfig()
+	cfg.Wide.WideEventsJSONFile = path
+	exp := newTestExporter(t)
+	exp.cfg = cfg
+	exp.sender = &recordingSender{}
+
+	materializeSampleData(t, exp)
+	require.NoError(t, exp.forceFlush(t.Context()))
+
+	data, err := os.ReadFile(path)
+	require.NoError(t, err)
+	lines := bytes.Split(bytes.TrimSpace(data), []byte("\n"))
+	require.Len(t, lines, 1)
+
+	// Each line is a wire-shaped envelope: version 2, tables with schema_json + rows.
+	var envelope wireEnvelopeDump
+	require.NoError(t, json.Unmarshal(lines[0], &envelope))
+	require.Equal(t, uint32(2), envelope.Version)
+	require.NotEmpty(t, envelope.Tables)
+	require.NotEmpty(t, envelope.Tables[0].EventType)
+	require.NotEmpty(t, envelope.Tables[0].Rows)
+
+	// A second flush appends a new line rather than truncating.
+	materializeSampleData(t, exp)
+	require.NoError(t, exp.forceFlush(t.Context()))
+	data, err = os.ReadFile(path)
+	require.NoError(t, err)
+	require.Len(t, bytes.Split(bytes.TrimSpace(data), []byte("\n")), 2)
+}
+
+// The wide.wide_events_binary_file option appends the raw serialized envelope bytes,
+// length-framed, so they can be read back and protobuf-decoded.
+func TestExporterWritesWideEventsBinaryFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "wide_events.pb")
+	cfg := newTestConfig()
+	cfg.Wide.WideEventsBinaryFile = path
+	exp := newTestExporter(t)
+	exp.cfg = cfg
+	exp.sender = &recordingSender{}
+
+	materializeSampleData(t, exp)
+	require.NoError(t, exp.forceFlush(t.Context()))
+
+	data, err := os.ReadFile(path)
+	require.NoError(t, err)
+	require.Greater(t, len(data), 4)
+
+	// Read the first length-prefixed frame and decode it as an envelope.
+	frameLen := binary.BigEndian.Uint32(data[:4])
+	require.LessOrEqual(t, int(4+frameLen), len(data))
+	var envelope widepb.WideTelemetryEnvelope
+	require.NoError(t, proto.Unmarshal(data[4:4+frameLen], &envelope))
+	require.Equal(t, uint32(2), envelope.GetVersion())
+	require.NotEmpty(t, envelope.GetTables())
 }
 
 // A persistent intake outage must not grow memory without bound: the retry

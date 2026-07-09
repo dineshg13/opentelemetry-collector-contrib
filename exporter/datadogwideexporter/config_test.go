@@ -24,6 +24,13 @@ func TestConfigValidate(t *testing.T) {
 	cfg.Wide.Endpoint = "https://wide.example.test/custom"
 	require.NoError(t, cfg.Validate())
 	require.Equal(t, "https://wide.example.test/custom", cfg.wideEndpoint())
+
+	// Path correctness is a config concern, not a validation error: a custom
+	// endpoint whose path omits the intake's expected suffix still validates
+	// (the intake, not Validate, rejects a wrong path at request time).
+	cfg.Wide.Endpoint = "https://event-platform-intake.example.test/api/v2/wide"
+	require.NoError(t, cfg.Validate())
+	require.Equal(t, "https://event-platform-intake.example.test/api/v2/wide", cfg.wideEndpoint())
 }
 
 func TestConfigValidateErrors(t *testing.T) {

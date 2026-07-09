@@ -5,6 +5,8 @@ package datadogwideexporter // import "github.com/open-telemetry/opentelemetry-c
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"os"
 	"sync"
@@ -16,6 +18,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const unknownService = "unknown_service"
@@ -76,7 +79,7 @@ func newWideExporter(set exporter.Settings, cfg *Config) (*wideExporter, error) 
 		done:     make(chan struct{}),
 	}
 	exp.sender = newHTTPEnvelopeSender(cfg.wideEndpoint(), string(cfg.API.Key), cfg.TimeoutSettings.Timeout, set.Logger)
-	exp.correlator = newCorrelator(cfg.Correlation, exp.exportObservationBatch)
+	exp.correlator = newCorrelator(cfg.Correlation, exp.exportObservationBatch, set.Logger)
 	return exp, nil
 }
 
@@ -182,8 +185,15 @@ func (e *wideExporter) exportObservationBatch(ctx context.Context, batch observa
 		event := events[i]
 		e.observeIdentity(event)
 		if err := e.materializer.Add(event); err != nil {
-			e.lastErr = err
-			return err
+			// This sink only accumulates in memory; the network POST happens
+			// out-of-band in forceFlush. Any error here is a per-event data
+			// problem, not a transient send failure, so dropping the event and
+			// continuing avoids abandoning the rest of the batch and prevents the
+			// collector from retrying an unresolvable batch forever. Deterministic
+			// schema conflicts are already dropped-and-counted inside Add; this
+			// guards against any other unexpected per-event error.
+			e.set.Logger.Debug("Datadog wide exporter dropped event", zap.Error(err))
+			continue
 		}
 	}
 	return nil
@@ -233,8 +243,94 @@ func (e *wideExporter) forceFlush(ctx context.Context) error {
 			return errors.Join(pending, err)
 		}
 		current = envelopes
+		e.dumpWireEnvelopes(current)
+		e.writeWideEventsBinary(current)
 	}
 	return errors.Join(pending, e.sendWithRetry(ctx, current))
+}
+
+// dumpWireEnvelopes renders the serialized envelopes (the exact protobuf + Arrow bytes
+// being POSTed) as wire-schema-shaped JSON for debugging, when either the
+// wide.log_wide_events_json (debug log) or wide.wide_events_json_file (file) toggle is
+// set. Decoding the on-the-wire bytes — rather than the internal structs — means the
+// dump reflects what the intake actually receives. forceFlush is serialized by flushMu,
+// so file writes never interleave; failures are logged and swallowed.
+func (e *wideExporter) dumpWireEnvelopes(envelopes []SerializedEnvelope) {
+	logEnabled := e.cfg.Wide.LogWideEventsJSON && e.set.Logger.Core().Enabled(zapcore.DebugLevel)
+	fileEnabled := e.cfg.Wide.WideEventsJSONFile != ""
+	if !logEnabled && !fileEnabled {
+		return
+	}
+
+	var file *os.File
+	if fileEnabled {
+		f, err := os.OpenFile(e.cfg.Wide.WideEventsJSONFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		if err != nil {
+			e.set.Logger.Warn("Datadog wide exporter failed to open wide events file",
+				zap.String("path", e.cfg.Wide.WideEventsJSONFile), zap.Error(err))
+			fileEnabled = false
+		} else {
+			file = f
+			defer file.Close()
+		}
+	}
+
+	for i := range envelopes {
+		dump, err := decodeWireEnvelope(envelopes[i])
+		if err != nil {
+			e.set.Logger.Warn("Datadog wide exporter failed to decode envelope for debug dump", zap.Error(err))
+			continue
+		}
+		payload, err := json.Marshal(dump)
+		if err != nil {
+			e.set.Logger.Warn("Datadog wide exporter failed to marshal envelope for debug dump", zap.Error(err))
+			continue
+		}
+		if logEnabled {
+			e.set.Logger.Debug("Datadog wide events payload",
+				zap.Int("wide_events", envelopes[i].RowCount),
+				zap.ByteString("envelope", payload))
+		}
+		if fileEnabled {
+			if _, err := file.Write(append(payload, '\n')); err != nil {
+				e.set.Logger.Warn("Datadog wide exporter failed to write wide events file",
+					zap.String("path", e.cfg.Wide.WideEventsJSONFile), zap.Error(err))
+			}
+		}
+	}
+}
+
+// writeWideEventsBinary appends the raw serialized envelope bytes (the exact protobuf
+// POSTed to the intake) to the configured file when wide.wide_events_binary_file is
+// set. Each envelope is written as a 4-byte big-endian length prefix followed by the
+// payload, so a reader can split a multi-envelope flush back into messages. forceFlush
+// is serialized by flushMu, so writes never interleave; failures are logged and swallowed.
+func (e *wideExporter) writeWideEventsBinary(envelopes []SerializedEnvelope) {
+	if e.cfg.Wide.WideEventsBinaryFile == "" || len(envelopes) == 0 {
+		return
+	}
+	f, err := os.OpenFile(e.cfg.Wide.WideEventsBinaryFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+	if err != nil {
+		e.set.Logger.Warn("Datadog wide exporter failed to open wide events binary file",
+			zap.String("path", e.cfg.Wide.WideEventsBinaryFile), zap.Error(err))
+		return
+	}
+	defer f.Close()
+	var lenPrefix [4]byte
+	for i := range envelopes {
+		payload := envelopes[i].Payload
+		binary.BigEndian.PutUint32(lenPrefix[:], uint32(len(payload)))
+		if _, err := f.Write(lenPrefix[:]); err != nil {
+			e.set.Logger.Warn("Datadog wide exporter failed to write wide events binary file",
+				zap.String("path", e.cfg.Wide.WideEventsBinaryFile), zap.Error(err))
+			return
+		}
+		if _, err := f.Write(payload); err != nil {
+			e.set.Logger.Warn("Datadog wide exporter failed to write wide events binary file",
+				zap.String("path", e.cfg.Wide.WideEventsBinaryFile), zap.Error(err))
+			return
+		}
+	}
 }
 
 // sendWithRetry drains the retry buffer (oldest first), appends the current
@@ -266,7 +362,7 @@ func (e *wideExporter) loop() {
 		select {
 		case <-ticker.C:
 			if err := e.forceFlush(context.Background()); err != nil {
-				e.set.Logger.Warn("Datadog wide flush failed", zap.Error(err))
+				e.set.Logger.Warn("Datadog wide flush failed", zap.String("endpoint", e.cfg.wideEndpoint()), zap.Error(err))
 			}
 		case <-e.stop:
 			return

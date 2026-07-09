@@ -66,11 +66,12 @@ func (s *httpEnvelopeSender) Send(ctx context.Context, envelopes []SerializedEnv
 		if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 			return fmt.Errorf("wide intake returned %s: %s", resp.Status, string(body))
 		}
-		s.logger.Debug("Sent Datadog wide envelope",
-			zap.String("host", envelope.Host),
-			zap.String("service", envelope.Service),
+		s.logger.Info("Sent Datadog wide events to intake",
+			zap.Int("wide_events", envelope.RowCount),
 			zap.Int("tables", envelope.TableCount),
-			zap.Int("bytes", envelope.EncodedBytes))
+			zap.Int("bytes", envelope.EncodedBytes),
+			zap.String("host", envelope.Host),
+			zap.String("service", envelope.Service))
 	}
 	return nil
 }

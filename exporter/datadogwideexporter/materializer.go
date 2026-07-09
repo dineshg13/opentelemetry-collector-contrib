@@ -18,6 +18,12 @@ import (
 
 const DefaultHistogramReservoirSize = 1028
 
+// errSchemaConflict marks a deterministic, data-shape conflict (a field/fact whose
+// role, type, kind, unit, or pattern disagrees with what was first seen for the same
+// table this window). It is not transient: retrying the same data reproduces it, so
+// callers drop the offending event and count it rather than failing the batch.
+var errSchemaConflict = errors.New("wide schema conflict")
+
 type MaterializerOption func(*Materializer)
 
 func WithClock(clock func() time.Time) MaterializerOption {
@@ -78,6 +84,7 @@ type Materializer struct {
 	droppedSampledRows uint64
 	droppedBuckets     uint64
 	droppedSchemas     uint64
+	droppedConflicts   uint64
 }
 
 func NewMaterializer(opts ...MaterializerOption) *Materializer {
@@ -112,6 +119,13 @@ func (m *Materializer) Add(event WideEvent) error {
 		}
 	}
 	if err := m.recordSchema(identity, event); err != nil {
+		// A deterministic schema conflict is unresolvable data shape, not a
+		// transient failure. Drop the whole event (recordSchema committed
+		// nothing) and count it, mirroring the accumulation caps above.
+		if errors.Is(err, errSchemaConflict) {
+			m.droppedConflicts++
+			return nil
+		}
 		return err
 	}
 	m.recordChild(event)
@@ -148,6 +162,13 @@ func (m *Materializer) Add(event WideEvent) error {
 	}
 	for name := range event.Facts {
 		if err := bucket.addFact(name, event.Facts[name], event.Timestamp, m.seq); err != nil {
+			// Defense in depth: schema gating above should already reject a
+			// conflicting fact, but if a bucket-level conflict slips through,
+			// count it and keep the rest of the window rather than failing.
+			if errors.Is(err, errSchemaConflict) {
+				m.droppedConflicts++
+				continue
+			}
 			return err
 		}
 	}
@@ -186,13 +207,14 @@ func (m *Materializer) flushSnapshot(ctx context.Context) ([]WideTable, time.Tim
 // caps during the window. It is called once per flush (throttling log volume to
 // the flush cadence); the counters are zeroed by reset.
 func (m *Materializer) logDrops() {
-	if m.droppedSampledRows == 0 && m.droppedBuckets == 0 && m.droppedSchemas == 0 {
+	if m.droppedSampledRows == 0 && m.droppedBuckets == 0 && m.droppedSchemas == 0 && m.droppedConflicts == 0 {
 		return
 	}
-	m.logger.Warn("Datadog wide exporter dropped telemetry due to accumulation caps",
+	m.logger.Warn("Datadog wide exporter dropped telemetry due to accumulation caps or schema conflicts",
 		zap.Uint64("dropped_sampled_rows", m.droppedSampledRows),
 		zap.Uint64("dropped_aggregate_buckets", m.droppedBuckets),
 		zap.Uint64("dropped_schemas", m.droppedSchemas),
+		zap.Uint64("dropped_schema_conflicts", m.droppedConflicts),
 	)
 }
 
@@ -205,6 +227,7 @@ func (m *Materializer) reset(windowStart time.Time) {
 	m.droppedSampledRows = 0
 	m.droppedBuckets = 0
 	m.droppedSchemas = 0
+	m.droppedConflicts = 0
 }
 
 func (m *Materializer) buildTables(ctx context.Context, windowStart, windowEnd time.Time) ([]WideTable, error) {
@@ -407,20 +430,20 @@ func recordField(fields map[string]FieldSchema, next FieldSchema) error {
 		return nil
 	}
 	if existing.Role != next.Role {
-		return fmt.Errorf("field %q role conflict: %s vs %s", next.Name, existing.Role, next.Role)
+		return fmt.Errorf("%w: field %q role conflict: %s vs %s", errSchemaConflict, next.Name, existing.Role, next.Role)
 	}
 	if existing.Type != next.Type {
-		return fmt.Errorf("field %q type conflict: %s vs %s", next.Name, existing.Type, next.Type)
+		return fmt.Errorf("%w: field %q type conflict: %s vs %s", errSchemaConflict, next.Name, existing.Type, next.Type)
 	}
 	if existing.Role == FieldRoleFact {
 		if existing.FactKind != next.FactKind {
-			return fmt.Errorf("fact %q kind conflict: %s vs %s", next.Name, existing.FactKind, next.FactKind)
+			return fmt.Errorf("%w: fact %q kind conflict: %s vs %s", errSchemaConflict, next.Name, existing.FactKind, next.FactKind)
 		}
 		if existing.Unit != next.Unit {
-			return fmt.Errorf("fact %q unit conflict: %q vs %q", next.Name, existing.Unit, next.Unit)
+			return fmt.Errorf("%w: fact %q unit conflict: %q vs %q", errSchemaConflict, next.Name, existing.Unit, next.Unit)
 		}
 		if existing.Pattern != next.Pattern {
-			return fmt.Errorf("fact %q pattern conflict: %q vs %q", next.Name, existing.Pattern, next.Pattern)
+			return fmt.Errorf("%w: fact %q pattern conflict: %q vs %q", errSchemaConflict, next.Name, existing.Pattern, next.Pattern)
 		}
 	}
 	return nil
@@ -661,10 +684,10 @@ func newAggregateValue(fact Fact) *aggregateValue {
 
 func (a *aggregateValue) add(fact Fact, timestamp time.Time, seq uint64) error {
 	if fact.Kind() != a.kind {
-		return fmt.Errorf("fact kind changed from %s to %s", a.kind, fact.Kind())
+		return fmt.Errorf("%w: fact kind changed from %s to %s", errSchemaConflict, a.kind, fact.Kind())
 	}
 	if fact.Unit() != a.unit {
-		return fmt.Errorf("unit changed from %q to %q", a.unit, fact.Unit())
+		return fmt.Errorf("%w: unit changed from %q to %q", errSchemaConflict, a.unit, fact.Unit())
 	}
 
 	switch a.kind {

@@ -20,7 +20,7 @@ import (
 const (
 	defaultSite             = "datadoghq.com"
 	defaultFlushInterval    = 10 * time.Second
-	defaultGraceWindow      = 300 * time.Millisecond
+	defaultGraceWindow      = 10 * time.Second
 	defaultOrphanTimeout    = 5 * time.Second
 	defaultSweepInterval    = 50 * time.Millisecond
 	defaultHTTPTimeout      = 15 * time.Second
@@ -64,7 +64,22 @@ type WideConfig struct {
 	// Note: this governs wide-intake egress. The sending_queue/retry_on_failure
 	// settings only govern ingestion into the aggregation window, not the intake POST.
 	MaxRetryBufferBytes int `mapstructure:"max_retry_buffer_bytes"`
-	_                   struct{}
+	// LogWideEventsJSON, when true, logs each flushed batch of wide events as JSON at
+	// debug level before it is sent to the intake. Intended for debugging payload
+	// contents; verbose, so it is off by default and also requires the collector's
+	// log level to be debug.
+	LogWideEventsJSON bool `mapstructure:"log_wide_events_json"`
+	// WideEventsJSONFile, when set, appends each flushed batch of wide events to this
+	// file as newline-delimited JSON (one JSON array per flush), independent of the
+	// collector log level. Use this to capture payload contents to a clean file
+	// without turning on verbose debug logging.
+	WideEventsJSONFile string `mapstructure:"wide_events_json_file"`
+	// WideEventsBinaryFile, when set, appends the raw serialized WideTelemetryEnvelope
+	// protobuf bytes (exactly what is POSTed to the intake) to this file. Each envelope
+	// is framed by a 4-byte big-endian length prefix so multiple envelopes can be read
+	// back. Use this to replay or decode payloads with protobuf tooling.
+	WideEventsBinaryFile string `mapstructure:"wide_events_binary_file"`
+	_                    struct{}
 }
 
 type CorrelationConfig struct {

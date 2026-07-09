@@ -59,6 +59,7 @@ type SerializedEnvelope struct {
 	WindowStart  time.Time
 	WindowEnd    time.Time
 	TableCount   int
+	RowCount     int
 	EncodedBytes int
 }
 
@@ -76,6 +77,9 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 	windowStart := tables[0].WindowStart
 	windowEnd := tables[0].WindowEnd
 	pbTables := make([]*widepb.WideTable, 0, len(tables))
+	// rowsByTable lets us attribute each table's wide-event (row) count to whichever
+	// envelope pack() places it in, so callers can report how many events were sent.
+	rowsByTable := make(map[*widepb.WideTable]int, len(tables))
 	for i := range tables {
 		table := tables[i]
 		if err := ctx.Err(); err != nil {
@@ -89,6 +93,7 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 			return nil, err
 		}
 		pbTables = append(pbTables, pbTable)
+		rowsByTable[pbTable] = len(table.Rows)
 	}
 
 	envelopes, err := s.pack(windowStart, windowEnd, pbTables)
@@ -101,6 +106,10 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 		if err != nil {
 			return nil, err
 		}
+		rowCount := 0
+		for _, table := range envelope.Tables {
+			rowCount += rowsByTable[table]
+		}
 		out = append(out, SerializedEnvelope{
 			Payload:      payload,
 			Host:         envelope.Host,
@@ -108,6 +117,7 @@ func (s *Serializer) Serialize(ctx context.Context, tables []WideTable) ([]Seria
 			WindowStart:  time.UnixMilli(int64(envelope.FlushWindowStartMs)).UTC(),
 			WindowEnd:    time.UnixMilli(int64(envelope.FlushWindowEndMs)).UTC(),
 			TableCount:   len(envelope.Tables),
+			RowCount:     rowCount,
 			EncodedBytes: len(payload),
 		})
 	}
