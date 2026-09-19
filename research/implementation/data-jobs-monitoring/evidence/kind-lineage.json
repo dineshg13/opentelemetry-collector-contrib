@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-09-19T22:12:19.218271+00:00",
+  "context": "kind-otel-dd",
+  "namespace": "ddot-poc",
+  "real_site": "us5.datadoghq.com",
+  "product_readback_verified": false,
+  "jobs": [
+    {
+      "job": "djm-python",
+      "succeeded": 1,
+      "result": {
+        "run_id": "af2e7153-e98e-4899-a4a9-ca23377ed8a7",
+        "trace_id": "6aaf07d90000000042215ae2306b0371",
+        "summary": {
+          "count": 3,
+          "total": 60
+        },
+        "lineage_enabled": true,
+        "lineage_statuses": [
+          201,
+          201
+        ],
+        "lineage_errors": [],
+        "ddtrace_version": "4.13.0rc1",
+        "openlineage_version": "1.45.0",
+        "scope": "manual OpenLineage job plus ordinary SDK trace; not native Spark DJM"
+      }
+    },
+    {
+      "job": "djm-python-alternative",
+      "succeeded": 1,
+      "result": {
+        "run_id": "2f388924-1634-4c3b-aa40-79e852b3a077",
+        "trace_id": "6aaf07d900000000595b1e607af13aeb",
+        "summary": {
+          "count": 3,
+          "total": 60
+        },
+        "lineage_enabled": true,
+        "lineage_statuses": [
+          201,
+          201
+        ],
+        "lineage_errors": [],
+        "ddtrace_version": "4.13.0rc1",
+        "openlineage_version": "1.45.0",
+        "scope": "manual OpenLineage job plus ordinary SDK trace; not native Spark DJM"
+      }
+    },
+    {
+      "job": "djm-python-disabled",
+      "succeeded": 1,
+      "result": {
+        "run_id": "ba8d5030-ee13-4bde-bbd6-ed5b5de2769c",
+        "trace_id": "6aaf088200000000d208a2574c1ef6af",
+        "summary": {
+          "count": 3,
+          "total": 60
+        },
+        "lineage_enabled": false,
+        "lineage_statuses": [],
+        "lineage_errors": [],
+        "ddtrace_version": "4.13.0rc1",
+        "openlineage_version": "1.45.0",
+        "scope": "manual OpenLineage job plus ordinary SDK trace; not native Spark DJM"
+      }
+    },
+    {
+      "job": "djm-python-alternative-disabled",
+      "succeeded": 1,
+      "result": {
+        "run_id": "1a4ddd1e-69bc-49c5-960b-82a6913d948d",
+        "trace_id": "6aaf088200000000333f7b5ed7a86a5d",
+        "summary": {
+          "count": 3,
+          "total": 60
+        },
+        "lineage_enabled": false,
+        "lineage_statuses": [],
+        "lineage_errors": [],
+        "ddtrace_version": "4.13.0rc1",
+        "openlineage_version": "1.45.0",
+        "scope": "manual OpenLineage job plus ordinary SDK trace; not native Spark DJM"
+      }
+    }
+  ]
+}

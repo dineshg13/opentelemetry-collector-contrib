@@ -1,5 +1,19 @@
 # Data Jobs Monitoring through the Collector
 
+**Implementation update (2026-09-19):** [runnable implementation and evidence](../../implementation/data-jobs-monitoring/README.md)
+now exercise actual Spark 4.0.0 with Datadog Java 1.66.0 and OpenLineage Spark 1.45.0.
+Native Spark spans preserve `span.type=spark`, DJM markers, task metrics and SQL-plan data
+through the SDK's own OTLP writer and the actual Collector. Real OpenLineage jobs run in
+kind through both forwarding alternatives and receive US5 intake 201 responses. This
+supersedes the earlier native-Spark-unexecuted and native-trace-receiver recommendations
+below. Native Spark also built and ran inside kind through both alternatives: four Spark
+jobs completed, including both SDK-disabled controls, and enabled native lineage received
+US5 intake 201 responses. Backend product readback, long-running updates and
+lineage/performance joins remain unverified; DJM is incomplete.
+
+The remaining report records the original source investigation and its historical limits;
+the implementation update above supersedes its runtime and transport blockers.
+
 Status: source investigation complete; real **OSS OpenLineage Python HTTP transport**
 validated through the current forwarder against a local capture server. Native Java Spark
 runtime, real Agent runtime, authenticated Datadog ingestion, and product UI/correlation remain
