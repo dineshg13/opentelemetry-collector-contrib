@@ -19,14 +19,18 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: otel-dd-worker
       containers:
-        - name: workload
-          image: ddot-ci-python:poc
-          imagePullPolicy: Never
-          env:
-            - name: DD_TRACE_AGENT_URL
-              value: http://collector.ddot-poc.svc.cluster.local:8126
-            - name: DD_SERVICE
-              value: ddot-ci-python-datadog-extension
+      - name: workload
+        image: ddot-ci-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector.ddot-poc.svc.cluster.local:8126
+        - name: DD_SERVICE
+          value: ddot-ci-python-datadog-extension
+        - name: DD_SITE
+          value: us5.datadoghq.com
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
 ---
 apiVersion: batch/v1
 kind: Job
@@ -47,11 +51,15 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: otel-dd-worker
       containers:
-        - name: workload
-          image: ddot-ci-python:poc
-          imagePullPolicy: Never
-          env:
-            - name: DD_TRACE_AGENT_URL
-              value: http://collector-http-forwarder.ddot-poc.svc.cluster.local:8126
-            - name: DD_SERVICE
-              value: ddot-ci-python-http-forwarder
+      - name: workload
+        image: ddot-ci-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector-http-forwarder.ddot-poc.svc.cluster.local:8126
+        - name: DD_SERVICE
+          value: ddot-ci-python-http-forwarder
+        - name: DD_SITE
+          value: us5.datadoghq.com
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector-http-forwarder.ddot-poc.svc.cluster.local:4318/v1/traces
