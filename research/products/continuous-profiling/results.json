@@ -1,0 +1,439 @@
+{
+  "scope": "real SDK + current forwarder + strict mock; backend/UI unverified",
+  "runtime": {
+    "python_executable": "/home/bits/.local/share/mise/installs/python/3.12/bin/python",
+    "python_version": "3.12.13",
+    "platform": "Linux-6.8.0-1057-aws-aarch64-with-glibc2.35",
+    "java_executable": "/usr/local/sdkman/candidates/java/current/bin/java",
+    "java_version": "openjdk version \"21.0.11\" 2026-04-21 LTS\nOpenJDK Runtime Environment Microsoft-13877185 (build 21.0.11+10-LTS)\nOpenJDK 64-Bit Server VM Microsoft-13877185 (build 21.0.11+10-LTS, mixed mode, sharing)",
+    "java_agent_sha256": "5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8"
+  },
+  "cases": [
+    {
+      "name": "python_default_path",
+      "exit_code": 0,
+      "command": [
+        "/home/bits/.local/share/mise/installs/python/3.12/bin/python",
+        "/tmp/ddot-research-continuous-profiling/research/products/continuous-profiling/python_workload.py"
+      ],
+      "sdk_environment": {
+        "DD_TRACE_ENABLED": "false",
+        "DD_REMOTE_CONFIGURATION_ENABLED": "false",
+        "DD_INSTRUMENTATION_TELEMETRY_ENABLED": "false",
+        "DD_SERVICE": "research-profiles",
+        "DD_ENV": "research",
+        "DD_VERSION": "1",
+        "DD_PROFILING_ENABLED": "true",
+        "DD_TRACE_AGENT_URL": "http://127.0.0.1:35415",
+        "PYTHONPATH": "/tmp/ddot-research-python-runtime"
+      },
+      "profiles": [
+        {
+          "path": "/profiling/v1/input",
+          "body_bytes": 14215,
+          "body_sha256": "cc94e356f2b4f2a5ebaf05f5cad8fd0cf69c20f3b6e3cfbc8b9ba58ae5025b16",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-py",
+          "origin_version": "4.13.0rc1",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2370,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 576,
+              "magic_hex": "28b52ffd"
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 10696,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "python",
+            "version": "4",
+            "attachments": [
+              "code-provenance.json",
+              "profile.pprof"
+            ],
+            "tags_profiler": "env:research,service:research-profiles,version:1,language:python,runtime:CPython,runtime-id:9fbabd660e2f4b53adfb50a785d88eca,runtime_version:3.12.13,profiler_version:4.13.0rc1,process_id:3500989,profiler_config:stack_v2_lock_mem_heap_exception_exp_dd_CAP1.0_MAXF64,runtime_platform:aarch64-unknown-linux-gnu"
+          },
+          "status": 404
+        }
+      ],
+      "stdout": "{\"sdk\": \"4.13.0rc1\", \"python\": \"3.12.13\", \"machine\": \"aarch64\", \"checksum_positive\": true}",
+      "upload_error_logged": false
+    },
+    {
+      "name": "python_agent_url_with_backend_path",
+      "exit_code": 0,
+      "command": [
+        "/home/bits/.local/share/mise/installs/python/3.12/bin/python",
+        "/tmp/ddot-research-continuous-profiling/research/products/continuous-profiling/python_workload.py"
+      ],
+      "sdk_environment": {
+        "DD_TRACE_ENABLED": "false",
+        "DD_REMOTE_CONFIGURATION_ENABLED": "false",
+        "DD_INSTRUMENTATION_TELEMETRY_ENABLED": "false",
+        "DD_SERVICE": "research-profiles",
+        "DD_ENV": "research",
+        "DD_VERSION": "1",
+        "DD_PROFILING_ENABLED": "true",
+        "DD_TRACE_AGENT_URL": "http://127.0.0.1:35415/api/v2/profile",
+        "PYTHONPATH": "/tmp/ddot-research-python-runtime"
+      },
+      "profiles": [
+        {
+          "path": "/api/v2/profile/profiling/v1/input",
+          "body_bytes": 14296,
+          "body_sha256": "3a6b8e936c6b79cbcfbf9a37efb76761038c4978782e688e37c6556d951a6412",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-py",
+          "origin_version": "4.13.0rc1",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2372,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 576,
+              "magic_hex": "28b52ffd"
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 10775,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "python",
+            "version": "4",
+            "attachments": [
+              "code-provenance.json",
+              "profile.pprof"
+            ],
+            "tags_profiler": "env:research,service:research-profiles,version:1,language:python,runtime:CPython,runtime-id:6c26eb1fbb05434ca23f56f870d94dcd,runtime_version:3.12.13,profiler_version:4.13.0rc1,process_id:3501177,profiler_config:stack_v2_lock_mem_heap_exception_exp_dd_CAP1.0_MAXF64,runtime_platform:aarch64-unknown-linux-gnu"
+          },
+          "status": 404
+        }
+      ],
+      "stdout": "{\"sdk\": \"4.13.0rc1\", \"python\": \"3.12.13\", \"machine\": \"aarch64\", \"checksum_positive\": true}",
+      "upload_error_logged": false
+    },
+    {
+      "name": "java_default_path",
+      "exit_code": 0,
+      "command": [
+        "java",
+        "-javaagent:/tmp/ddot-research-java-agent-1.66.0.jar",
+        "-cp",
+        "/tmp/ddot-profile-lkus0im9",
+        "ProfileWorkload"
+      ],
+      "sdk_environment": {
+        "DD_TRACE_ENABLED": "false",
+        "DD_REMOTE_CONFIGURATION_ENABLED": "false",
+        "DD_INSTRUMENTATION_TELEMETRY_ENABLED": "false",
+        "DD_SERVICE": "research-profiles",
+        "DD_ENV": "research",
+        "DD_VERSION": "1",
+        "DD_PROFILING_ENABLED": "true",
+        "DD_TRACE_AGENT_URL": "http://127.0.0.1:35415",
+        "DD_PROFILING_START_DELAY": "0",
+        "DD_PROFILING_UPLOAD_PERIOD": "1",
+        "DD_PROFILING_AGENTLESS": "false"
+      },
+      "profiles": [
+        {
+          "path": "/profiling/v1/input",
+          "body_bytes": 80098,
+          "body_sha256": "99c46272a65d03026b4bae0608e0335b325a2e5b5fa883dcd4ff60c678e4f490",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 79168,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501364,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:3059df0a-e5f6-4aa2-a049-cd00cc5130d4,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 404
+        },
+        {
+          "path": "/profiling/v1/input",
+          "body_bytes": 74019,
+          "body_sha256": "592827a46f5681f9e638a4fc6d96e083b6247cd20d7668bd250580524b80af2d",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 73089,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501364,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:3059df0a-e5f6-4aa2-a049-cd00cc5130d4,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 404
+        },
+        {
+          "path": "/profiling/v1/input",
+          "body_bytes": 74808,
+          "body_sha256": "47ed98946febfed02cdd30fa3709187f2431b111fe86d12ecce02b26961df9b0",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 73878,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501364,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:3059df0a-e5f6-4aa2-a049-cd00cc5130d4,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 404
+        },
+        {
+          "path": "/profiling/v1/input",
+          "body_bytes": 74402,
+          "body_sha256": "995cb92d018572972f0559554c1284e932a82168ab1d90fa3d46a661b43729c0",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 73472,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501364,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:3059df0a-e5f6-4aa2-a049-cd00cc5130d4,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 404
+        }
+      ],
+      "stdout": "profile-workload-complete true",
+      "upload_error_logged": true
+    },
+    {
+      "name": "java_exact_url_override",
+      "exit_code": 0,
+      "command": [
+        "java",
+        "-javaagent:/tmp/ddot-research-java-agent-1.66.0.jar",
+        "-cp",
+        "/tmp/ddot-profile-lkus0im9",
+        "ProfileWorkload"
+      ],
+      "sdk_environment": {
+        "DD_TRACE_ENABLED": "false",
+        "DD_REMOTE_CONFIGURATION_ENABLED": "false",
+        "DD_INSTRUMENTATION_TELEMETRY_ENABLED": "false",
+        "DD_SERVICE": "research-profiles",
+        "DD_ENV": "research",
+        "DD_VERSION": "1",
+        "DD_PROFILING_ENABLED": "true",
+        "DD_TRACE_AGENT_URL": "http://127.0.0.1:35415",
+        "DD_PROFILING_START_DELAY": "0",
+        "DD_PROFILING_UPLOAD_PERIOD": "1",
+        "DD_PROFILING_AGENTLESS": "false",
+        "DD_PROFILING_URL": "http://127.0.0.1:35415/api/v2/profile"
+      },
+      "profiles": [
+        {
+          "path": "/api/v2/profile",
+          "body_bytes": 79611,
+          "body_sha256": "271917dc46aa0c67c0937bd5fb969d85328bd2be42e385d9769ca4e4aec1f25b",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 78681,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501894,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:f7cf08d6-97d8-4c8e-b5d7-28f0714ceb05,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 202
+        },
+        {
+          "path": "/api/v2/profile",
+          "body_bytes": 72901,
+          "body_sha256": "9731b0c6d5dbb971e9f50a2941dcb6247096b6379ec3f1624b512da8efbe59cb",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 71971,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501894,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:f7cf08d6-97d8-4c8e-b5d7-28f0714ceb05,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 202
+        },
+        {
+          "path": "/api/v2/profile",
+          "body_bytes": 72477,
+          "body_sha256": "b097e8f24f9d7b0398961b2b1665a754b2e89638c08e5f203d305cfcd4fb0a72",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 71547,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501894,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:f7cf08d6-97d8-4c8e-b5d7-28f0714ceb05,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 202
+        },
+        {
+          "path": "/api/v2/profile",
+          "body_bytes": 72938,
+          "body_sha256": "dc0dbb753cc7c078907fff759fe992c939ebc11506710253e251e718f8c84a47",
+          "content_type": "multipart/form-data",
+          "origin": "dd-trace-java",
+          "origin_version": "1.66.0~a099fffb31",
+          "key_matches": true,
+          "additional_tags": "host:research-host,default_env:research",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 572,
+              "magic_hex": "7b226174"
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 72008,
+              "magic_hex": "28b52ffd"
+            }
+          ],
+          "event": {
+            "family": "java",
+            "version": "4",
+            "attachments": [
+              "main.jfr"
+            ],
+            "tags_profiler": "library_version:1.66.0~a099fffb31,process_id:3501894,runtime_version:21.0.11,service:research-profiles,profiler_version:1.66.0~a099fffb31,host:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756,runtime-id:f7cf08d6-97d8-4c8e-b5d7-28f0714ceb05,language:jvm,env:research,version:1,snapshot:periodic"
+          },
+          "status": 202
+        }
+      ],
+      "stdout": "profile-workload-complete true",
+      "upload_error_logged": false
+    }
+  ],
+  "backend_202_returned_unchanged": true
+}

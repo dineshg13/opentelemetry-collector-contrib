@@ -1,0 +1,12 @@
+# Working generic-forwarder subtree for an independently configured OSS client.
+# Client must send /api/v1/lineage?api-version=2 itself. The egress URL cannot rewrite it.
+# Put this under extensions.http_forwarder and enable service.extensions in a full Collector.
+ingress:
+  endpoint: 127.0.0.1:18146
+  compression_algorithms: []
+egress:
+  endpoint: http://127.0.0.1:18147
+  timeout: 5s
+  headers:
+    Authorization: Bearer collector-research-key
+    X-Datadog-Additional-Tags: host:research-host,default_env:research
