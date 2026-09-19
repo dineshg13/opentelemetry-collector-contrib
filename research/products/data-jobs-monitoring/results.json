@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-19",
+  "client": "openlineage-python==1.45.0 HttpTransport",
+  "interpreter": "CPython 3.12.13",
+  "target": "unmodified http_forwarder extension in shared minimal host",
+  "backend": "loopback capture fixture; not Datadog",
+  "all_assertions_passed": true,
+  "cases": [
+    {"path": "/openlineage/api/v1/lineage", "fixture_status": 404},
+    {"path": "/api/v1/lineage", "fixture_status": 202},
+    {"path": "/api/v1/lineage?api-version=2", "fixture_status": 202},
+    {"path": "/api/v1/lineage?api-version=2&reject=1", "fixture_status": 429}
+  ],
+  "invariants": [
+    "egress URL path and query ignored",
+    "incoming path and query preserved",
+    "exact prepared gzip request bytes preserved",
+    "configured Bearer replaces client Bearer with one Authorization header",
+    "static host/env tags present; no generated container tags",
+    "run ID, job name and event type preserved",
+    "response status, JSON, Retry-After and Via available to client"
+  ],
+  "unverified": [
+    "native Java Spark instrumentation runtime",
+    "real Agent runtime",
+    "Collector native Spark trace round-trip",
+    "framework-generated OpenLineage facets",
+    "Datadog backend ingestion and UI correlation",
+    "TLS, UDS, load, retry policy and multi-destination parity"
+  ]
+}
