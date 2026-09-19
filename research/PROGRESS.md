@@ -183,3 +183,18 @@ source repositories and supplemental integrations repository remain clean at the
 No PR exists yet, and no product PR is marked ready or merged. Product/common branches may
 be synchronized with shared documentation while retaining product-only diffs against the
 intended combined target. Final branch push and complete link-check results follow below.
+
+## Publication and final checks
+
+All eight product branches, the shared branch, intended combined target and assembled review
+snapshot have been pushed to `dineshg13/opentelemetry-collector-contrib`. The complete
+documentation checker passes: **8/8 reports, 102 relative links, 93 pinned source-file
+targets**. This verifies file/link existence, not every prose claim or backend compatibility.
+The common documentation is synchronized into product branches so each product's shared
+configuration and runtime references are available; each product PR diff remains limited
+to its own directory. The complete review snapshot remains the place to read all products.
+
+Publication is blocked solely on the pending human PR sections/attestation required by
+AGENTS.md; backend acceptance is separately blocked on product access, credentials and
+the services/workloads specified per report. No production change, deployment, default-branch
+merge, issue/PR comment, generated PR description or human-checkbox action was performed.
