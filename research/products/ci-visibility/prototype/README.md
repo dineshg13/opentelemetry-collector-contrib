@@ -16,7 +16,7 @@ No SDK source checkout is modified. Install packages into isolated temporary pat
 python3 -m pip install --target /tmp/ddot-research-python-runtime ddtrace==4.13.0rc1
 python3 -m pip install --target /tmp/ddot-research-ci-python pytest==8.3.5 msgpack==1.1.1
 PYTHONPATH=/tmp/ddot-research-ci-python python3 research/products/ci-visibility/prototype/validate.py
-node research/products/ci-visibility/prototype/check-js-components.cjs /home/bits/dd/dd-trace-js
+node research/products/ci-visibility/prototype/check-js-components.cjs "$HOME/dd/dd-trace-js"
 ```
 
 Dependency/runtime installs may need network access; tests themselves use loopback only.
