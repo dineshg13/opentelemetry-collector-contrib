@@ -1,5 +1,13 @@
 # CI Visibility / Test Optimization through the Collector
 
+**Implementation update:** [the runnable implementation](../../implementation/ci-visibility/README.md)
+now uses actual shared Collector forwarding components, real Python pytest events and
+an independent ordinary OTLP pipeline. It provides both forwarding configurations,
+kind Jobs and enabled/disabled tests. Python requires an explicit private context mode
+to avoid intercepting ordinary traces; Java's OTLP writer bypasses native CI event
+envelopes in a reproduced test. Backend product behavior remains unverified. The research
+below describes the original baseline and does not override those implementation limits.
+
 The native CI path fits the principles' HTTP proxy plus enrichment boundary. The SDK
 creates test events, coverage, git data and optimization requests; the Agent's EVP proxy
 forwards those bytes and returns backend responses. **Current `http_forwarder` configuration

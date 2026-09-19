@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-09-19T22:09:41.298489+00:00",
+  "backend_verified": false,
+  "scope": "Actual Python SDK + actual generic HTTP forwarder and OTLP Collector pipelines; test-only fixture responses",
+  "checks": [
+    {
+      "proxy_enabled": true,
+      "sdk_enabled": true,
+      "test_events": 5,
+      "coverage_entries": 1,
+      "ordinary_otlp_spans": 1,
+      "backend_paths": [
+        "/api/v2/ci/libraries/tests",
+        "/api/v2/ci/tests/skippable",
+        "/api/v2/citestcov",
+        "/api/v2/citestcycle",
+        "/api/v2/git/repository/packfile",
+        "/api/v2/git/repository/search_commits",
+        "/api/v2/libraries/tests/services/setting",
+        "/api/v2/test/libraries/test-management/tests",
+        "/v1/traces"
+      ],
+      "hierarchy_validated": true,
+      "pytest_summary": "1 passed, 1 skipped in 0.03s",
+      "control_error_response_preserved": true
+    },
+    {
+      "language": "java",
+      "scope": "Real manual CI SDK API with OTLP configured",
+      "status": "SDK CI events bypassed by OtlpWriter selection",
+      "otlp_spans": 4,
+      "native_test_event_envelopes": 0,
+      "backend_paths": [
+        "/api/v2/ci/libraries/tests",
+        "/api/v2/ci/tests/skippable",
+        "/api/v2/git/repository/packfile",
+        "/api/v2/git/repository/search_commits",
+        "/api/v2/libraries/tests/services/setting",
+        "/api/v2/test/libraries/test-management/tests",
+        "/v1/traces"
+      ],
+      "java_runtime": "openjdk version \"21.0.11\" 2026-04-21 LTS\nOpenJDK Runtime Environment Microsoft-13877185 (build 21.0.11+10-LTS)\nOpenJDK 64-Bit Server VM Microsoft-13877185 (build 21.0.11+10-LTS, mixed mode, sharing)"
+    },
+    {
+      "proxy_enabled": false,
+      "sdk_enabled": true,
+      "test_events": 0,
+      "coverage_entries": 0,
+      "ordinary_otlp_spans": 1,
+      "backend_paths": [
+        "/v1/traces"
+      ],
+      "hierarchy_validated": false,
+      "pytest_summary": "1 passed, 1 skipped in 0.02s"
+    },
+    {
+      "proxy_enabled": true,
+      "sdk_enabled": false,
+      "test_events": 0,
+      "coverage_entries": 0,
+      "ordinary_otlp_spans": 1,
+      "backend_paths": [
+        "/v1/traces"
+      ],
+      "hierarchy_validated": false,
+      "pytest_summary": "1 passed, 1 skipped in 0.02s",
+      "control_error_response_preserved": true
+    }
+  ]
+}
