@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -186,7 +187,7 @@ func (h *httpForwarder) forwardRequest(writer http.ResponseWriter, request *http
 
 	status := response.StatusCode
 	if matched != nil {
-		if mapped, ok := matched.ResponseStatus[status]; ok {
+		if mapped, ok := matched.ResponseStatus[strconv.Itoa(status)]; ok {
 			status = mapped
 		}
 		h.settings.Logger.Debug("Forwarded HTTP product request", zap.String("route", matched.Path), zap.String("upstream_host", target.Host), zap.Int("upstream_status_code", response.StatusCode), zap.Int("status_code", status))

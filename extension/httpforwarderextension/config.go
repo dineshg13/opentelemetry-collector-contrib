@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"go.opentelemetry.io/collector/config/confighttp"
@@ -37,7 +38,7 @@ type Route struct {
 	Endpoint       string                         `mapstructure:"endpoint"`
 	Headers        map[string]configopaque.String `mapstructure:"headers"`
 	RemoveHeaders  []string                       `mapstructure:"remove_headers"`
-	ResponseStatus map[int]int                    `mapstructure:"response_status"`
+	ResponseStatus map[string]int                 `mapstructure:"response_status"`
 	Response       *StaticResponse                `mapstructure:"response"`
 	// AppendQuery appends comma-separated metadata to existing query values.
 	AppendQuery map[string]string `mapstructure:"append_query"`
@@ -78,7 +79,8 @@ func (c *Config) Validate() error {
 			return fmt.Errorf("routes[%d].response.status must be between 200 and 599", i)
 		}
 		for from, to := range r.ResponseStatus {
-			if from < 200 || from > 599 || to < 200 || to > 599 {
+			code, err := strconv.Atoi(from)
+			if err != nil || code < 200 || code > 599 || to < 200 || to > 599 {
 				return fmt.Errorf("routes[%d].response_status must contain status codes between 200 and 599", i)
 			}
 		}

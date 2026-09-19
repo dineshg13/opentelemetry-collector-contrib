@@ -19,10 +19,24 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/config/confighttp"
+	"go.opentelemetry.io/collector/confmap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarderextension"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/testutil"
 )
+
+func TestProductProxyUnmarshalDefaults(t *testing.T) {
+	cfg := NewFactory().CreateDefaultConfig().(*Config)
+	err := confmap.NewFromStringMap(map[string]any{
+		"api":           map[string]any{"key": "test-key"},
+		"product_proxy": map[string]any{"endpoint": "127.0.0.1:8126"},
+		"products":      map[string]any{"continuous_profiling": map[string]any{"enabled": true}},
+	}).Unmarshal(cfg)
+	require.NoError(t, err)
+	require.NoError(t, confmap.Validate(cfg))
+	require.Empty(t, cfg.ProductProxy.ServerConfig.CompressionAlgorithms)
+	require.EqualValues(t, 32*1024*1024, cfg.ProductProxy.ServerConfig.MaxRequestBodySize)
+}
 
 func productTestConfig() *Config {
 	cfg := NewFactory().CreateDefaultConfig().(*Config)

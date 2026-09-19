@@ -15,6 +15,7 @@ import (
 	"go.opentelemetry.io/collector/config/confighttp"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configopaque"
+	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/extension"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarderextension"
@@ -46,6 +47,15 @@ type ProductProxyConfig struct {
 	Tags           []string                `mapstructure:"tags"`
 	DefaultEnv     string                  `mapstructure:"default_env"`
 	ApplicationKey configopaque.String     `mapstructure:"application_key"`
+}
+
+// Unmarshal initializes the optional listener before recursive validation.
+// HTTP payloads must remain compressed exactly as the SDK sent them.
+func (p *ProductProxyConfig) Unmarshal(conf *confmap.Conf) error {
+	p.ServerConfig = confighttp.NewDefaultServerConfig()
+	p.ServerConfig.CompressionAlgorithms = []string{}
+	p.ServerConfig.MaxRequestBodySize = 32 * 1024 * 1024
+	return conf.Unmarshal(p)
 }
 
 func (c *Config) validateProducts() error {
@@ -115,7 +125,7 @@ func productForwarderConfig(c *Config, hostname string) *httpforwarderextension.
 	}
 	if c.Products.ContinuousProfiling.Enabled {
 		r := add("/profiling/v1/input", "intake.profile", "/api/v2/profile", false)
-		r.ResponseStatus = map[int]int{http.StatusAccepted: http.StatusOK}
+		r.ResponseStatus = map[string]int{"202": http.StatusOK}
 		endpoints = append(endpoints, "/profiling/v1/input")
 	}
 	if c.Products.DataStreamsMonitoring.Enabled {
