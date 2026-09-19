@@ -1,5 +1,13 @@
 # Data Streams Monitoring: SDK stats proxy and Agent collection
 
+**Implementation update (2026-09-19):** [runnable DSM implementation](../../implementation/data-streams-monitoring/README.md)
+now builds Python 4.13.0rc1, Java 1.66.0 and JavaScript 6.16.0 applications with actual
+SDK manual checkpoints and ordinary OTLP traces. Full SDK enabled/disabled tests and the
+actual Collector's generic forwarding/OTLP pipeline tests passed. Both product Collector
+configurations validate. This supersedes the source-only JavaScript and native-trace-path
+limitations below for the exercised workload. Kind loading hit a full Docker filesystem;
+real backend topology and trace/schema correlation remain unverified.
+
 The SDK pathway-statistics upload is an opaque HTTP proxy candidate. Full DSM also includes
 Agent broker collection, cluster/schema metadata, remote Kafka actions, and SDK trace
 correlation. Those are separate data paths. The principles keep Agent-originated collection
