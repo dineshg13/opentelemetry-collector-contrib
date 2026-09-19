@@ -259,8 +259,9 @@ func (e *datadogExtension) Shutdown(ctx context.Context) error {
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
+	var productErr error
 	if e.productForwarder != nil {
-		defer e.productForwarder.Shutdown(ctxWithTimeout)
+		productErr = e.productForwarder.Shutdown(ctxWithTimeout)
 	}
 
 	// Stop periodic payload sending
@@ -273,7 +274,7 @@ func (e *datadogExtension) Shutdown(ctx context.Context) error {
 	if e.serializer != nil {
 		e.serializer.Stop()
 	}
-	return nil
+	return productErr
 }
 
 // sendLivenessMetric sends the otel.datadog_extension.running metric to indicate the extension is active
