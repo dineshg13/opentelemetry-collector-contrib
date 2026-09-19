@@ -1,0 +1,32 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Merge these explicit receivers and pipelines into the combined Collector config.
+receivers:
+  postgresql/dbm:
+    endpoint: dbm-postgres.ddot-poc.svc.cluster.local:5432
+    username: dbm_monitor
+    password: ${env:DBM_POSTGRES_PASSWORD}
+    databases: [dbm]
+    collection_interval: 2s
+    tls:
+      insecure: true
+    events:
+      db.server.query_sample:
+        enabled: true
+      db.server.top_query:
+        enabled: true
+    top_query_collection:
+      collection_interval: 10s
+      max_explain_each_interval: 0
+service:
+  pipelines:
+    metrics/dbm:
+      receivers: [postgresql/dbm]
+      processors: [resource/poc, batch]
+      exporters: [otlp_http/datadog, debug]
+    logs/dbm:
+      receivers: [postgresql/dbm]
+      processors: [resource/poc, batch]
+      exporters: [otlp_http/datadog, debug]
+# Disable database collection by removing both pipelines and this receiver.
+# DD_DBM_PROPAGATION_MODE=disabled independently removes SDK SQL trace context.

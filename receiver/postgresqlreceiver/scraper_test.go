@@ -852,62 +852,76 @@ func TestScrapeQuerySampleSemconv(t *testing.T) {
 }
 
 func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
-	cfg := createDefaultConfig().(*Config)
-	cfg.Databases = []string{}
-	cfg.LogsBuilderConfig.Events.DbServerQuerySample.Enabled = true
-	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-	require.NoError(t, err)
+	for _, source := range []string{"application_name", "sql_comment"} {
+		t.Run(source, func(t *testing.T) {
+			cfg := createDefaultConfig().(*Config)
+			cfg.Databases = []string{}
+			cfg.LogsBuilderConfig.Events.DbServerQuerySample.Enabled = true
+			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			require.NoError(t, err)
 
-	defer db.Close()
+			defer db.Close()
 
-	factory := mockSimpleClientFactory{
-		db: db,
+			factory := mockSimpleClientFactory{
+				db: db,
+			}
+
+			settings := receivertest.NewNopSettings(metadata.Type)
+			logger, err := zap.NewProduction()
+			require.NoError(t, err)
+			settings.TelemetrySettings = component.TelemetrySettings{
+				Logger: logger,
+			}
+
+			scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+			require.NoError(t, scraperErr)
+			scraper.newestQueryTimestamp = 123440.111
+
+			traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+			application := traceparent
+			query := "select * from pg_stat_activity where id = 32"
+			if source == "sql_comment" {
+				application = "dbm-workload"
+				query = "/*service='workload',traceparent='" + traceparent + "'*/ " + query
+			}
+			mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newSQLMockRows(querySampleColumns, map[string]any{
+				querySampleColumnDatname:              "postgres",
+				querySampleColumnUsename:              "otelu",
+				querySampleColumnClientAddr:           "11.4.5.14",
+				querySampleColumnClientHostname:       "otel",
+				querySampleColumnClientPort:           "114514",
+				querySampleColumnQueryStart:           "2025-02-12T16:37:54.843+08:00",
+				querySampleColumnQueryID:              "123131231231",
+				querySampleColumnPID:                  "1450",
+				querySampleColumnApplicationName:      application,
+				querySampleColumnQueryStartTimestamp:  "123445.123",
+				querySampleColumnState:                "idle",
+				querySampleColumnQuery:                query,
+				querySampleColumnDurationMilliseconds: "1.2",
+				querySampleColumnBlockingPIDs:         "{}",
+			}))
+			actualLogs, err := scraper.scrapeQuerySamples(t.Context(), 30)
+			require.NoError(t, err)
+
+			require.Equal(t, 1, actualLogs.ResourceLogs().Len())
+			rl := actualLogs.ResourceLogs().At(0)
+			require.Equal(t, 1, rl.ScopeLogs().Len())
+			sl := rl.ScopeLogs().At(0)
+			require.Equal(t, 1, sl.LogRecords().Len())
+			lr := sl.LogRecords().At(0)
+
+			require.Equal(t, "4bf92f3577b34da6a3ce929d0e0e4736", lr.TraceID().String())
+			require.Equal(t, "00f067aa0ba902b7", lr.SpanID().String())
+
+			applicationName, ok := lr.Attributes().Get("postgresql.application_name")
+			require.True(t, ok)
+			require.Equal(t, application, applicationName.Str())
+			queryText, ok := lr.Attributes().Get("db.query.text")
+			require.True(t, ok)
+			require.NotContains(t, queryText.Str(), traceparent)
+			require.NotContains(t, queryText.Str(), "32")
+		})
 	}
-
-	settings := receivertest.NewNopSettings(metadata.Type)
-	logger, err := zap.NewProduction()
-	require.NoError(t, err)
-	settings.TelemetrySettings = component.TelemetrySettings{
-		Logger: logger,
-	}
-
-	scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
-	require.NoError(t, scraperErr)
-	scraper.newestQueryTimestamp = 123440.111
-
-	traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
-	mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newSQLMockRows(querySampleColumns, map[string]any{
-		querySampleColumnDatname:              "postgres",
-		querySampleColumnUsename:              "otelu",
-		querySampleColumnClientAddr:           "11.4.5.14",
-		querySampleColumnClientHostname:       "otel",
-		querySampleColumnClientPort:           "114514",
-		querySampleColumnQueryStart:           "2025-02-12T16:37:54.843+08:00",
-		querySampleColumnQueryID:              "123131231231",
-		querySampleColumnPID:                  "1450",
-		querySampleColumnApplicationName:      traceparent,
-		querySampleColumnQueryStartTimestamp:  "123445.123",
-		querySampleColumnState:                "idle",
-		querySampleColumnQuery:                "select * from pg_stat_activity where id = 32",
-		querySampleColumnDurationMilliseconds: "1.2",
-		querySampleColumnBlockingPIDs:         "{}",
-	}))
-	actualLogs, err := scraper.scrapeQuerySamples(t.Context(), 30)
-	require.NoError(t, err)
-
-	require.Equal(t, 1, actualLogs.ResourceLogs().Len())
-	rl := actualLogs.ResourceLogs().At(0)
-	require.Equal(t, 1, rl.ScopeLogs().Len())
-	sl := rl.ScopeLogs().At(0)
-	require.Equal(t, 1, sl.LogRecords().Len())
-	lr := sl.LogRecords().At(0)
-
-	require.Equal(t, "4bf92f3577b34da6a3ce929d0e0e4736", lr.TraceID().String())
-	require.Equal(t, "00f067aa0ba902b7", lr.SpanID().String())
-
-	applicationName, ok := lr.Attributes().Get("postgresql.application_name")
-	require.True(t, ok)
-	require.Equal(t, traceparent, applicationName.Str())
 }
 
 func TestQuerySampleTemplateRendering(t *testing.T) {
