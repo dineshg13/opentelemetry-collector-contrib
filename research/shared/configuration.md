@@ -52,6 +52,30 @@ missing/miswired pipeline; emitting only a warning would create false success. D
 stanzas are inert and do not require an otherwise-unused pipeline or credentials beyond
 the existing extension's own requirements. Unknown product/mode keys should be rejected.
 
+## Combining transports
+
+`modes` is a list, with pipeline dependencies keyed by mode in `pipelines`. This is required
+because a single SDK product can use more than one transport at once. For example, Python
+LLM APM spans can coexist with EVP fallback/evaluation events; OTLP LLM spans can coexist
+with native evaluations. A proposed combined setting is:
+
+```yaml
+products:
+  llm_observability:
+    enabled: true
+    modes: [native_traces, native_proxy, otlp]
+    pipelines:
+      native_traces: traces/native
+      otlp: traces/llm
+```
+
+This does not mean exporting every span three times. Validate distinct data responsibilities:
+APM-carried fields use the native path, OTLP producers use the OTLP path, and native event/
+evaluation routes use the proxy; SDK-selected fallback is respected. Reject duplicate modes,
+unknown modes, pipeline references for unrelated modes, and unsupported combinations. Enabled
+products need at least one supported mode. Disabled entries remain inert. A product flag may
+cover several separately registered data/control paths; there is no inferred generic fallback.
+
 ## Runtime and disable boundaries
 
 Use an immutable route/capability plan constructed after validation. /info reports only the
