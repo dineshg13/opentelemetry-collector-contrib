@@ -36,7 +36,8 @@ def main():
     span_pairs = set()
     for record in records:
         trace_id = re.search(r"Trace ID\s*:\s*([0-9a-f]{32})", record)
-        span_id = re.search(r"Span ID\s*:\s*([0-9a-f]{16})", record)
+        id_label = r"^\s+ID" if record.startswith("Span") else r"^Span ID"
+        span_id = re.search(id_label + r"\s*:\s*([0-9a-f]{16})", record, re.MULTILINE)
         if not trace_id or not span_id:
             continue
         pair = (trace_id.group(1), span_id.group(1))
@@ -47,8 +48,8 @@ def main():
     expected = {(parent.split("-")[1], parent.split("-")[2]) for parent in parents}
     matched = expected & query_pairs & span_pairs
     assert matched, {"sql_contexts": len(expected), "query_log_contexts": len(query_pairs), "db_spans": len(span_pairs)}
-    assert "postgresql.backends" in logs, "No real PostgreSQL metric in collector output"
-    assert "db.server.top_query" in logs, "No real top query log in collector output"
+    assert re.search(r"Name:\s*postgresql.backends", logs), "No real PostgreSQL metric in collector output"
+    assert "EventName: db.server.top_query" in logs, "No real top query log in collector output"
     result = {
         "timestamp": datetime.now(timezone.utc).isoformat(), "context": "kind-otel-dd", "namespace": "ddot-poc",
         "sdk": "ddtrace 4.13.0rc1", "driver": "psycopg2 2.9.11", "database": "PostgreSQL 16.15",
