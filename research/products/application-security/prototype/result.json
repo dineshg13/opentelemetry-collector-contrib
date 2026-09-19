@@ -1,0 +1,39 @@
+{
+  "backend_validated": false,
+  "evidence": "synthetic native msgpack -\u003e actual datadogreceiver -\u003e captured pdata",
+  "info": {
+    "client_drop_p0s": false,
+    "config": null,
+    "endpoints": [
+      "/",
+      "/v0.3/traces",
+      "/v0.4/traces",
+      "/v0.5/traces",
+      "/v0.7/traces",
+      "/api/v0.2/traces"
+    ],
+    "long_running_spans": false,
+    "span_meta_structs": false,
+    "version": "datadogreceiver-otelcol-latest"
+  },
+  "meta_struct_dropped": true,
+  "rc_body": "",
+  "rc_status": 200,
+  "span_attributes": {
+    "_dd.apm.enabled": 0,
+    "_dd.appsec.enabled": 1,
+    "_dd.appsec.json": "{\"triggers\":[{\"rule\":{\"id\":\"fixture\"}}]}",
+    "_dd.appsec.s.req.body": "fixture-schema",
+    "_dd.iast.json": "{\"vulnerabilities\":[]}",
+    "_dd.p.dm": "-5",
+    "_dd.p.ts": "02",
+    "_sampling_priority_v1": 2,
+    "appsec.event": "true",
+    "datadog.span.id": "7",
+    "datadog.trace.id": "42",
+    "dd.span.Resource": "GET /fixture",
+    "sampling.priority": "2.000000"
+  },
+  "trace_response": "{}",
+  "unknown_route_status": 200
+}

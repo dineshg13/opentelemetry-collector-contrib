@@ -1,0 +1,28 @@
+{
+  "runtime_versions": {
+    "ddtrace": "4.13.0rc1",
+    "flask": "3.1.3",
+    "msgpack": "1.2.2"
+  },
+  "capture_count": 1,
+  "span_count": 11,
+  "sdk_stdout": "HTTP_STATUS 200",
+  "backend_validated": false,
+  "source_commit_for_wheel": "c280552330bb906df23b2963d6457a8d23fb81de",
+  "security_span_count": 1,
+  "security_input": {
+    "name": "flask.request",
+    "structured_keys": [
+      "appsec"
+    ],
+    "trigger_count": 1,
+    "legacy_json_present": false,
+    "event": "true",
+    "sampling_priority": 2.0,
+    "decision_maker": "-5",
+    "source": "02",
+    "waf_version": "2.0.0",
+    "rules_version": "1.18.0"
+  },
+  "replay_result": "prototype/python-replay-result.json"
+}
