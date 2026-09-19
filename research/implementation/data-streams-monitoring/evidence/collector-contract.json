@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-09-19T21:56:16.424198+00:00",
+  "scope": "actual SDK images through Collector generic proxy/OTLP pipeline to fixture",
+  "backend_verified": false,
+  "collector_sha256": "24f19823b15a4f0bbcde84ddb01aa44cb480cbd3feddda89e9640ff1bac05f07",
+  "proxy_disabled": false,
+  "checks": [
+    {
+      "language": "python",
+      "enabled": true,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 1,
+      "pathway_points": 4,
+      "linked_points": true,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/api/v0.1/pipeline_stats",
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 0, \"producer_hash\": 7133959521526319588, \"consumer_hash\": 13896206670220814781, \"propagation\": {\"dd-pathway-ctx-base64\": \"5ImXMmPqAGPQyNm6l2jQyNm6l2g=\"}, \"workload\": \"manual-in-process-checkpoints\"}",
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 1, \"producer_hash\": 3082163636081570341, \"consumer_hash\": 8299286221375471748, \"propagation\": {\"dd-pathway-ctx-base64\": \"JbJEPH8LxirQyNm6l2j8ytm6l2g=\"}, \"workload\": \"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "python",
+      "enabled": false,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 0,
+      "pathway_points": 0,
+      "linked_points": false,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 0, \"producer_hash\": null, \"consumer_hash\": null, \"propagation\": {}, \"workload\": \"manual-in-process-checkpoints\"}",
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 1, \"producer_hash\": null, \"consumer_hash\": null, \"propagation\": {}, \"workload\": \"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "java",
+      "enabled": true,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 2,
+      "pathway_points": 2,
+      "linked_points": true,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/api/v0.1/pipeline_stats",
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04ed000000007a542ff79ab4c520\"}",
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04ee000000005b41ab0e00b21451\"}",
+        "{\"sdk\":\"dd-java-agent\",\"version\":\"1.66.0\",\"workload\":\"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "java",
+      "enabled": false,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 0,
+      "pathway_points": 0,
+      "linked_points": false,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04f2000000001f9adc93ac02a6f5\"}",
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04f2000000005ae6df4049f21c36\"}",
+        "{\"sdk\":\"dd-java-agent\",\"version\":\"1.66.0\",\"workload\":\"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "node",
+      "enabled": true,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 1,
+      "pathway_points": 2,
+      "linked_points": true,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/api/v0.1/pipeline_stats",
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\":\"dd-trace\",\"version\":\"6.16.0\",\"sequence\":0,\"propagation\":{\"dd-pathway-ctx-base64\":\"3YZg6BmfunGq89q6l2iq89q6l2g=\"},\"workload\":\"manual-in-process-checkpoints\"}",
+        "{\"sdk\":\"dd-trace\",\"version\":\"6.16.0\",\"sequence\":1,\"propagation\":{\"dd-pathway-ctx-base64\":\"3YZg6BmfunGe9Nq6l2ie9Nq6l2g=\"},\"workload\":\"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "node",
+      "enabled": false,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 0,
+      "pathway_points": 0,
+      "linked_points": false,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\":\"dd-trace\",\"version\":\"6.16.0\",\"sequence\":0,\"propagation\":{},\"workload\":\"manual-in-process-checkpoints\"}",
+        "{\"sdk\":\"dd-trace\",\"version\":\"6.16.0\",\"sequence\":1,\"propagation\":{},\"workload\":\"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "java",
+      "enabled": true,
+      "advertise_pipeline_stats": false,
+      "stats_requests": 0,
+      "pathway_points": 0,
+      "linked_points": false,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04fe000000005a74dc3f13feed4c\"}",
+        "{\"operation\":\"produce\",\"trace_id\":\"6aaf04fe00000000084cb862055c2179\"}",
+        "{\"sdk\":\"dd-java-agent\",\"version\":\"1.66.0\",\"workload\":\"manual-in-process-checkpoints\"}"
+      ]
+    }
+  ]
+}
