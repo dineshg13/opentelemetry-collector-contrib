@@ -1,0 +1,10 @@
+{
+  "scope": "Additional released SDK runtime, not researched master snapshot",
+  "version": "1.66.0",
+  "source_tag": "v1.66.0",
+  "source_commit": "a099fffb31657bb6e8b4d04ee741491f3480829d",
+  "artifact_url": "https://repo.maven.apache.org/maven2/com/datadoghq/dd-java-agent/1.66.0/dd-java-agent-1.66.0.jar",
+  "path": "/tmp/ddot-research-java-agent-1.66.0.jar",
+  "sha256": "5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8",
+  "java": "Temurin 25.0.4+7-LTS Linux arm64"
+}

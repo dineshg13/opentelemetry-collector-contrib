@@ -24,3 +24,9 @@ Collector component; it is a component host, not a full Collector service binary
 
 Each product report includes commands, observed assertions, and missing acceptance steps.
 No HTTP/mock fixture result is counted as authenticated product success.
+
+The [Java runtime manifest](../java-runtime.json) pins a supplemental `dd-java-agent 1.66.0`
+artifact from Maven Central, source tag `a099fffb31657bb6e8b4d04ee741491f3480829d`, and its
+SHA-256. It is 81 commits before researched Java master. The runtime is Temurin 25.0.4 Linux
+arm64. Java product reports record whether this artifact was actually executed; merely
+downloading it is not a validation result.
