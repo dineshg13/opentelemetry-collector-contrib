@@ -17,7 +17,7 @@ broadening Collector responsibilities.
 | Support multiple transport modes per product | LLM spans/evaluations can simultaneously use native traces, EVP and OTLP; Live Debugging includes trace/metric probe side paths | Canonical proposed modes/pipelines model |
 | Retain Agent checks | SDK DBM correlation/DSM data is distinct from database/broker collection in the principles | Applied scope; DBM/DSM owners |
 | Separate Collector and SDK disablement | Blocking a route cannot remove installed probes, undo local WAF, stop agentless SDK traffic or suppress all product fields in other pipelines | Explicit limitation; cross-team contract required |
-| Preserve PR workflow while authorship input is pending | AGENTS.md requires human sections/attestation; consuming product branches into target would eliminate PR diffs | Separate review snapshot; no generated PR bodies/comments |
+| Preserve separate product diffs while drafts stay open | User explicitly authorized basic summaries for nine draft PRs in the fork; consuming product heads into their target would eliminate their diffs | Eight drafts target all-products; integration draft uses review-snapshot into fork main; authorship unchecked and no comments/merges |
 
 ## Conflicts needing decisions
 

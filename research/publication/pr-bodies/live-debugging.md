@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and local transport prototypes for Live Debugging through the Collector, with no production changes. Recommends a shared Datadog extension proxy for uploads, together with discovery, remote configuration, and required metrics/trace paths.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Exercised pinned JavaScript uploader components with explicit stubs and a real Python ddtrace 4.13.0rc1 local probe through the actual HTTP forwarder plus a prototype adapter against local mocks. No authenticated Datadog backend or UI validation was performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[Live Debugging research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-live-debugging/research/products/live-debugging/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->

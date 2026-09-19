@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and local prototypes for Application Security through the Collector, with no production changes. Finds that the current Datadog receiver drops structured security detection payloads and recommends resolving native trace preservation and processing before claiming product support.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Captured a real Python ddtrace 4.13.0rc1 Flask WAF event through the actual HTTP forwarder and replayed its exact payload through the actual Datadog receiver; synthetic fixtures also demonstrated structured payload loss. No authenticated Datadog backend or UI validation was performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[Application Security research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-application-security/research/products/application-security/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->
