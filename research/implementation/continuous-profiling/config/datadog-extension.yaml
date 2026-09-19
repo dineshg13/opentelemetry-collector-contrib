@@ -1,0 +1,35 @@
+# Native profiles use the Datadog extension. Ordinary signals remain OTLP.
+extensions:
+  datadog:
+    api:
+      site: ${env:DD_SITE}
+      key: ${env:DD_API_KEY}
+    hostname: ${env:DD_HOSTNAME}
+    product_proxy:
+      endpoint: 0.0.0.0:8126
+      tags: [env:poc]
+    products:
+      continuous_profiling:
+        enabled: true
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+exporters:
+  otlphttp/datadog:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+service:
+  extensions: [datadog]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]
+    logs:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]
