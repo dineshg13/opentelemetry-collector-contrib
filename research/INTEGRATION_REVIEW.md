@@ -1,5 +1,8 @@
 # Independent integration review
 
+Publication statements below record the pre-publication review checkpoint. The subsequent
+user-authorized nine draft PRs and their current targets are in the [publication index](publication/README.md).
+
 Reviewer: `/root/integration_review`, 2026-09-19. This review is independent of the product
 owners and coordinator. Status: **technical research review passed for all eight products**.
 All actionable review findings are resolved, and final documentation packaging checks pass.

@@ -1,3 +1,45 @@
+$defs:
+  product_config:
+    description: ProductConfig controls only the extension-owned HTTP forwarding path. SDK features and Collector telemetry pipelines must be configured independently.
+    type: object
+    properties:
+      enabled:
+        type: boolean
+  product_proxy_config:
+    description: ProductProxyConfig configures the optional HTTP product listener. Compression is always preserved; product payloads are opaque to this extension.
+    type: object
+    properties:
+      application_key:
+        $ref: go.opentelemetry.io/collector/config/configopaque.string
+      default_env:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+    allOf:
+      - $ref: go.opentelemetry.io/collector/config/confighttp.server_config
+  products_config:
+    description: ProductsConfig deliberately has no implicit enablement.
+    type: object
+    properties:
+      application_security:
+        description: These products require telemetry pipelines, not an HTTP product proxy.
+        $ref: product_config
+      ci_visibility:
+        $ref: product_config
+      continuous_profiling:
+        $ref: product_config
+      data_jobs_monitoring:
+        $ref: product_config
+      data_streams_monitoring:
+        $ref: product_config
+      database_monitoring:
+        $ref: product_config
+      live_debugging:
+        $ref: product_config
+      llm_observability:
+        $ref: product_config
 description: Config contains the information necessary for enabling the Datadog Extension.
 type: object
 properties:
@@ -23,5 +65,12 @@ properties:
   installation_method:
     description: 'InstallationMethod indicates how the collector was installed. Valid values: "", "kubernetes", "bare-metal", "docker", "ecs-fargate", "eks-fargate". Defaults to "" (unset) if not configured.'
     type: string
+  product_proxy:
+    description: ProductProxy enables a separate listener for explicitly enabled product HTTP protocols.
+    x-pointer: true
+    $ref: product_proxy_config
+  products:
+    description: Products contains independent opt-in switches; it never creates telemetry pipelines.
+    $ref: products_config
 allOf:
   - $ref: go.opentelemetry.io/collector/config/confighttp.client_config

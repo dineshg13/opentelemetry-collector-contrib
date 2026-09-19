@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-09-19T21:37:07.628788+00:00",
+  "scope": "actual SDK to local HTTP wire-contract fixture",
+  "backend_verified": false,
+  "checks": [
+    {
+      "language": "python",
+      "otlp_spans": 1,
+      "native_trace_requests": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "semantic_fields": [
+        "operation",
+        "provider",
+        "model",
+        "input",
+        "output",
+        "token_counts"
+      ],
+      "stdout": [
+        "{\"mode\": \"otlp\", \"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"iterations\": 1, \"trace_id\": \"6aaf0078000000001dff689a378d138f\", \"span_id\": \"6836428446f77e64\", \"generated_at_unix\": 1789853816.9490163}"
+      ]
+    },
+    {
+      "language": "python-native",
+      "paths": [
+        "/evp_proxy/v2/api/intake/llm-obs/v2/eval-metric",
+        "/evp_proxy/v2/api/v2/llmobs"
+      ],
+      "ordinary_trace_requests": 0
+    },
+    {
+      "language": "java",
+      "otlp_spans": 2,
+      "native_trace_requests": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "semantic_fields": [
+        "operation",
+        "provider",
+        "model",
+        "input",
+        "output",
+        "token_counts"
+      ],
+      "stdout": [
+        "{\"language\":\"java\",\"trace_id\":\"6aaf007a000000000c4e6c5aa2b3ec7a\",\"span_id\":\"5604384011408621347\"}",
+        "{\"language\":\"java\",\"trace_id\":\"6aaf007b000000004970b7febb0c8d03\",\"span_id\":\"7927587990575344107\"}"
+      ]
+    },
+    {
+      "java_runtime": "openjdk version \"21.0.11\" 2026-04-21 LTS\nOpenJDK Runtime Environment Microsoft-13877185 (build 21.0.11+10-LTS)\nOpenJDK 64-Bit Server VM Microsoft-13877185 (build 21.0.11+10-LTS, mixed mode, sharing)"
+    },
+    {
+      "language": "javascript",
+      "otlp_spans": 1,
+      "native_trace_requests": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "semantic_fields": [
+        "operation",
+        "provider",
+        "model",
+        "input",
+        "output",
+        "token_counts"
+      ],
+      "stdout": [
+        "{\"language\":\"javascript\",\"trace_id\":\"7710220331478930610\",\"span_id\":\"7710220331478930610\"}"
+      ]
+    }
+  ]
+}

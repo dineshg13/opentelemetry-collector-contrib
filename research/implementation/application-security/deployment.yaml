@@ -1,0 +1,44 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appsec-python-otlp
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appsec-python-otlp
+  template:
+    metadata:
+      labels:
+        app: appsec-python-otlp
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      containers:
+        - name: workload
+          image: ddot-appsec-python:poc
+          imagePullPolicy: Never
+          args: [--interval, "30"]
+          env:
+            - name: DD_APPSEC_ENABLED
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+          ports:
+            - containerPort: 8080
+              name: health
+          readinessProbe:
+            httpGet:
+              port: health
+              path: /health
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi

@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and local prototypes for Database Monitoring correlation through the Collector, with no production changes. Recommends retaining Agent database collection and separately validating SDK trace correlation, including resource mapping and 128-bit trace IDs.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Exercised five real Python ddtrace 4.13.0rc1 propagation/native-writer cases through the actual Datadog receiver, including forwarding and a 128-bit trace-ID regression; an Agent resource helper test exposed a SQL resource mapping gap. No database-service workload or authenticated Datadog backend/UI validation was performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[Database Monitoring research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-database-monitoring/research/products/database-monitoring/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->

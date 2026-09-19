@@ -48,3 +48,52 @@ The following settings can be optionally configured:
 
 The full list of settings exposed for this exporter are documented in [config.go](./config.go)
 with detailed sample configurations in [testdata/config.yaml](./testdata/config.yaml).
+
+### Exact routes
+
+An optional `routes` list enables an allowlist. The first matching exact path, method and
+`match_headers` selects the destination. Unmatched requests receive 404. In this mode,
+`egress.endpoint` is optional; the remaining `egress` settings still configure the HTTP
+client. A route's complete `endpoint` supplies the destination path and overrides matching
+query parameters. Other request query parameters remain intact. In legacy mode without
+routes, the original request URI is preserved and the egress URL supplies only the origin.
+
+```yaml
+extensions:
+  http_forwarder:
+    ingress:
+      endpoint: localhost:7070
+      # Preserve opaque compressed request bodies instead of decompressing them.
+      compression_algorithms: []
+    egress:
+      timeout: 30s
+    routes:
+      - path: /uploads
+        method: POST
+        endpoint: https://intake.example.com/api/v2/upload?version=2
+        headers:
+          Authorization: Bearer ${env:INTAKE_TOKEN}
+        remove_headers: [Cookie]
+        response_status: {202: 200}
+      - path: /info
+        method: GET
+        response:
+          status: 200
+          headers: {Content-Type: application/json}
+          body: '{"endpoints":["/uploads"]}'
+```
+
+`headers` replaces caller values; route headers take precedence over common egress headers.
+`remove_headers` strips named caller headers before route headers are applied. Use
+`match_headers` to require additional exact header values. `append_query` appends configured
+comma-separated metadata to a query value. `request_id_header` generates a fresh UUID under
+the named header. `response_status` only translates explicitly listed status codes. Other
+statuses, response bodies, repeated headers and Retry-After are preserved. Configured
+upstream redirects are returned to callers rather than followed with credentials.
+
+A route with `disabled: true` remains in the allowlist but cannot match. Keep the route table
+present when disabling the last route: an empty table selects legacy pass-through mode.
+Bodies stream without parsing. For opaque payloads, explicitly set
+`ingress.compression_algorithms: []`; normal server request-size limits still apply.
+The proxy strips hop-by-hop headers. Debug logging records configured route and upstream
+and downstream status codes without request payloads, query parameters or credentials.
