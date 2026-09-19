@@ -17,8 +17,8 @@ publication input is pending. No authenticated Datadog backend/UI validation has
 | CI Visibility | `/root/ci_visibility` | ci-visibility | complete; reviewed in snapshot | pending human sections |
 | Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; reviewed in snapshot | pending human sections |
 | Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | complete; reviewed in snapshot | pending human sections |
-| Database Monitoring | `/root/database_monitoring` | database-monitoring | complete; independent review in progress | pending human sections |
-| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | experiments complete; report finalizing | pending human sections |
+| Database Monitoring | `/root/database_monitoring` | database-monitoring | complete; reviewed in snapshot | pending human sections |
+| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | complete; reviewed in snapshot | pending human sections |
 
 Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 `/tmp/ddot-research-` + suffix. Shared worktree: `/tmp/ddot-research-shared`.
@@ -41,9 +41,9 @@ Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 
 ## Next
 
-Finish DSM report integration and independent review, run full inventory/artifact checks,
-then push every product and the complete review snapshot. The async request for human PR
-sections is pending. Once supplied (or explicitly declined), create product draft PRs, obtain
+The eight-product technical review is complete; final packaging and publication verification
+are recorded in the closing checkpoint below. The async request for human PR sections is
+pending. Once supplied (or explicitly declined), create product draft PRs, obtain
 human attestation, apply review/check gates and merge into the intended combined branch;
 leave the final combined PR draft/open. Authenticated product acceptance needs the access
 and workload dependencies documented per product.
@@ -147,3 +147,39 @@ now disabled; historical CI JDK runtime explicitly unrecorded; profiling actual 
 JDK 21 distinguished from coordinator shell Temurin 25; CI source path portable; documentation
 checker gained source-root override and scope clarification. No product runtime behavior
 changed by these documentation corrections. Full review waits for DBM and DSM reports.
+
+## Closing checkpoint: eight products reviewed
+
+All eight deliverables are assembled on the review snapshot. Independent reviewer
+`/root/integration_review` found no remaining actionable technical research issue after
+the recorded corrections. [Review findings and exact scope](INTEGRATION_REVIEW.md) remain
+separate from product acceptance and PR readiness. Historical checkpoints above retain
+their original in-progress state; this section and the top table are current.
+
+| Product | Research commit | Review correction commit |
+| --- | --- | --- |
+| Live Debugging | `c00317469b436b3b57dc6e558caa0494d34f8df7` | `625ccdcece9` |
+| LLM Observability | `449c9a0cbe8657fdc69fc495db1d384830b19c4c` | none required |
+| Application Security | `eef3baba88b8e3b260c2afd61d49f37d94ca9ce6` | none required |
+| CI Visibility | `37ff6cac1f271277ef8db44bd474bb740fe424dc` | `4bfb449d7ec`, `e00a24d4931` |
+| Data Jobs Monitoring | `50cf528275ca2de651b4debab8f5f13b157426e3` | none required |
+| Continuous Profiling | `36ab96ae274f3ea9d57c16a5ba3cc0c55ff34357` | common runtime-manifest clarification |
+| Database Monitoring | `5ad1da5a693239096379003b459b713a4db3488f` | none required |
+| Data Streams Monitoring | `83b096b8f677136d502290ade3d40684554ec4af` | `7914650dd0ade3c94f4d08e176b6ce876d78c975` |
+
+DBM's five cases validate actual Python propagation/native writer and receiver fields;
+the SQL-resource repair is tested at an imported mapping helper, not the full exporter.
+DSM's five Python and two Java cases were rerun after fixture isolation fixes. Java records
+Microsoft JDK 21.0.11+10-LTS executable/compiler paths and the exact agent-jar hash from the
+same invocation. DSM backend/brokers, signed RC and schema/correlation experiences remain
+unverified, as do each other report's stated runtime/backend gaps.
+
+Artifact checks passed across all eight products: 12 Python AST parses, 12 JSON parses,
+3 Node syntax checks and 4 Go formatting checks. DSM changed artifacts were checked again
+after its rerun. Baseline `git diff --check` passed. All original four research inputs and
+all nine unmodified PR templates were compared byte-for-byte successfully. The four SDK/Agent
+source repositories and supplemental integrations repository remain clean at their pins.
+
+No PR exists yet, and no product PR is marked ready or merged. Product/common branches may
+be synchronized with shared documentation while retaining product-only diffs against the
+intended combined target. Final branch push and complete link-check results follow below.
