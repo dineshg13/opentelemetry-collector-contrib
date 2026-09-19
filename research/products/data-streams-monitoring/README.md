@@ -314,7 +314,7 @@ extensions:
       endpoint: 127.0.0.1:9875
       path: /metadata
     native_sdk_proxy:
-      enabled: true
+      enabled: false # enable explicitly together with a supported product
       endpoint: 127.0.0.1:8126
     products:
       data_streams_monitoring:
@@ -324,7 +324,8 @@ service:
   extensions: [datadog]
 ```
 
-For enabled Python/JavaScript schema-span features or full trace correlation, use:
+For enabled Python/JavaScript schema-span features or full trace correlation, enable the
+shared `native_sdk_proxy` above and use:
 
 ```yaml
 products:
@@ -362,6 +363,8 @@ product suppression from the proxy flag. Vendor-neutral Collector pipelines rema
 The test programs live only in this research directory. They start the **actual unmodified**
 C `httpforwarderextension` factory in the shared minimal host, not a full Collector service.
 They use local ephemeral listeners and synthetic keys, with no backend credentials.
+SDK fixtures exclude inherited `DD_`, `_DD_` and `OTEL_` settings before applying the explicit
+test configuration; the Java fixture also excludes injected Java option environment variables.
 Both TCP execution commands needed sandbox escalation because sandbox sockets were denied;
 the authorized local-loopback executions succeeded. No production deployment was changed.
 
@@ -403,7 +406,12 @@ semantics. [Recorded results](python-results.json) include body hashes, which ch
 timestamps/process metadata and are not golden fixtures. The adapter is a bounded local
 experiment, not an implemented Datadog extension or substitute for discovery/tag lookup.
 
-Java requires JDK tools and the released agent jar (executed with OpenJDK 21.0.11). The jar used here was already downloaded
+Java requires JDK tools and the released agent jar. The rerun's exact `java` and `javac`
+executables/versions and agent jar SHA256 are recorded during the same invocation in
+[java-results.json](java-results.json), alongside the executed cases. The
+[shared Java runtime manifest](../../java-runtime.json) identifies the downloaded artifact;
+its shell-runtime inventory does not substitute for these per-experiment records.
+The jar used here was already downloaded
 to `/tmp/ddot-research-java-agent-1.66.0.jar`; obtain the matching `com.datadoghq:dd-java-agent:1.66.0`
 artifact when reproducing elsewhere. The script compiles into a temporary directory and
 invokes `java -javaagent` with `dd.data.streams.enabled=true`, Agent URL, and unrelated

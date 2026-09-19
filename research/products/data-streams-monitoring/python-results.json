@@ -26,7 +26,7 @@
       ],
       "propagation_parent_link": true,
       "adapter_body_unchanged": null,
-      "compressed_body_sha256": "d02bdeef10be0194d3a94ce0186b67563457a66d1134cbb58b129fbe2c6671e7"
+      "compressed_body_sha256": "e5dcc12552cd76beb7ac564cff0f6a72ff993f142dd6cfcae65b102d07dbf2dc"
     },
     {
       "case": "default_ingress_decompresses",
@@ -80,7 +80,7 @@
       ],
       "propagation_parent_link": true,
       "adapter_body_unchanged": true,
-      "compressed_body_sha256": "5d710982ae956e678f069f7b06dee1e13ebdade65bb3e51d889f1b2ae5983d31"
+      "compressed_body_sha256": "780051356af6e5a33516903ef0f304d55cd072a8b7fa94c21a47e60f5b617dc5"
     },
     {
       "case": "backend_503_returns_to_sdk",
@@ -107,7 +107,7 @@
       ],
       "propagation_parent_link": true,
       "adapter_body_unchanged": true,
-      "compressed_body_sha256": "7800c5de964f61cec56babcf30a09d501ce84e75a1902041309fd1677828444c"
+      "compressed_body_sha256": "bcbf82c23e1b6ac4df00c6ae23a2fe71bdf7c8e19413e4665ed6cfd0142bdfee"
     },
     {
       "case": "sdk_disabled",

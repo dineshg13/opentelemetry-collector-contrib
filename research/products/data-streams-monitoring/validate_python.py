@@ -23,6 +23,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import msgpack
 
 
+def clean_fixture_env():
+    """Keep runtime paths while excluding caller telemetry/product configuration."""
+    return {key: value for key, value in os.environ.items()
+            if not key.startswith(("DD_", "_DD_", "OTEL_"))}
+
+
 class CaptureServer(ThreadingHTTPServer):
     def __init__(self, status=202, upstream=None):
         super().__init__(("127.0.0.1", 0), CaptureHandler)
@@ -111,7 +117,7 @@ def run_case(binary, directory, name, *, adapter=False, preserve=True, status=20
         assert ready, "forwarder startup timed out"
         first_line = forwarder.stdout.readline()
         assert first_line.startswith("READY"), first_line
-        env = dict(os.environ)
+        env = clean_fixture_env()
         env.update({
             "DD_TRACE_AGENT_URL": f"http://127.0.0.1:{port}",
             "DD_SERVICE": "dsm-research-python", "DD_ENV": "test", "DD_VERSION": "research",
