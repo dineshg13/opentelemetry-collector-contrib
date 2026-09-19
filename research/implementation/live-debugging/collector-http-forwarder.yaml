@@ -1,0 +1,122 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+extensions:
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:8126
+      compression_algorithms: []
+      max_request_body_size: 33554432
+    egress:
+      endpoint: https://api.${env:DD_SITE}
+    routes:
+    - path: /debugger/v1/input
+      method: POST
+      endpoint: https://http-intake.logs.${env:DD_SITE}/api/v2/logs
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /debugger/v1/diagnostics
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /debugger/v2/input
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /symdb/v1/input
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-symdb
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /info
+      method: GET
+      response:
+        status: 200
+        headers:
+          Content-Type: application/json
+        body: '{"endpoints": ["/debugger/v1/input", "/debugger/v2/input", "/debugger/v1/diagnostics",
+          "/symdb/v1/input"], "version": "otel-collector-product-proxy"}'
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+exporters:
+  otlp_http/datadog:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+service:
+  pipelines:
+    traces:
+      receivers:
+      - otlp
+      exporters:
+      - otlp_http/datadog
+  extensions:
+  - http_forwarder
