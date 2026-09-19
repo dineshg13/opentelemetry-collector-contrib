@@ -24,11 +24,16 @@ PRODUCTS = (
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--allow-incomplete", action="store_true")
+    parser.add_argument("--source-root", type=Path,
+                        help="Directory containing Datadog source checkouts; overrides recorded local paths")
     args = parser.parse_args()
     research = Path(__file__).resolve().parents[1]
     manifest = json.loads((research / "sources.json").read_text())
     sources = {
-        item["repository"]: (Path(item["path"]), item["commit"])
+        item["repository"]: (
+            args.source_root / item["repository"].split("/")[-1]
+            if args.source_root else Path(item["path"]), item["commit"]
+        )
         for item in manifest["sources"]
     }
     sources["open-telemetry/opentelemetry-collector-contrib"] = (
@@ -66,7 +71,7 @@ def main():
             repo = "/".join(parts[:2])
             if repo not in sources:
                 continue
-            path, expected_commit = sources[repo]
+            path, _expected_commit = sources[repo]
             commit, filename = parts[3], "/".join(parts[4:])
             if not re.fullmatch(r"[0-9a-f]{40}", commit):
                 errors.append(f"{document.relative_to(research)}: unpinned source {link}")

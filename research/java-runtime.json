@@ -6,5 +6,10 @@
   "artifact_url": "https://repo.maven.apache.org/maven2/com/datadoghq/dd-java-agent/1.66.0/dd-java-agent-1.66.0.jar",
   "path": "/tmp/ddot-research-java-agent-1.66.0.jar",
   "sha256": "5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8",
-  "java": "Temurin 25.0.4+7-LTS Linux arm64"
+  "coordinator_shell_inventory": "Temurin 25.0.4+7-LTS Linux arm64",
+  "profiling_execution": {
+    "java_executable": "/usr/local/sdkman/candidates/java/current/bin/java",
+    "java_version": "Microsoft OpenJDK21.0.11+10-LTS Linux arm64",
+    "evidence": "products/continuous-profiling/results.json"
+  }
 }

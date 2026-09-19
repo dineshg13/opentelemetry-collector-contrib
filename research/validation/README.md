@@ -27,6 +27,19 @@ No HTTP/mock fixture result is counted as authenticated product success.
 
 The [Java runtime manifest](../java-runtime.json) pins a supplemental `dd-java-agent 1.66.0`
 artifact from Maven Central, source tag `a099fffb31657bb6e8b4d04ee741491f3480829d`, and its
-SHA-256. It is 81 commits before researched Java master. The runtime is Temurin 25.0.4 Linux
-arm64. Java product reports record whether this artifact was actually executed; merely
-downloading it is not a validation result.
+SHA-256. It is 81 commits before researched Java master. The coordinator shell inventory reported Temurin 25.0.4 Linux arm64, but the profiling
+experiment actually executed Microsoft OpenJDK 21.0.11 at the path recorded in its results.
+Those are distinct environments. Product execution records take precedence; the CI runner
+uses the Java executable on its invocation PATH, so record `java -version` when reproducing
+it. Merely downloading the artifact is not a validation result.
+
+Documentation integrity checks read the source checkouts recorded in `sources.json` by
+default. On another machine, map the DataDog source root explicitly (each repository must
+contain the recorded Git objects):
+
+```sh
+python3 research/checks/validate.py --source-root "$HOME/dd"
+```
+
+This verifies the eight reports, relative links and pinned GitHub source-file links. It does
+not verify every prose citation, run SDKs, or establish product/backend compatibility.
