@@ -2,17 +2,19 @@
 
 import argparse
 import gzip
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import select
+import shutil
 import subprocess
 import tempfile
 import threading
 
 import msgpack
 
-from validate_python import reserve_port
+from validate_python import clean_fixture_env, reserve_port
 
 
 class AgentShapedHandler(BaseHTTPRequestHandler):
@@ -57,7 +59,7 @@ class AgentShapedHandler(BaseHTTPRequestHandler):
         pass
 
 
-def run_case(jar, binary, directory, advertise):
+def run_case(jar, binary, directory, advertise, java, env):
     server = ThreadingHTTPServer(("127.0.0.1", 0), AgentShapedHandler)
     server.advertise, server.paths, server.stats = advertise, [], []
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -74,13 +76,13 @@ def run_case(jar, binary, directory, advertise):
         assert select.select([forwarder.stdout], [], [], 10)[0]
         assert forwarder.stdout.readline().startswith("READY")
         result = subprocess.run([
-            "java", f"-javaagent:{jar}", "-Ddd.data.streams.enabled=true",
+            java, f"-javaagent:{jar}", "-Ddd.data.streams.enabled=true",
             f"-Ddd.trace.agent.url=http://127.0.0.1:{port}", "-Ddd.service=dsm-research-java",
             "-Ddd.env=test", "-Ddd.instrumentation.telemetry.enabled=false",
             "-Ddd.remote_config.enabled=false", "-Ddd.trace.startup.logs=false",
             "-Ddd.profiling.enabled=false", "-Ddd.appsec.enabled=false",
             "-cp", directory, "DsmEmit",
-        ], capture_output=True, text=True, timeout=30, check=True)
+        ], env=env, capture_output=True, text=True, timeout=30, check=True)
         assert "/info" in server.paths
         assert bool(server.stats) == advertise, (server.paths, result.stderr)
         summaries = []
@@ -119,13 +121,30 @@ def main():
     parser.add_argument("--jar", default="/tmp/ddot-research-java-agent-1.66.0.jar")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    env = clean_fixture_env()
+    # Prevent caller-supplied -D properties or extra agents from changing this fixture.
+    for key in ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS"):
+        env.pop(key, None)
+    java = str(Path(shutil.which("java")).resolve())
+    javac = str(Path(shutil.which("javac")).resolve())
+    runtime = {}
+    for label, executable in (("java", java), ("javac", javac)):
+        version = subprocess.run([executable, "-version"], env=env, capture_output=True,
+                                 text=True, check=True)
+        runtime[label] = {"executable": executable,
+                          "version": (version.stdout + version.stderr).strip()}
+    runtime["agent_jar"] = {"path": str(Path(args.jar).resolve()),
+                            "sha256": hashlib.sha256(Path(args.jar).read_bytes()).hexdigest(),
+                            "release": "1.66.0",
+                            "source_tag_commit": "a099fffb31657bb6e8b4d04ee741491f3480829d"}
+    runtime["environment"] = "DD_/_DD_/OTEL_ variables and Java option injection removed; explicit fixture properties applied"
     with tempfile.TemporaryDirectory(prefix="ddot-dsm-java-") as directory:
-        subprocess.run(["javac", "-cp", args.jar, "-d", directory,
-                        str(Path(__file__).with_name("DsmEmit.java"))], check=True)
-        cases = [run_case(args.jar, args.forwarder, directory, advertise)
+        subprocess.run([javac, "-cp", args.jar, "-d", directory,
+                        str(Path(__file__).with_name("DsmEmit.java"))], env=env, check=True)
+        cases = [run_case(args.jar, args.forwarder, directory, advertise, java, env)
                  for advertise in (False, True)]
     result = json.dumps({"validation": "local Agent-shaped mock only; no Datadog Agent process or backend",
-                         "cases": cases}, indent=2)
+                         "runtime": runtime, "cases": cases}, indent=2)
     if args.output:
         args.output.write_text(result + "\n")
     print(result)
