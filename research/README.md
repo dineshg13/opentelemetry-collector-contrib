@@ -65,16 +65,18 @@ retains each product's PR diff. Product branches were created from that combined
 Use the assembled review snapshot for the complete index: relative links to other products
 will remain incomplete on the common-only target and individual product branches until merges.
 
-The requested eight product PRs and final draft PR are pending the required human-written
-sections. They have not been created, marked ready or merged. See
-[publication handoff and unmodified templates](publication/README.md) and
-[progress/branch ownership](PROGRESS.md). No issue/PR comments were posted and no authorship
-checkbox was checked. No production component or default branch was changed.
+The eight product drafts [#11–#18](publication/README.md) and
+[integration draft #19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19)
+are open in the user's fork. The integration draft uses `poc-review-snapshot` into the fork's
+`main` so individual product drafts retain their own diffs against `poc-all-products`.
+The user explicitly authorized basic assistant-written summaries for these nine drafts.
+Authorship checkboxes remain unchecked. No PR was marked ready or merged, no issue/PR comments
+were posted, and no production component or default branch was changed.
 
-To resume: supply the human PR sections (or explicitly decline sections), perform the human
-authorship attestation, and follow the recorded product PR review/merge workflow. Backend
-acceptance separately needs an approved test organization/site, product access, appropriate
-credentials and workloads/services listed in each report. Credentials must stay out of Git.
+See the [publication index and descriptions](publication/README.md) and
+[progress/branch ownership](PROGRESS.md). Backend acceptance separately needs an approved test
+organization/site, product access, appropriate credentials and workloads/services listed in
+each report. Credentials must stay out of Git.
 
 ## Baseline sources
 

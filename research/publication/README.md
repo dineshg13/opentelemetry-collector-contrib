@@ -1,41 +1,34 @@
-# Publication handoff
+# Published draft PRs
 
-Research branches may be pushed and reviewed locally without PR text. Creating each PR needs
-human-provided Description, Link to tracking issue, Testing and Documentation sections under
-[AGENTS.md](../../AGENTS.md) and [CONTRIBUTING.md](../../CONTRIBUTING.md). These source rules
-require verbatim use and prohibit AI-generated issue/PR comments. The human author must check
-the authorship box before readiness; the assistant must not check it.
+The user explicitly authorized overriding the human-written-description rule for these nine
+PRs and publishing the prepared basic summaries in their fork. All nine PRs are open drafts
+in `dineshg13/opentelemetry-collector-contrib`. Authorship checkboxes remain unchecked; no
+issue/PR comments, readiness changes or PR merges were performed.
 
-The [pr-bodies](pr-bodies) directory contains **unmodified repository templates**, not drafted
-PR descriptions. Supply each section in the corresponding file or in chat. An explicitly
-declined section stays unmodified. Absence of a reply is not a decline.
+The [pr-bodies](pr-bodies) directory records the published descriptions. This authorization
+applies to these nine drafts; it is not a general change to [AGENTS.md](../../AGENTS.md).
 
-| Branch | Target | Body file | PR |
+| Product | Head | Base | Draft PR |
 | --- | --- | --- | --- |
-| `dinesh.gurumurthy/poc-live-debugging` | `dinesh.gurumurthy/poc-all-products` | [live-debugging](pr-bodies/live-debugging.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-llm-observability` | `dinesh.gurumurthy/poc-all-products` | [llm-observability](pr-bodies/llm-observability.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-application-security` | `dinesh.gurumurthy/poc-all-products` | [application-security](pr-bodies/application-security.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-ci-visibility` | `dinesh.gurumurthy/poc-all-products` | [ci-visibility](pr-bodies/ci-visibility.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-data-jobs-monitoring` | `dinesh.gurumurthy/poc-all-products` | [data-jobs-monitoring](pr-bodies/data-jobs-monitoring.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-continuous-profiling` | `dinesh.gurumurthy/poc-all-products` | [continuous-profiling](pr-bodies/continuous-profiling.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-database-monitoring` | `dinesh.gurumurthy/poc-all-products` | [database-monitoring](pr-bodies/database-monitoring.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-data-streams-monitoring` | `dinesh.gurumurthy/poc-all-products` | [data-streams-monitoring](pr-bodies/data-streams-monitoring.md) | awaiting human sections |
-| `dinesh.gurumurthy/poc-all-products` | `main` | [all-products](pr-bodies/all-products.md) | awaiting human sections |
+| Live Debugging | `dinesh.gurumurthy/poc-live-debugging` | `dinesh.gurumurthy/poc-all-products` | [#11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) |
+| LLM Observability | `dinesh.gurumurthy/poc-llm-observability` | `dinesh.gurumurthy/poc-all-products` | [#12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) |
+| Application Security | `dinesh.gurumurthy/poc-application-security` | `dinesh.gurumurthy/poc-all-products` | [#13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) |
+| CI Visibility | `dinesh.gurumurthy/poc-ci-visibility` | `dinesh.gurumurthy/poc-all-products` | [#14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) |
+| Data Jobs Monitoring | `dinesh.gurumurthy/poc-data-jobs-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) |
+| Continuous Profiling | `dinesh.gurumurthy/poc-continuous-profiling` | `dinesh.gurumurthy/poc-all-products` | [#16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) |
+| Database Monitoring | `dinesh.gurumurthy/poc-database-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) |
+| Data Streams Monitoring | `dinesh.gurumurthy/poc-data-streams-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) |
+| Integration | `dinesh.gurumurthy/poc-review-snapshot` | `main` | [#19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19) |
 
-## Integration while PR text is pending
+## Integration while product PRs remain drafts
 
-A separate [review snapshot](https://github.com/dineshg13/opentelemetry-collector-contrib/tree/dinesh.gurumurthy/poc-review-snapshot/research)
-assembles all eight completed product branches for local testing and independent review
-while the combined branch retains a useful base for product PRs. Such a
-snapshot is not a GitHub PR merge and must not be reported as one. PR creation, readiness and
-merge remain pending human sections, human attestation, and applicable checks.
+The complete integration draft uses `dinesh.gurumurthy/poc-review-snapshot` into the fork's
+`main`. This preserves useful product-only diffs for the eight draft PRs targeting
+`dinesh.gurumurthy/poc-all-products`, which contains the shared research. Merging product
+heads into their target now would consume those diffs. This publication arrangement replaces
+the earlier plan to merge product PRs before opening the integration draft, accommodating
+the user's request to leave all nine PRs in draft state.
 
-The final combined PR must remain draft/open. Do not merge this work to `main` on the user's
-behalf. Do not consume product branch commits into the combined branch before their PRs exist;
-that would erase the product PR diff and require reconstructing the requested workflow.
-
-The repository is the fork `dineshg13/opentelemetry-collector-contrib`, default branch `main`.
-Product branches use the targets in the table above. Do not substitute the review snapshot
-for the requested final head: after authorized product PR merges, the final head must be
-`dinesh.gurumurthy/poc-all-products`. Use supplied body text verbatim and actual product PR
-URLs in the human-authored final body; do not invent PR links or report pending PRs as open.
+No PR targets the OpenTelemetry project. Do not mark ready, merge, or check the human-authorship
+box on the user's behalf. Backend/UI validation remains unperformed; local protocol and SDK
+results retain the evidence limits in the product reports and independent review.
