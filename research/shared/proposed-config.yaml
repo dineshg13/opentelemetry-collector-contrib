@@ -21,31 +21,31 @@ extensions:
     products:
       live_debugging:
         enabled: false
-        mode: native_proxy
+        modes: [native_proxy]
       llm_observability:
         enabled: false
-        mode: otlp
-        pipeline: traces/llm
+        modes: [otlp]
+        pipelines: {otlp: traces/llm}
       application_security:
         enabled: false
-        mode: native_traces
-        pipeline: traces/native
+        modes: [native_traces]
+        pipelines: {native_traces: traces/native}
       ci_visibility:
         enabled: false
-        mode: native_proxy
+        modes: [native_proxy]
       data_jobs_monitoring:
         enabled: false
-        mode: openlineage_proxy
+        modes: [openlineage_proxy]
       continuous_profiling:
         enabled: false
-        mode: native_proxy
+        modes: [native_proxy]
       database_monitoring:
         enabled: false
-        mode: correlation_only
-        pipeline: traces/native
+        modes: [correlation_only]
+        pipelines: {correlation_only: traces/native}
       data_streams_monitoring:
         enabled: false
-        mode: sdk_stats_proxy
+        modes: [sdk_stats_proxy]
 
 # Named pipelines above are dependency references, not definitions. Disabled entries
 # have no active dependency. Before enabling a pipeline-backed mode, configure and

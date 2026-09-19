@@ -16,7 +16,12 @@ if the SDK keeps sending after an earlier capability response. Shared routes suc
 must enforce per-product allowlists, not merely remain open because another product uses
 EVP. A control request can contain multiple products; RC integration must preserve the
 protocol while constraining subscriptions to enabled products, not discard signed response
-metadata arbitrarily.
+metadata arbitrarily. Some SDK feature activation shares the `APM_TRACING` RC product
+(for example LLM and DSM paths in the inspected SDKs). Disabling one feature cannot be
+implemented by blindly removing that entire product without affecting other consumers.
+The RC team must define supported targeting/capability or client enforcement boundaries;
+a proxy must not rewrite signed documents to simulate per-feature control. Until that
+contract exists, guarantee only the documented managed ingress/egress scope.
 
 The Datadog extension owns policy, site/credentials for its outbound product requests,
 listener/discovery, enrichment and RC provider selection. Receivers, processors, exporters,
@@ -40,10 +45,10 @@ service/serializer startup; do not silently change existing defaults.
 | `llm_observability` | `otlp`; alternatives `native_proxy`, `native_traces` | OTLP mode references a configured trace pipeline and supported GenAI/OpenInference mapping/export. Native events/evaluations require EVP path/subdomain routing. SDK/native-trace mode requires exact LLM field preservation in trace processing. Experiment/API-specific credentials need independent validation. |
 | `application_security` | `native_traces` | Product-complete trace receiver/pipeline preserving native security metadata and sampling; RC provider for remote rules/activation where used. SDK-local WAF/IAST is still SDK-owned; no separate generic AppSec upload endpoint solves the trace path. |
 | `ci_visibility` | `native_proxy` | CI EVP event/coverage/control routes, synchronous responses and discovery; optional native trace fallback must reference a proven pipeline. Product-specific optimization/settings calls are not RC solely because they return configuration. |
-| `data_jobs_monitoring` | `openlineage_proxy`; additional native SDK paths subject to report | Explicit OpenLineage route/backend and enrichment when used; language/framework native spans or Spark listener payloads may require separate routes/pipelines. An HTTP route cannot create absent JavaScript/Python instrumentation. |
+| `data_jobs_monitoring` | `openlineage_proxy`; optional `native_traces` | Explicit OpenLineage route/backend and enrichment when used; Java Spark native spans require a separately validated trace pipeline. OpenLineage does not replace those native spans. An HTTP route cannot create absent JavaScript/Python instrumentation. |
 | `continuous_profiling` | `native_proxy`; upstream profile mode only when verified | Multipart/pprof upload compatibility, profile path rewrite, tags, sizes/timeouts and optional extra destinations. Standard OTLP profile support must be validated separately against SDK collection and Datadog ingestion; accepting OTLP traces is unrelated. |
 | `database_monitoring` | `correlation_only` | Validate a native/standard trace path carrying DBM correlation fields; clearly label UI/config scope as SDK correlation, never database collection. Database checks and query/sample/plan collection stay in Agent. Attempting `collection` here must fail as unsupported. |
-| `data_streams_monitoring` | `sdk_stats_proxy` | SDK pipeline_stats route, msgpack/gzip body, discovery and enrichment; separate schema/message-related paths need explicit support. Broker integrations, lag collection and remote Kafka actions stay in Agent. Attempting Agent collection here must fail as unsupported. |
+| `data_streams_monitoring` | `sdk_stats_proxy` | SDK pipeline_stats route, msgpack/gzip body, discovery and enrichment; schema span features additionally need `native_traces` and its explicit pipeline; separate Agent message collection is not included. Broker integrations, lag collection and remote Kafka actions stay in Agent. Attempting Agent collection here must fail as unsupported. |
 
 This table is a shared dependency model. Product reports determine exact SDK version/language
 support and feature completeness. `enabled:true` must fail startup for an unsupported mode,
@@ -51,6 +56,30 @@ unavailable built component, missing required provider/credential, listener conf
 missing/miswired pipeline; emitting only a warning would create false success. Disabled
 stanzas are inert and do not require an otherwise-unused pipeline or credentials beyond
 the existing extension's own requirements. Unknown product/mode keys should be rejected.
+
+## Combining transports
+
+`modes` is a list, with pipeline dependencies keyed by mode in `pipelines`. This is required
+because a single SDK product can use more than one transport at once. For example, Python
+LLM APM spans can coexist with EVP fallback/evaluation events; OTLP LLM spans can coexist
+with native evaluations. A proposed combined setting is:
+
+```yaml
+products:
+  llm_observability:
+    enabled: true
+    modes: [native_traces, native_proxy, otlp]
+    pipelines:
+      native_traces: traces/native
+      otlp: traces/llm
+```
+
+This does not mean exporting every span three times. Validate distinct data responsibilities:
+APM-carried fields use the native path, OTLP producers use the OTLP path, and native event/
+evaluation routes use the proxy; SDK-selected fallback is respected. Reject duplicate modes,
+unknown modes, pipeline references for unrelated modes, and unsupported combinations. Enabled
+products need at least one supported mode. Disabled entries remain inert. A product flag may
+cover several separately registered data/control paths; there is no inferred generic fallback.
 
 ## Runtime and disable boundaries
 
