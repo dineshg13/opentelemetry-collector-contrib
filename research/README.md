@@ -1,5 +1,9 @@
 # Datadog SDK products through the Collector
 
+**Active implementation phase:** follow [the revised instructions](new-instr.md) and
+[current implementation checkpoint](implementation/PROGRESS.md). The research below is
+background evidence; none of its mock results satisfies the new end-to-end completion bar.
+
 Research follows [instructions](instructions.md) and [principles](principles.md).
 The source investigation covers all eight products and Python, Java and JavaScript where
 supported. Local prototypes exercise real Collector components and selected SDK workloads.
