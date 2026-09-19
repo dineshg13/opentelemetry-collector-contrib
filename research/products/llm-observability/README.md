@@ -1,5 +1,13 @@
 # LLM Observability through the Collector
 
+**Implementation update (2026-09-19):** [runnable workloads and Collector configurations](../../implementation/llm-observability/README.md)
+now exercise the actual Datadog Python 4.13.0rc1, Java 1.66.0 and JavaScript 6.16.0 SDK
+OTLP writers. Their GenAI spans preserve model, provider, input/output and numeric token
+fields in wire tests, with no Datadog receiver. This supersedes the earlier unexecuted
+OTLP-path assessment below. Python native spans/evaluations have a separate runnable
+proxy workload. Kind/backend product validation remains pending; earlier mock results
+remain transport tests and are not end-to-end evidence.
+
 Status: source investigation complete; focused writer/forwarder contract prototype and
 full Python 4.13.0rc1 transport experiment passed. Pinned HEAD full SDK, authenticated intake,
 and Datadog UI validation remain blocked or unexecuted.

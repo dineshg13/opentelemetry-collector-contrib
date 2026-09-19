@@ -1,0 +1,92 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Independent generic HTTP forwarder alternative, with no Datadog extension.
+extensions:
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:8126
+      compression_algorithms: []
+    egress:
+      endpoint: https://api.${env:DD_SITE}
+    routes:
+      - path: /info
+        method: GET
+        response:
+          status: 200
+          headers:
+            Content-Type: application/json
+          body: '{"endpoints":["/evp_proxy/v2/","/evp_proxy/v4/"]}'
+      - path: /evp_proxy/v2/api/v2/llmobs
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: llmobs-intake
+        endpoint: https://llmobs-intake.${env:DD_SITE}/api/v2/llmobs
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+      - path: /evp_proxy/v2/api/intake/llm-obs/v1/eval-metric
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: api
+        endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v1/eval-metric
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+      - path: /evp_proxy/v2/api/intake/llm-obs/v2/eval-metric
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: api
+        endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v2/eval-metric
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+      - path: /evp_proxy/v4/api/v2/llmobs
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: llmobs-intake
+        endpoint: https://llmobs-intake.${env:DD_SITE}/api/v2/llmobs
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+      - path: /evp_proxy/v4/api/intake/llm-obs/v1/eval-metric
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: api
+        endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v1/eval-metric
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+      - path: /evp_proxy/v4/api/intake/llm-obs/v2/eval-metric
+        method: POST
+        match_headers:
+          X-Datadog-EVP-Subdomain: api
+        endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v2/eval-metric
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        remove_headers: [Authorization, DD-APPLICATION-KEY, Cookie, X-Datadog-EVP-Subdomain, X-Datadog-NeedsAppKey]
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+processors:
+  batch: {}
+exporters:
+  otlphttp/llm:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+      dd-otlp-source: llmobs
+service:
+  extensions: [http_forwarder]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/llm]
