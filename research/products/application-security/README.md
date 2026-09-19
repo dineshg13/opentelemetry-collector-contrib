@@ -1,5 +1,13 @@
 # Application Security through the Collector
 
+**Implementation update:** [the OTLP-native implementation](../../implementation/application-security/README.md)
+supersedes this historical report's recommendation to repair a native trace receiver.
+Real Python and Node WAF events now pass through the actual standard OTLP receiver,
+batch processor and OTLP HTTP exporter, with enabled/disabled tests and deployable
+workloads. Java structured metadata loss is reproduced at the SDK encoder. No Datadog
+receiver is used in the new solution. Backend security behavior and remote configuration
+remain unverified; this historical native receiver experiment is retained as evidence.
+
 **The current native receiver is not a complete Application Security path.** A real
 Python WAF event passed through the unmodified HTTP forwarder, then lost its detection
 payload when replayed through the unmodified Datadog receiver. HTTP 200 and an
