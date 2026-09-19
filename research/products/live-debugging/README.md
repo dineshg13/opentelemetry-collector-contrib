@@ -275,7 +275,7 @@ extensions:
     products:
       live_debugging:
         enabled: false
-        mode: native_proxy
+        modes: [native_proxy]
     native_sdk_proxy:
       enabled: false
       endpoint: 127.0.0.1:8126

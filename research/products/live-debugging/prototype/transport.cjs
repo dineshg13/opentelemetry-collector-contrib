@@ -1,3 +1,6 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Research experiment: real SDK source components + unmodified http_forwarder.
 // Optional Python SDK run installs a local probe into a generated fixture only.
 // Does not implement RC or contact Datadog.
