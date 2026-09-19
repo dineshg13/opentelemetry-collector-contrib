@@ -4,7 +4,10 @@ Updated: 2026-09-19. Coordinator: `/root`.
 
 Combined branch: `dinesh.gurumurthy/poc-all-products`, worktree `/tmp/ddot-research-all`.
 Started from fork default `main` at `16fa3257d56c299e115a558b1a668018a39990d5`.
-Original checkout and untracked research inputs remain untouched.
+Original checkout and original untracked research inputs are preserved; only a WORKTREE.md
+pointer was added there. Assembled review: `dinesh.gurumurthy/poc-review-snapshot`, worktree
+`/tmp/ddot-research-review`. The intended combined branch retains product PR diffs while
+publication input is pending. No authenticated Datadog backend/UI validation has occurred.
 
 | Product | Agent | Branch suffix | Status | PR |
 | --- | --- | --- | --- | --- |
@@ -14,8 +17,8 @@ Original checkout and untracked research inputs remain untouched.
 | CI Visibility | `/root/ci_visibility` | ci-visibility | complete; reviewed in snapshot | pending human sections |
 | Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; reviewed in snapshot | pending human sections |
 | Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | complete; reviewed in snapshot | pending human sections |
-| Database Monitoring | `/root/database_monitoring` | database-monitoring | investigating | pending human sections |
-| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | investigating | pending human sections |
+| Database Monitoring | `/root/database_monitoring` | database-monitoring | complete; independent review in progress | pending human sections |
+| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | experiments complete; report finalizing | pending human sections |
 
 Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 `/tmp/ddot-research-` + suffix. Shared worktree: `/tmp/ddot-research-shared`.
@@ -25,7 +28,7 @@ Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 - PR descriptions: user must supply Description, Link to tracking issue, Testing, Documentation
   verbatim for each PR (or explicitly decline sections). Human must check authorship checkbox.
   Prepare deliverables first; do not post generated descriptions/comments or mark ready.
-- Backend credentials/access: not yet established. Do not mistake local HTTP tests for product
+- Backend credentials/access: unavailable in the environment. Do not mistake local HTTP tests for product
   success in Datadog. Never record credential values.
 - Sandboxed Git metadata is read-only; authorized worktree creation succeeded with escalation.
   Sandboxed GitHub network unavailable; escalated read-only API access succeeded.
@@ -38,9 +41,12 @@ Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 
 ## Next
 
-Assign shared components plus two products concurrently; queue remaining six products.
-Review product evidence, integrate isolated commits locally, execute focused checks, obtain an
-independent integration review, push authorized research branches, then request human PR text.
+Finish DSM report integration and independent review, run full inventory/artifact checks,
+then push every product and the complete review snapshot. The async request for human PR
+sections is pending. Once supplied (or explicitly declined), create product draft PRs, obtain
+human attestation, apply review/check gates and merge into the intended combined branch;
+leave the final combined PR draft/open. Authenticated product acceptance needs the access
+and workload dependencies documented per product.
 
 ## Shared ownership and early evidence
 

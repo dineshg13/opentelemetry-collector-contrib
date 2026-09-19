@@ -39,7 +39,7 @@
       "path": "/home/bits/dd/integrations-core",
       "reference": "master",
       "commit": "916e4f4364609494986417f9a5efc4b3b0281e52",
-      "scope": "Supplemental DBM check/correlation source; clean older snapshot preserved"
+      "scope": "Supplemental DBM checks/correlation and DSM Kafka collection/actions source; clean older snapshot preserved"
     }
   ],
   "runtime": {
@@ -52,6 +52,7 @@
     "git describe is an ancestry hint, not a released-version support claim.",
     "No source repository was updated; all were clean when recorded.",
     "Imported module versions may differ from source main. Product reports must qualify that boundary.",
+    "runtime is coordinator shell inventory, not every product execution environment; product records take precedence (profiling used Microsoft JDK 21.0.11; historical CI JDK was not recorded).",
     "Conventional DD_API_KEY/DATADOG_API_KEY/DD_APP_KEY/DATADOG_APP_KEY variables absent; no secret values recorded."
   ]
 }

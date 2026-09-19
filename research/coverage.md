@@ -12,13 +12,16 @@
 | Application Security | Native APM security data | Native APM security data | Native APM security data | Preserve structured security payloads, sampling, optional RC; WAF remains in SDK | Full Python WAF payload replay proves structured trigger details lost by actual receiver |
 | CI Visibility | Dedicated CI support | Dedicated CI support | Dedicated CI support | Data uploads plus discovery and synchronous CI API responses | Real Python legacy/default pytest + Java manual APIs through adapter; JS source components; mock intake |
 | Data Jobs Monitoring | No dedicated SDK DJM collector found; PySpark uses Java JVM path | Spark + optional OpenLineage | No dedicated SDK DJM collector found | Native Spark trace processing; separate standard OpenLineage forwarding | Real OpenLineage client backend-path gzip/Bearer/response tests pass; Agent path fails mock |
-| Continuous Profiling | Native profiles | Native JFR/profiles with exact URL override | Native profiles | Opaque proxy + path/enrichment/response adapter; direct Java URL is narrow alternative | Full Java direct-path profile transport passes mock; Python Agent paths require rewrite; report finalizing |
-| Database Monitoring | Investigating SDK correlation | Investigating SDK correlation | Investigating SDK correlation | Agent database collection retained; SDK correlation separate | Investigation active |
-| Data Streams Monitoring | SDK checkpoint path investigated | SDK checkpoint path investigated | SDK checkpoint path investigated | Agent broker collection retained; SDK statistics are separate opaque path | Investigation and real Python transport test active |
+| Continuous Profiling | Native pprof profiles; runtime exercised | Native JFR/profiles with exact URL override; runtime exercised | Native profiles; source only | Opaque proxy + path/enrichment/response adapter; direct Java URL is narrow alternative | Full Java direct-path profile transport passes mock; real Python Agent paths require rewrite; no UI/correlation validation |
+| Database Monitoring | SQL-comment correlation; propagator/writer exercised | SQL comments or DB-specific session context; source only | SQL-comment correlation; source only | Explicit trace pipeline preserving correlation and SQL resources; Agent database checks retained | Five Python SDK/receiver cases pass; 128-bit gate negative control; SQL resource bridge validated at mapping helper only; no database/driver/backend |
+| Data Streams Monitoring | Checkpoint statistics + schema span features; runtime statistics exercised | Checkpoint statistics, discovery gate and additional metadata; runtime discovery exercised | Checkpoint statistics + schema span features; source only | Opaque SDK statistics adapter plus required native trace paths; Agent broker collection retained | Real Python gzip/MessagePack tests prove path rewrite and compression requirements; Java /info advertisement gates output; no broker/backend topology |
 
-Reports will replace queued/in-progress entries as each investigation finishes. Framework and
-feature subsets are product-specific; a language row is not a promise of universal coverage.
+Framework and feature subsets are product-specific; a language row is not a promise of universal coverage.
 An external Python/JS OpenLineage library does not establish native Datadog SDK DJM support.
+AppSec covers WAF/IAST/RASP/API Security source paths, with runtime WAF evidence; broader SCA
+scope is unresolved. Java and JavaScript DBM, JS profiling/DSM, and native Spark remain
+source-only. CI's Java run uses manual APIs, not a complete framework integration. A full
+SDK execution does not imply every feature or the inspected newer source snapshot was run.
 
 ## Evidence levels
 
