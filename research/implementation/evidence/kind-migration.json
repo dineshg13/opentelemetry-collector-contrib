@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-09-19T21:37:35.352393+00:00",
+  "context": "kind-otel-dd",
+  "sdk_otlp_target": "http://otel-collector.observability.svc.cluster.local:4318",
+  "product_proxy_target": "collector.ddot-poc.svc.cluster.local",
+  "apps_restarted": [
+    "inventory-service",
+    "payment-service",
+    "store-frontend"
+  ],
+  "fake_deployment_service_removed": true,
+  "old_mock_configmaps_removed": [
+    "otel-collector-466467be"
+  ],
+  "backend_site": "us5.datadoghq.com",
+  "credential_reference": "ddot-poc/datadog-api-key:api-key",
+  "preserved": "PostgreSQL and recommender are existing independent experiment state, unused by this PoC"
+}
