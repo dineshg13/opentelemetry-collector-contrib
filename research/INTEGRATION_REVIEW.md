@@ -2,8 +2,8 @@
 
 Reviewer: `/root/integration_review`, 2026-09-19. This review is independent of the product
 owners and coordinator. Status: **technical research review passed for all eight products**.
-All actionable review findings are resolved. Final documentation packaging verification follows
-integration of this file. This review does not certify backend compatibility or PR readiness.
+All actionable review findings are resolved, and final documentation packaging checks pass.
+This review does not certify backend compatibility or PR readiness.
 
 The review reads the assembled `dinesh.gurumurthy/poc-review-snapshot` at
 `/tmp/ddot-research-review` and coordinator-owned common documents at
@@ -18,7 +18,7 @@ the intended combined PR target. It is not a GitHub PR merge or the final integr
 | CI primary YAML opted in while other primary examples default off | Low | Corrected both switches to false in `4bfb449d7ec`; independently re-read. Explicit secondary opt-in examples remain appropriate. |
 | Shared Java runtime wording could imply profiling ran on coordinator's JDK | Medium | Common manifest/docs now distinguish coordinator Temurin 25.0.4 inventory and actual profiling Microsoft OpenJDK 21.0.11. CI explicitly labels its historical JDK unrecorded; independently re-read. That historical provenance gap remains a documented limitation. |
 | CI reproduction command hard-coded `/home/bits` | Low | Corrected to `$HOME/dd/dd-trace-js` in `e00a24d4931`; independently re-read. |
-| Integrity checker depends on recorded absolute source paths | Low | Coordinator added `--source-root` mapping and documented its scope; independently executed against all eight products. The only remaining packaging failure is this review file's link before its integration. |
+| Integrity checker depends on recorded absolute source paths | Low | Coordinator added `--source-root` mapping and documented its scope; independently executed successfully against all eight products after integration. |
 | DSM primary shared-listener sample enables the listener; Java execution provenance is not recorded | Low | Corrected in `7914650dd0a`: sample disabled, shared artifact linked, actual Java/javac Microsoft 21.0.11 paths/versions and matching jar checksum recorded. Independently re-read. |
 | DSM fixture processes inherit SDK environment settings | Low | Corrected in `7914650dd0a`: both fixtures remove inherited `DD_`, `_DD_` and `OTEL_` settings; Java also excludes injected option variables. Owner reran all five Python and two Java cases successfully; code and resulting records independently reviewed. |
 
@@ -35,12 +35,13 @@ narrative preserve the evidence and publication boundaries.
 - Read the instructions, principles, repository rules, shared design/configuration, architecture,
   implementation plan, eight product reports, their prototype code and result summaries.
   DSM's report and final correction commit were reviewed in its isolated product worktree.
-- Executed the documentation checker: 6/8 reports available, 64 local links and 93 pinned source
-  files passed. This checks target existence, not whether each source supports every claim.
-- Re-ran the assembled eight-product checker with `--source-root /home/bits/dd`: all eight
-  reports, 99 local links and 93 pinned source-file targets inspected. Its sole failure was
-  the README link to this review file, which still resided in the coordinator worktree.
-  Re-run after committing/merging this file to close that packaging check.
+- Independently re-ran the final assembled documentation checker with
+  `--source-root /home/bits/dd`: **8/8 reports, 102 local links and 93 pinned source-file targets
+  passed**. An earlier missing self-link was resolved by integrating this review document.
+  The check verifies target existence, not whether each source supports every claim.
+- Independently re-ran `git diff --check` against the recorded Collector baseline: passed.
+  The final progress table records all eight products complete/reviewed, while PRs remain
+  accurately labeled pending human sections.
 - Re-ran the CI JavaScript source-component checks: four discovery cases and two writer cases
   passed. Network and encoders remain stubbed; this is not a full JavaScript SDK run.
 - Re-ran all shared Go forwarder tests with `-mod=readonly`: request/path/response contract,
