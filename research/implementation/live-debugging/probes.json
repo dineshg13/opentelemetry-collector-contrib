@@ -1,0 +1,12 @@
+[
+  {
+    "id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+    "version": 1,
+    "type": "LOG_PROBE",
+    "where": {"typeName": "workload", "methodName": "calculate"},
+    "captureSnapshot": true,
+    "template": "ddot synthetic calculation",
+    "segments": [{"str": "ddot synthetic calculation"}],
+    "sampling": {"snapshotsPerSecond": 1}
+  }
+]

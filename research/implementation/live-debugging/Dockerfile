@@ -1,0 +1,19 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+FROM python:3.12.13-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py workload.py probes.json .
+ENV DD_ENV=ddot-poc DD_VERSION=1 \
+    DD_DYNAMIC_INSTRUMENTATION_ENABLED=true \
+    DD_DYNAMIC_INSTRUMENTATION_PROBE_FILE=/app/probes.json \
+    DD_DYNAMIC_INSTRUMENTATION_UPLOAD_INTERVAL_SECONDS=1 \
+    DD_INSTRUMENTATION_TELEMETRY_ENABLED=false DD_REMOTE_CONFIGURATION_ENABLED=false \
+    DD_CODE_ORIGIN_FOR_SPANS_ENABLED=false DD_SYMBOL_DATABASE_ENABLED=false \
+    DD_EXCEPTION_REPLAY_ENABLED=false DD_RUNTIME_METRICS_ENABLED=false \
+    OTEL_TRACES_EXPORTER=otlp OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/json \
+    DD_TRACE_SAMPLE_RATE=1
+USER 65532:65532
+EXPOSE 8080
+ENTRYPOINT ["python", "-u", "app.py"]

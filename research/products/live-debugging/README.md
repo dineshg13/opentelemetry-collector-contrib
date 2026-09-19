@@ -1,5 +1,11 @@
 # Live Debugging through the Collector
 
+> **Revised implementation:** [runnable real-SDK kind workloads](../../implementation/live-debugging/README.md)
+> use both implemented Collector forwarding alternatives and real Datadog destinations.
+> This supersedes the local adapter and mock-only transport status below. Signed RC
+> and authenticated Datadog UI/API readback remain blocked. The old prototype is
+> historical evidence and is not part of the deployed solution.
+
 Status: source-backed architecture and executed local transport prototype; **no Datadog
 backend/UI validation**. The snapshot, diagnostic and symbol upload data plane is an HTTP
 proxy plus metadata enrichment. The complete product additionally needs discovery, remote
