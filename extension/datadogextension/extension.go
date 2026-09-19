@@ -94,6 +94,7 @@ type datadogExtension struct {
 
 	otelCollectorMetadata *payload.OtelCollector
 	httpServer            *httpserver.Server
+	productForwarder      extension.Extension
 
 	// Fields for periodic payload sending
 	payloadSender *payloadSender
@@ -216,7 +217,7 @@ func (*datadogExtension) ComponentStatusChanged(
 }
 
 // Start starts the extension via the component interface.
-func (e *datadogExtension) Start(_ context.Context, host component.Host) error {
+func (e *datadogExtension) Start(ctx context.Context, host component.Host) error {
 	// Store host for later use when creating the HTTP server
 	e.host = host
 
@@ -227,9 +228,26 @@ func (e *datadogExtension) Start(_ context.Context, host component.Host) error {
 		e.logger.Warn("Host does not implement hostcapabilities.ModuleInfo, component list in payload will be empty.")
 	}
 
+	// Start the optional product listener before other background work.
+	if e.configs.extension.ProductProxy != nil {
+		var err error
+		e.productForwarder, err = newProductForwarder(e.configs.extension, e.info.host.Identifier, e.telemetrySettings)
+		if err != nil {
+			return err
+		}
+		if err = e.productForwarder.Start(ctx, host); err != nil {
+			return err
+		}
+	}
+
 	// Start the serializer if it's available
 	if e.serializer != nil {
-		return e.serializer.Start()
+		if err := e.serializer.Start(); err != nil {
+			if e.productForwarder != nil {
+				_ = e.productForwarder.Shutdown(ctx)
+			}
+			return err
+		}
 	}
 	return nil
 }
@@ -240,6 +258,10 @@ func (e *datadogExtension) Start(_ context.Context, host component.Host) error {
 func (e *datadogExtension) Shutdown(ctx context.Context) error {
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
+
+	if e.productForwarder != nil {
+		defer e.productForwarder.Shutdown(ctxWithTimeout)
+	}
 
 	// Stop periodic payload sending
 	e.stopPeriodicPayloadSending()
