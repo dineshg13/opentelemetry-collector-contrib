@@ -28,6 +28,10 @@ Exit: owners accept the protocol and product acceptance criteria; language suppo
 
 - Keep supported OTLP signals on upstream receiver/processor/exporter pipelines. Validate LLM
   GenAI schema and DB-related trace identity against backend product acceptance separately.
+- Extend the local DBM experiment through the complete connector/exporter boundary: verify
+  the demonstrated SQL resource bridge, 128-bit IDs, native span type, sampling and final
+  trace/stats payloads. This local next step does not require backend credentials; the current
+  result exercises the receiver and an imported mapping helper only.
 - Use the existing HTTP forwarder to an actual Agent as a transitional transport option,
   preserving request compression and Agent responses. This still depends on the Agent.
 - Consider upstream generic improvements only where product tests require them: response header
@@ -62,6 +66,9 @@ Live Debugging, CI Visibility, LLM Observability and Data Jobs teams.
 
 - Reuse a single optional RC client/cache/trust implementation. Preserve capability/version
   negotiation, product targeting, acknowledgements, polling and error semantics.
+- Agree on feature controls sharing an RC product such as `APM_TRACING`; dropping the whole
+  subscription can affect permitted features. Use supported targeting/client enforcement,
+  and never rewrite signed configuration to simulate an independent feature switch.
 - Add Live Debugging upload/control routes together, including diagnostics and supported symbol,
   metric and span paths. A snapshot upload alone is not acceptance.
 - Add CI data/control routes together and test test-discovery/settings/optimization responses.

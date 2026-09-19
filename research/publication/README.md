@@ -24,11 +24,18 @@ declined section stays unmodified. Absence of a reply is not a decline.
 
 ## Integration while PR text is pending
 
-A separate review snapshot may assemble completed product branches for local testing and
-independent review while the combined branch retains a useful base for product PRs. Such a
+A separate [review snapshot](https://github.com/dineshg13/opentelemetry-collector-contrib/tree/dinesh.gurumurthy/poc-review-snapshot/research)
+assembles all eight completed product branches for local testing and independent review
+while the combined branch retains a useful base for product PRs. Such a
 snapshot is not a GitHub PR merge and must not be reported as one. PR creation, readiness and
 merge remain pending human sections, human attestation, and applicable checks.
 
 The final combined PR must remain draft/open. Do not merge this work to `main` on the user's
 behalf. Do not consume product branch commits into the combined branch before their PRs exist;
 that would erase the product PR diff and require reconstructing the requested workflow.
+
+The repository is the fork `dineshg13/opentelemetry-collector-contrib`, default branch `main`.
+Product branches use the targets in the table above. Do not substitute the review snapshot
+for the requested final head: after authorized product PR merges, the final head must be
+`dinesh.gurumurthy/poc-all-products`. Use supplied body text verbatim and actual product PR
+URLs in the human-authored final body; do not invent PR links or report pending PRs as open.
