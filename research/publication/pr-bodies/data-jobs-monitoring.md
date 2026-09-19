@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and a local OpenLineage transport prototype for Data Jobs Monitoring, with no production changes. Recommends an OpenLineage proxy composed with a separately validated native Spark trace pipeline; lineage forwarding alone does not establish complete product support.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Exercised the real OpenLineage Python 1.45.0 HTTP client through the actual HTTP forwarder against local mocks, covering backend-path success, Agent-prefixed path failure, compressed payloads, and error responses. Native Spark runtime and authenticated Datadog backend/UI validation were not performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[Data Jobs Monitoring research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-data-jobs-monitoring/research/products/data-jobs-monitoring/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->

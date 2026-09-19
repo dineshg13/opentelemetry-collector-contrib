@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and local transport prototypes for LLM Observability through the Collector, with no production changes. Recommends shared native event proxy routes and separate trace compatibility work for Python LLM payloads carried in native traces; documents the distinct OTLP option.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Exercised pinned JavaScript writer components with explicit stubs and real Python ddtrace 4.13.0rc1 span/evaluation uploads through the actual HTTP forwarder against local mocks, including missing path rewrites. No authenticated Datadog backend or UI validation was performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[LLM Observability research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-llm-observability/research/products/llm-observability/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->
