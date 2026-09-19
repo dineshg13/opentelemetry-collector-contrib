@@ -1,0 +1,7 @@
+{
+  "name": "ddot-profile-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real Datadog Node SDK profiling workload",
+  "dependencies": {"dd-trace": "6.16.0"}
+}

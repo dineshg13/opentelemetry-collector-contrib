@@ -1,0 +1,39 @@
+# Requires the generic route extension implemented by this PoC.
+extensions:
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:8126
+      compression_algorithms: []
+    egress:
+      endpoint: https://intake.profile.${env:DD_SITE}
+    routes:
+      - path: /profiling/v1/input
+        method: POST
+        endpoint: https://intake.profile.${env:DD_SITE}/api/v2/profile
+        headers:
+          DD-API-KEY: ${env:DD_API_KEY}
+          X-Datadog-Additional-Tags: env:poc
+        response_status:
+          202: 200
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+exporters:
+  otlphttp/datadog:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+service:
+  extensions: [http_forwarder]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]
+    logs:
+      receivers: [otlp]
+      exporters: [otlphttp/datadog]

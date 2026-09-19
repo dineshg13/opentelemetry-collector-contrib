@@ -1,5 +1,20 @@
 # Continuous Profiling through the Collector
 
+## Implementation addendum (revised instructions)
+
+The [runnable implementation](../../implementation/continuous-profiling/README.md) supersedes
+the implementation status and proposed architecture below. It includes three real SDK application
+images, ordinary OTLP trace export, Collector configurations for both implemented forwarding
+alternatives, kind manifests, and executable SDK enable/disable contract tests. Shared component
+code supplies explicit routes, body preservation, trusted headers, status adaptation and product
+flags. No Datadog receiver is used. Product completion still requires kind and real Datadog profile
+visibility evidence; local contract tests do not supply that evidence.
+
+The remaining report is the historical source analysis and first transport experiment. Its
+references to an unimplemented proxy or untested Node runtime describe that earlier milestone.
+
+## Original research milestone
+
 Status: all three SDKs and the Agent inspected; **real Python and Java profile uploads
 executed through the unmodified current `http_forwarder` to a strict local mock**.
 Java's exact profiling URL override provides a configuration-only transport path. Default
