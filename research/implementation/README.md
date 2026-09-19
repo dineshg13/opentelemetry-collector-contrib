@@ -110,6 +110,9 @@ Dockerfiles and dependency locks pin SDK versions. They do not install into sour
    and the PostgreSQL receiver have meaningful Go tests. The distribution is built with
    local module replacements; `/tmp/ddot-poc-build*/build.json` records source, binary hash,
    image ID and actual transitive Trace Agent utilities. A dirty-build marker is explicit.
+   Both [clean-source rebuilds](evidence/build-reproducibility.json) at commit
+   `f34e6a129cbbbce1fb4566a89adf1f642a6ec9e0` exactly match the binaries in the
+   executed images. Original build records are retained separately.
 
 The [combined Datadog policy config](collector/combined.yaml) and
 [generic alternative](collector/combined-http-forwarder.yaml) are independently validated

@@ -72,6 +72,7 @@ head. All PR targets are in `dineshg13/opentelemetry-collector-contrib`; human-a
 checkboxes stay unchecked, and no issue/PR discussion comments or default-branch merges
 are performed.
 
-Next: clean-source provenance records and publication of the eight updated product
-drafts plus the corrected integration draft. Independent review and the final bounded
-readiness check are complete.
+Both clean-source builds at `f34e6a129cb` succeeded and exactly match the executed
+binary hashes; [provenance](evidence/build-reproducibility.json) links them to the original
+image IDs. Independent review and the final bounded readiness check are complete.
+Next: publish the eight updated product drafts and corrected integration draft.
