@@ -67,12 +67,17 @@ longer observation window and is not represented as a steady-state failure.
 
 Product changes are staged into the combined branch for joint testing. Blocked product
 PRs stay drafts; none is represented as complete or merged. The obsolete research-only
-`poc-review-snapshot` integration draft is being replaced by the required `poc-all-products`
-head. All PR targets are in `dineshg13/opentelemetry-collector-contrib`; human-authorship
+`poc-review-snapshot` integration draft #19 is closed without merge and replaced by
+[final draft #20](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20)
+from the required `poc-all-products` head. All PR targets are in `dineshg13/opentelemetry-collector-contrib`; human-authorship
 checkboxes stay unchecked, and no issue/PR discussion comments or default-branch merges
 are performed.
 
 Both clean-source builds at `f34e6a129cb` succeeded and exactly match the executed
 binary hashes; [provenance](evidence/build-reproducibility.json) links them to the original
 image IDs. Independent review and the final bounded readiness check are complete.
-Next: publish the eight updated product drafts and corrected integration draft.
+All eight product drafts and the corrected integration draft are published and verified
+in the fork; [publication evidence](../publication/verification.json) records their state.
+Remaining work: obtain read-scoped Datadog account/application-key access and verify each
+product UI/readback, then address the SDK/control/mapping gaps listed in each product README.
+No product is marked complete merely because transport and local checks pass.

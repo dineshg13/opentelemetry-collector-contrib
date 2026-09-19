@@ -16,7 +16,8 @@ from product UI/readback. The missing readback access does not conceal SDK/contr
 - [Independently built generic alternative](implementation/collector/combined-http-forwarder.yaml)
 - [Real kind outcomes](implementation/evidence/kind-integration.json)
 - [Product disable checks](implementation/evidence/kind-disabled.json)
-- [Draft PRs](publication/README.md)
+- [Final integration draft #20](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20)
+- [Eight product drafts and publication verification](publication/README.md)
 - [Source pins](sources.json) and per-product implementation evidence
 
 The [earlier research index](legacy-research-index.md), [old architecture](architecture.md),

@@ -6,7 +6,7 @@ This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or e
 
 #### Link to tracking issue
 
-No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
+No tracking issue was provided. Targets `dinesh.gurumurthy/poc-all-products`; [combined integration draft #20](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20).
 
 #### Testing
 

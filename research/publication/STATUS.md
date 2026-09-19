@@ -1,11 +1,19 @@
 # Draft publication status
 
 The user explicitly approved: “Yes—override that rule for these nine draft PRs,” referring
-to AGENTS.md's human-written-description rule and the prepared basic summaries. That explicit
-approval resolved the earlier automatic approval rejection. All nine drafts were then created
-in the user's fork; [the publication index](README.md) records their URLs and exact targets.
+to AGENTS.md's human-written-description rule and basic summaries. That authorization also
+covers the updated implementation summaries for the same eight products and final draft.
+All descriptions preserve the four template sections and unchecked human-authorship boxes.
 
-The eight product drafts target `dinesh.gurumurthy/poc-all-products`. The integration draft
-uses `dinesh.gurumurthy/poc-review-snapshot` into the fork's `main` so all eight product diffs
-remain reviewable while every PR stays draft. All human-authorship boxes remain unchecked.
-No PR was marked ready or merged, and no issue/PR comments were posted.
+The eight open product drafts (#11–#18) target `dinesh.gurumurthy/poc-all-products`.
+The [final draft #20](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20)
+uses `dinesh.gurumurthy/poc-all-products` into the fork's `main`, as new-instr.md requires.
+The obsolete research-only #19 is closed without merge; its historical branch is retained.
+All active drafts target the user's fork `dineshg13/opentelemetry-collector-contrib`.
+
+All eight products remain incomplete because backend product behavior is unverified,
+with additional documented SDK, DBM mapping and remote-control gaps. Product changes are
+staged in the combined branch for joint execution; product PRs retain scoped nonempty
+reviewable diffs and remain unmerged drafts. No PR was marked ready or merged, no issue/PR
+comments were posted, and fork `main` remains at `16fa3257d56c299e115a558b1a668018a39990d5`.
+See [the publication index](README.md) and [verification snapshot](verification.json).

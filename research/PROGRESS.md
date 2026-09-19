@@ -1,3 +1,6 @@
+> Historical research-stage record. Current implementation, status and PRs are in
+> [the implementation index](implementation/README.md) and [publication index](publication/README.md).
+
 # Progress checkpoint
 
 Updated: 2026-09-19. Coordinator: `/root`.

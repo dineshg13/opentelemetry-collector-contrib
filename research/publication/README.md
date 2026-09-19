@@ -16,10 +16,13 @@ No issue/PR discussion comments or default-branch merges are part of this work.
 | Database Monitoring | [17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) | poc-all-products |
 | Data Streams Monitoring | [18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) | poc-all-products |
 
-The corrected final draft is being published from
-`dinesh.gurumurthy/poc-all-products` to fork `main`, replacing the obsolete
-research-only [PR19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19)
-whose head was `poc-review-snapshot`. The final PR URL will be recorded after publication.
+**[Final integration draft #20](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20)**
+is open from `dinesh.gurumurthy/poc-all-products` to fork `main`. The obsolete
+research-only [PR19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19),
+whose head was `poc-review-snapshot`, is closed without merge; its branch is preserved.
+[Publication verification](verification.json) records exact targets, prepared-body matches,
+unchecked authorship boxes and unchanged `main`. [Machine-readable links](pull-requests.json)
+include all eight products and the replacement final draft.
 
 All products remain incomplete under the required product/backend verification bar.
 Their implementation content is staged into the combined branch for joint testing;
