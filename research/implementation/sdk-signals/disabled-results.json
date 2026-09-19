@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-09-19T22:28:59.147370+00:00",
+  "backend_verified": false,
+  "logs_metrics_enabled": false,
+  "scope": "Real SDKs through the actual standard OTLP Collector receiver/batch/exporter; local semantic assertions",
+  "checks": [
+    {
+      "language": "python",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 0,
+      "counter_points_with_value_3": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\": \"python\", \"trace_id\": \"6aaf0ca100000000f62f3c7e5fd71800\", \"span_id\": \"9e6a05a1a899d123\"}\npython: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "",
+      "all_signals_verified": false,
+      "expected_signals_verified": true
+    },
+    {
+      "language": "javascript",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 0,
+      "counter_points_with_value_3": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\":\"javascript\"}\n{\"logger_provider\":\"ProxyLoggerProvider\",\"meter_provider\":\"NoopMeterProvider\"}\njavascript: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "",
+      "all_signals_verified": false,
+      "expected_signals_verified": true
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 0,
+      "counter_points_with_value_3": 0,
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\":\"java\",\"trace_id\":\"6aaf0ca60000000054329c4017080b21\",\"span_id\":\"1cdca2de2030371c\"}\njava: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended\n[dd.trace 2026-09-19 22:28:53:450 +0000] [main] WARN datadog.trace.bootstrap.config.provider.OtelEnvironmentConfigSource - OTEL_metrics_EXPORTER=OTLP is not supported\n[dd.trace 2026-09-19 22:28:53:453 +0000] [main] WARN datadog.trace.bootstrap.config.provider.OtelEnvironmentConfigSource - OTEL_logs_EXPORTER=OTLP is not supported",
+      "all_signals_verified": false,
+      "expected_signals_verified": true
+    }
+  ]
+}

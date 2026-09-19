@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/api-logs": "0.208.0",
+    "dd-trace": "6.16.0"
+  }
+}
