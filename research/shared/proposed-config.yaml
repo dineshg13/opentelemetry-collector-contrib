@@ -1,0 +1,55 @@
+# DESIGN ONLY. Current datadogextension does not implement these added fields.
+# All product switches are explicit and default to false when omitted.
+extensions:
+  datadog:
+    api:
+      site: datadoghq.com
+      key: ${env:DD_API_KEY}
+    # Existing metadata-service setting, distinct from the proposed SDK listener.
+    http:
+      endpoint: 127.0.0.1:9875
+      path: /metadata
+
+    native_sdk_proxy:
+      enabled: false
+      endpoint: 127.0.0.1:8126
+    remote_configuration:
+      enabled: false
+      # Agent relay is a proposed compatibility mode and keeps an Agent dependency.
+      provider: agent_relay
+      endpoint: http://127.0.0.1:18125
+    products:
+      live_debugging:
+        enabled: false
+        mode: native_proxy
+      llm_observability:
+        enabled: false
+        mode: otlp
+        pipeline: traces/llm
+      application_security:
+        enabled: false
+        mode: native_traces
+        pipeline: traces/native
+      ci_visibility:
+        enabled: false
+        mode: native_proxy
+      data_jobs_monitoring:
+        enabled: false
+        mode: openlineage_proxy
+      continuous_profiling:
+        enabled: false
+        mode: native_proxy
+      database_monitoring:
+        enabled: false
+        mode: correlation_only
+        pipeline: traces/native
+      data_streams_monitoring:
+        enabled: false
+        mode: sdk_stats_proxy
+
+# Named pipelines above are dependency references, not definitions. Disabled entries
+# have no active dependency. Before enabling a pipeline-backed mode, configure and
+# validate the corresponding receivers/processors/exporters in service.pipelines.
+# The extension must not invent or instantiate missing Collector pipelines.
+service:
+  extensions: [datadog]
