@@ -91,6 +91,14 @@ second executes the same SDK and database with propagation disabled and asserts
 both completed queries contain no traceparent comment. These are local integration
 checks, not backend product readback.
 
+Executed on 2026-09-19 at 22:01:53 UTC: **11 exact query-span context matches** across
+the real SDK, database query samples and Collector OTLP spans; PostgreSQL metrics and
+top-query events were also present. At 22:02:05 UTC, the disabled workload completed
+two real queries with **zero SQL trace contexts** while keeping OTLP configured.
+See [kind results](kind-results.json), [disabled results](disabled-results.json), and
+[build/runtime versions](build-results.json). The PostgreSQL component's full unit
+test suite passed. Datadog DBM product readback remains unverified.
+
 Disable database collection by removing both explicit DB pipelines and its receiver.
 Disable SDK injection independently with `DD_DBM_PROPAGATION_MODE=disabled`.
 An extension cannot create or remove these Collector pipelines dynamically.
