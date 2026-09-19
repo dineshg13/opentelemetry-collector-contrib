@@ -16,6 +16,7 @@ data:
     GRANT CONNECT ON DATABASE dbm TO dbm_app;
     CREATE EXTENSION pg_stat_statements;
     SQL
+    psql --username "$POSTGRES_USER" --dbname postgres --set=ON_ERROR_STOP=1 -c 'CREATE EXTENSION pg_stat_statements;'
 ---
 apiVersion: apps/v1
 kind: Deployment
