@@ -1,0 +1,9 @@
+{
+  "name": "ddot-appsec-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real Datadog SDK WAF activity exported through OTLP",
+  "dependencies": {
+    "dd-trace": "6.16.0"
+  }
+}
