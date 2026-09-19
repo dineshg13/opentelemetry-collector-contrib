@@ -30,7 +30,9 @@ source `c280552330bb906df23b2963d6457a8d23fb81de`, and `pytest==8.3.5`. It does 
 Python main. Additional real Java manual-API evidence uses agent **1.66.0**, release source
 `a099fffb31657bb6e8b4d04ee741491f3480829d`, not Java master. The JavaScript component checks
 execute files from the pinned checkout with explicit stubs; they do not load the full tracer.
-Agent findings are source inspection.
+Agent findings are source inspection. The historical Java experiment did not record its
+Java/javac runtime version; do not infer it from the coordinator shell inventory or the
+separate profiling test. Record `java -version` and `javac -version` when reproducing it.
 
 ## Current and proposed path
 
@@ -229,11 +231,11 @@ extensions:
       key: ${env:DD_API_KEY}
       site: datadoghq.com
     native_sdk_proxy:
-      enabled: true
+      enabled: false
       endpoint: 127.0.0.1:8126
     products:
       ci_visibility:
-        enabled: true                 # absent/default is false
+        enabled: false                 # absent/default is false
         modes: [native_proxy]
 service:
   extensions: [datadog]
