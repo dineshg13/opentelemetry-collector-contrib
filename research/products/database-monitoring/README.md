@@ -1,5 +1,12 @@
 # Database Monitoring through the Collector
 
+> **Revised implementation:** see [the runnable PostgreSQL + Datadog SDK OTLP PoC](../../implementation/database-monitoring/README.md).
+> It extends the upstream receiver with SQL-comment trace context and supersedes
+> this historical report's native receiver recommendations. The old prototype below
+> is historical evidence only; it is not included in the new Collector deployment.
+> Datadog DBM product behavior remains blocked on an explicit backend event contract
+> and authenticated product readback.
+
 Status: **SDK correlation fields locally validated; database collection remains in the
 Agent; authenticated Datadog product experience unverified.** Dedicated owner:
 `database_monitoring`; branch `dinesh.gurumurthy/poc-database-monitoring`.

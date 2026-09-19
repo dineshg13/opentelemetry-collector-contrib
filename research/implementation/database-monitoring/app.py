@@ -29,15 +29,27 @@ class Health(BaseHTTPRequestHandler):
 
 def main():
     global ready
+    endpoint = os.environ["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"]
+    # The SDK's generic send-error string can still name its Agent URL even in
+    # OTLP mode. Assert the actual writer configuration instead of trusting it.
+    assert getattr(tracer._span_aggregator.writer, "_otlp_endpoint", None) == endpoint
     threading.Thread(target=HTTPServer(("0.0.0.0", 8080), Health).serve_forever, daemon=True).start()
-    connection = psycopg2.connect(
-        host=os.getenv("DB_HOST", "dbm-postgres"), port=5432, dbname="dbm",
-        user="dbm_app", password=os.environ["DB_PASSWORD"], application_name="ddot-dbm-python",
-    )
+    for attempt in range(30):
+        try:
+            connection = psycopg2.connect(
+                host=os.getenv("DB_HOST", "dbm-postgres"), port=5432, dbname="dbm",
+                user="dbm_app", password=os.environ["DB_PASSWORD"], application_name="ddot-dbm-python",
+                connect_timeout=2,
+            )
+            break
+        except psycopg2.OperationalError:
+            if attempt == 29:
+                raise
+            time.sleep(2)
     connection.autocommit = True
     ready = True
     print(json.dumps({"event": "ready", "ddtrace": ddtrace.__version__,
-                      "protocol": os.environ.get("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"),
+                      "protocol": os.environ.get("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"), "otlp_endpoint": endpoint,
                       "propagation_mode": os.environ.get("DD_DBM_PROPAGATION_MODE")}), flush=True)
     count = int(os.getenv("ITERATIONS", "0"))
     iteration = 0
