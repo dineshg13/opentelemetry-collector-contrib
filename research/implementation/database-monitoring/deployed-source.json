@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-19T22:15:15.996823+00:00",
+  "file": "/app/app.py",
+  "deployed_sha256": "dabc375dbbf8d88d0d8d4f51dd3a98aa9aa6a7065ac82c0f363d33fb0c9fd258",
+  "repository_sha256": "dabc375dbbf8d88d0d8d4f51dd3a98aa9aa6a7065ac82c0f363d33fb0c9fd258",
+  "exact_match": true,
+  "includes_connection_retry": true,
+  "includes_otlp_writer_assertion": true,
+  "pods": [
+    {
+      "name": "dbm-python-775f486584-gdqmg",
+      "node": "otel-dd-worker",
+      "image_id": "docker.io/library/import-2026-09-19@sha256:9c349407f4e2e943b5827171e42b4380b3d442db3b119c58deec9721d3eb0378"
+    }
+  ]
+}
