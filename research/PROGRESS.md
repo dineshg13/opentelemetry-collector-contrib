@@ -2,32 +2,38 @@
 
 Updated: 2026-09-19. Coordinator: `/root`.
 
+**Current publication state:** all eight product PRs and the integration PR are open drafts
+in the user's fork. The user explicitly authorized the description-rule override for these
+nine PRs. [Publication index](publication/README.md) and
+[authorization/status checkpoint](publication/STATUS.md) record the links and scope.
+Historical publication states below describe the earlier research checkpoint.
+
 Combined branch: `dinesh.gurumurthy/poc-all-products`, worktree `/tmp/ddot-research-all`.
 Started from fork default `main` at `16fa3257d56c299e115a558b1a668018a39990d5`.
 Original checkout and original untracked research inputs are preserved; only a WORKTREE.md
 pointer was added there. Assembled review: `dinesh.gurumurthy/poc-review-snapshot`, worktree
 `/tmp/ddot-research-review`. The intended combined branch retains product PR diffs while
-publication input is pending. No authenticated Datadog backend/UI validation has occurred.
+all product PRs remain drafts. No authenticated Datadog backend/UI validation has occurred.
 
 | Product | Agent | Branch suffix | Status | PR |
 | --- | --- | --- | --- | --- |
-| Live Debugging | `/root/live_debugging` | live-debugging | complete; reviewed in snapshot | pending human sections |
-| LLM Observability | `/root/llm_observability` | llm-observability | complete; reviewed in snapshot | pending human sections |
-| Application Security | `/root/application_security` | application-security | complete; reviewed in snapshot | pending human sections |
-| CI Visibility | `/root/ci_visibility` | ci-visibility | complete; reviewed in snapshot | pending human sections |
-| Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; reviewed in snapshot | pending human sections |
-| Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | complete; reviewed in snapshot | pending human sections |
-| Database Monitoring | `/root/database_monitoring` | database-monitoring | complete; reviewed in snapshot | pending human sections |
-| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | complete; reviewed in snapshot | pending human sections |
+| Live Debugging | `/root/live_debugging` | live-debugging | complete; open draft | [#11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) |
+| LLM Observability | `/root/llm_observability` | llm-observability | complete; open draft | [#12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) |
+| Application Security | `/root/application_security` | application-security | complete; open draft | [#13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) |
+| CI Visibility | `/root/ci_visibility` | ci-visibility | complete; open draft | [#14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) |
+| Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; open draft | [#15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) |
+| Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | complete; open draft | [#16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) |
+| Database Monitoring | `/root/database_monitoring` | database-monitoring | complete; open draft | [#17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) |
+| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | complete; open draft | [#18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) |
 
 Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 `/tmp/ddot-research-` + suffix. Shared worktree: `/tmp/ddot-research-shared`.
 
 ## Blockers and constraints
 
-- PR descriptions: user must supply Description, Link to tracking issue, Testing, Documentation
-  verbatim for each PR (or explicitly decline sections). Human must check authorship checkbox.
-  Prepare deliverables first; do not post generated descriptions/comments or mark ready.
+- PRs remain draft as requested. The explicit description-rule override covers these nine
+  summaries; authorship boxes remain unchecked. No readiness, merging or comments authorized
+  by this publication follow-up.
 - Backend credentials/access: unavailable in the environment. Do not mistake local HTTP tests for product
   success in Datadog. Never record credential values.
 - Sandboxed Git metadata is read-only; authorized worktree creation succeeded with escalation.
@@ -41,12 +47,10 @@ Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 
 ## Next
 
-The eight-product technical review is complete; final packaging and publication verification
-are recorded in the closing checkpoint below. The async request for human PR sections is
-pending. Once supplied (or explicitly declined), create product draft PRs, obtain
-human attestation, apply review/check gates and merge into the intended combined branch;
-leave the final combined PR draft/open. Authenticated product acceptance needs the access
-and workload dependencies documented per product.
+Review the nine open draft PRs in the fork. The complete integration draft is #19, using
+`poc-review-snapshot` into `main`; product drafts #11–#18 target `poc-all-products`.
+Leave all drafts open. Authenticated product acceptance separately needs the access and
+workload dependencies documented per product. Technical research checks remain complete.
 
 ## Shared ownership and early evidence
 
@@ -198,3 +202,13 @@ Publication is blocked solely on the pending human PR sections/attestation requi
 AGENTS.md; backend acceptance is separately blocked on product access, credentials and
 the services/workloads specified per report. No production change, deployment, default-branch
 merge, issue/PR comment, generated PR description or human-checkbox action was performed.
+
+## Published draft checkpoint
+
+The user explicitly approved overriding the human-written-description rule for these nine
+PRs. Product drafts #11–#18 and complete integration draft #19 are open in
+`dineshg13/opentelemetry-collector-contrib`. The publication index contains the actual links.
+All remain draft, all authorship boxes are unchecked, and none was merged. The integration
+head is the assembled review snapshot so the eight product PRs retain their product-only
+diffs. No PR targets the OTel project. The nine body files now contain the published basic
+summaries; earlier statements that they were untouched templates are historical.
