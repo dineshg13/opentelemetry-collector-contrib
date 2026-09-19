@@ -1,0 +1,58 @@
+{
+  "date": "2026-09-19",
+  "collector": {
+    "path": "/home/bits/otel/opentelemetry-collector-contrib",
+    "commit": "16fa3257d56c299e115a558b1a668018a39990d5",
+    "reference": "main"
+  },
+  "sources": [
+    {
+      "repository": "DataDog/dd-trace-py",
+      "path": "/home/bits/dd/dd-trace-py",
+      "reference": "main",
+      "commit": "d6ab482ea3fb3c8666e75ac1905a3325b8f80098",
+      "describe": "v4.13.0rc1-569-gd6ab482ea3"
+    },
+    {
+      "repository": "DataDog/dd-trace-java",
+      "path": "/home/bits/dd/dd-trace-java",
+      "reference": "master",
+      "commit": "7b903a53644abc39f55b2fb21283546ae9801f35",
+      "describe": "v1.66.0-81-g7b903a5364"
+    },
+    {
+      "repository": "DataDog/dd-trace-js",
+      "path": "/home/bits/dd/dd-trace-js",
+      "reference": "master",
+      "commit": "d62655e12494634bb53f8c0cd440f087b004ca63",
+      "describe": "dev-2195-gd62655e12"
+    },
+    {
+      "repository": "DataDog/datadog-agent",
+      "path": "/home/bits/dd/datadog-agent",
+      "reference": "main",
+      "commit": "761050392a732097645b76d9845d36629f1ef3dc",
+      "describe": "serverless-init-1.10.3-968-g761050392a7"
+    },
+    {
+      "repository": "DataDog/integrations-core",
+      "path": "/home/bits/dd/integrations-core",
+      "reference": "master",
+      "commit": "916e4f4364609494986417f9a5efc4b3b0281e52",
+      "scope": "Supplemental DBM checks/correlation and DSM Kafka collection/actions source; clean older snapshot preserved"
+    }
+  ],
+  "runtime": {
+    "go": "go1.26.4 linux/arm64",
+    "node": "v24.18.0",
+    "python": "3.12.13",
+    "java": "Temurin 25.0.4+7-LTS"
+  },
+  "notes": [
+    "git describe is an ancestry hint, not a released-version support claim.",
+    "No source repository was updated; all were clean when recorded.",
+    "Imported module versions may differ from source main. Product reports must qualify that boundary.",
+    "runtime is coordinator shell inventory, not every product execution environment; product records take precedence (profiling used Microsoft JDK 21.0.11; historical CI JDK was not recorded).",
+    "Conventional DD_API_KEY/DATADOG_API_KEY/DD_APP_KEY/DATADOG_APP_KEY variables absent; no secret values recorded."
+  ]
+}
