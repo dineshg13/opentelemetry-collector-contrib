@@ -1,0 +1,16 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Build context is assembled and verified by build_spark.py from pinned artifacts.
+FROM eclipse-temurin:21.0.8_9-jre-jammy
+WORKDIR /app
+COPY spark/ /opt/spark/
+COPY dd-java-agent.jar openlineage-spark.jar workload.jar ./
+RUN echo '5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8  /app/dd-java-agent.jar' | sha256sum -c - \
+    && echo 'de887d1acfc0b890915071da4fff1bd2862a0e104b0df46b1e475009d1ea7a3c  /app/openlineage-spark.jar' | sha256sum -c -
+ENV SPARK_HOME=/opt/spark DD_SERVICE=ddot-djm-spark DD_ENV=ddot-poc DD_DATA_JOBS_ENABLED=true \
+    DD_DATA_JOBS_OPENLINEAGE_ENABLED=true DD_TRACE_ENABLED=true DD_TRACE_OTEL_ENABLED=true \
+    OTEL_TRACES_EXPORTER=otlp OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/json \
+    DD_REMOTE_CONFIG_ENABLED=false DD_INSTRUMENTATION_TELEMETRY_ENABLED=false \
+    DD_RUNTIME_METRICS_ENABLED=false DD_PROFILING_ENABLED=false DD_CODE_ORIGIN_FOR_SPANS_ENABLED=false
+USER 65532:65532
+ENTRYPOINT ["/opt/spark/bin/spark-submit", "--master", "local[2]", "--driver-memory", "512m", "--conf", "spark.driver.extraJavaOptions=--add-opens=java.base/java.security=ALL-UNNAMED -javaagent:/app/dd-java-agent.jar", "--jars", "/app/openlineage-spark.jar", "--class", "DjmSparkWorkload", "/app/workload.jar"]
