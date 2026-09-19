@@ -1,0 +1,79 @@
+{
+  "validation": "local Agent-shaped mock only; no Datadog Agent process or backend",
+  "runtime": {
+    "java": {
+      "executable": "/usr/local/sdkman/candidates/java/21.0.11-ms/bin/java",
+      "version": "openjdk version \"21.0.11\" 2026-04-21 LTS\nOpenJDK Runtime Environment Microsoft-13877185 (build 21.0.11+10-LTS)\nOpenJDK 64-Bit Server VM Microsoft-13877185 (build 21.0.11+10-LTS, mixed mode, sharing)"
+    },
+    "javac": {
+      "executable": "/usr/local/sdkman/candidates/java/21.0.11-ms/bin/javac",
+      "version": "javac 21.0.11"
+    },
+    "agent_jar": {
+      "path": "/tmp/ddot-research-java-agent-1.66.0.jar",
+      "sha256": "5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8",
+      "release": "1.66.0",
+      "source_tag_commit": "a099fffb31657bb6e8b4d04ee741491f3480829d"
+    },
+    "environment": "DD_/_DD_/OTEL_ variables and Java option injection removed; explicit fixture properties applied"
+  },
+  "cases": [
+    {
+      "advertise_pipeline_stats": false,
+      "sdk": "dd-java-agent 1.66.0",
+      "paths": [
+        "/info",
+        "/info",
+        "/v0.4/traces",
+        "/info"
+      ],
+      "stats_requests": 0,
+      "payloads": []
+    },
+    {
+      "advertise_pipeline_stats": true,
+      "sdk": "dd-java-agent 1.66.0",
+      "paths": [
+        "/info",
+        "/info",
+        "/v0.4/traces",
+        "/info",
+        "/v0.1/pipeline_stats",
+        "/v0.1/pipeline_stats"
+      ],
+      "stats_requests": 2,
+      "payloads": [
+        {
+          "keys": [
+            "Env",
+            "Lang",
+            "PrimaryTag",
+            "ProcessTags",
+            "ProductMask",
+            "Service",
+            "Stats",
+            "TracerVersion",
+            "Version"
+          ],
+          "point_count": 0,
+          "transaction_bytes_present": true
+        },
+        {
+          "keys": [
+            "Env",
+            "Lang",
+            "PrimaryTag",
+            "ProcessTags",
+            "ProductMask",
+            "Service",
+            "Stats",
+            "TracerVersion",
+            "Version"
+          ],
+          "point_count": 2,
+          "transaction_bytes_present": false
+        }
+      ]
+    }
+  ]
+}

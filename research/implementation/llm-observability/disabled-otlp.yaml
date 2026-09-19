@@ -1,0 +1,10 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Merge this processor into the explicitly configured ordinary-trace pipeline.
+# Also set extensions.datadog.products.llm_observability.enabled: false.
+processors:
+  transform/disable_llm_conversion:
+    trace_statements:
+      - context: span
+        statements:
+          - set(attributes["dd_llmobs_enabled"], false)

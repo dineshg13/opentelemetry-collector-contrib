@@ -1,21 +1,19 @@
-<!--Ex. Fixing a bug - Describe the bug and how this fixes the issue.
-Ex. Adding a feature - Explain what this achieves.-->
 #### Description
 
-<!-- Issue number (e.g. #1234) or full URL to issue, if applicable. -->
-#### Link to tracking issue
-Fixes
+Adds research and local prototypes for Data Streams Monitoring through the Collector, with no production changes. Recommends an SDK statistics proxy with discovery and metadata support, while retaining Agent broker collection and handling trace correlation separately.
 
-<!--Describe what testing was performed and which tests were added.-->
+#### Link to tracking issue
+
+None provided.
+
 #### Testing
 
-<!--Describe the documentation added.-->
+Exercised real Python ddtrace 4.13.0rc1 and Java agent 1.66.0 pathway statistics through the actual HTTP forwarder, a prototype path adapter where needed, and local mocks, covering path rewriting, compressed payloads, errors, disablement, and Java discovery gating. No authenticated Datadog backend or UI validation was performed.
+
 #### Documentation
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf
-of the user; the human author must check it themselves before the PR is ready for review.-->
+[Data Streams Monitoring research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-data-streams-monitoring/research/products/data-streams-monitoring/README.md).
+
 #### Authorship
 
 - [ ] I, a human, wrote this pull request description myself.
-
-<!--Please delete paragraphs that you did not use before submitting.-->

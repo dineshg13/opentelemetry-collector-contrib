@@ -1,0 +1,2 @@
+ddtrace==4.13.0rc1
+psycopg2-binary==2.9.11

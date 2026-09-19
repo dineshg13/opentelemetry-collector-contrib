@@ -1,0 +1,11 @@
+# CURRENT supported http_forwarder extension subtree, as consumed by shared harness.
+# Negative direct-intake example: path is deliberately specified to show it is ignored.
+# This does NOT provide Live Debugging end-to-end.
+ingress:
+  endpoint: 127.0.0.1:18126
+  compression_algorithms: []
+egress:
+  endpoint: http://127.0.0.1:18127/api/v2/debugger
+  headers:
+    DD-API-KEY: research-only
+  timeout: 5s
