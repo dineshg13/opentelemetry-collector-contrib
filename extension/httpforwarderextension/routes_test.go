@@ -60,6 +60,7 @@ func TestRoutePayloadCredentialsAndResponse(t *testing.T) {
 	}))
 	defer backend.Close()
 	cfg := createDefaultConfig().(*Config)
+	cfg.Egress.Headers = configopaque.MapList{{Name: "DD-API-KEY", Value: "common-key"}}
 	cfg.Routes = []Route{{Path: "/input", Method: "POST", MatchHeaders: map[string]string{"X-Product": "profile"}, Endpoint: backend.URL + "/native?api-version=2", Headers: map[string]configopaque.String{"DD-API-KEY": "trusted"}, RemoveHeaders: []string{"Authorization"}, ResponseStatus: map[int]int{202: 200}, AppendQuery: map[string]string{"ddtags": "host:collector"}, RequestIDHeader: "X-Request-ID"}}
 	address := startRouteForwarder(t, cfg)
 	request, err := http.NewRequest("POST", address+"/input?api-version=bad&other=keep&ddtags=service:sdk", bytes.NewReader(compressed.Bytes()))

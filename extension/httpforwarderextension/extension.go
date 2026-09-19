@@ -37,7 +37,11 @@ func (h *httpForwarder) Start(ctx context.Context, host component.Host) error {
 		return fmt.Errorf("failed to bind to address %s: %w", h.config.Ingress.NetAddr.Endpoint, err)
 	}
 
-	httpClient, err := h.config.Egress.ToClient(ctx, host.GetExtensions(), h.settings)
+	clientConfig := h.config.Egress
+	// Headers are applied explicitly below so route headers take precedence.
+	// A client transport header wrapper would overwrite them a second time.
+	clientConfig.Headers = nil
+	httpClient, err := clientConfig.ToClient(ctx, host.GetExtensions(), h.settings)
 	if err != nil {
 		_ = listener.Close()
 		return fmt.Errorf("failed to create HTTP Client: %w", err)
@@ -70,6 +74,9 @@ func (h *httpForwarder) Shutdown(_ context.Context) error {
 		return nil
 	}
 	err := h.server.Close()
+	if h.httpClient != nil {
+		h.httpClient.CloseIdleConnections()
+	}
 	h.shutdownWG.Wait()
 	return err
 }
@@ -158,6 +165,9 @@ func (h *httpForwarder) forwardRequest(writer http.ResponseWriter, request *http
 
 	response, err := h.httpClient.Do(forwarderRequest)
 	if err != nil {
+		if matched != nil {
+			h.settings.Logger.Debug("HTTP product forwarding failed", zap.String("route", matched.Path), zap.String("upstream_host", target.Host), zap.Int("status_code", http.StatusBadGateway))
+		}
 		http.Error(writer, "upstream request failed", http.StatusBadGateway)
 		return
 	}
@@ -179,6 +189,7 @@ func (h *httpForwarder) forwardRequest(writer http.ResponseWriter, request *http
 		if mapped, ok := matched.ResponseStatus[status]; ok {
 			status = mapped
 		}
+		h.settings.Logger.Debug("Forwarded HTTP product request", zap.String("route", matched.Path), zap.String("upstream_host", target.Host), zap.Int("upstream_status_code", response.StatusCode), zap.Int("status_code", status))
 	}
 	writer.WriteHeader(status)
 	written, err := io.Copy(writer, response.Body)
