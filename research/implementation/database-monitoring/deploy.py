@@ -8,6 +8,7 @@ import secrets
 import subprocess
 import tempfile
 
+POSTGRES_IMAGE = "postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
 ROOT = Path(__file__).resolve().parent
 KUBE = ["kubectl", "--context", "kind-otel-dd", "-n", "ddot-poc"]
 
@@ -19,11 +20,13 @@ def main():
     # Restrict the archive to the kind nodes' platform. Cached multi-platform
     # indexes can otherwise reference manifests absent from the Docker store.
     architecture = subprocess.check_output(KUBE + ["get", "nodes", "-o", "jsonpath={.items[0].status.nodeInfo.architecture}"], text=True)
+    subprocess.run(["docker", "pull", "--platform", "linux/" + architecture, POSTGRES_IMAGE], check=True)
+    subprocess.run(["docker", "tag", POSTGRES_IMAGE, "ddot-postgres:16.15"], check=True)
     with tempfile.TemporaryDirectory(prefix="ddot-dbm-image-") as directory:
         archive = str(Path(directory) / "images.tar")
         subprocess.run(["docker", "image", "save", "--platform", "linux/" + architecture,
-                        "-o", archive, "ddot-dbm-python:poc", "postgres:16-alpine"], check=True)
-        subprocess.run(["kind", "load", "image-archive", "--name", "otel-dd", archive], check=True)
+                        "-o", archive, "ddot-dbm-python:poc", "ddot-postgres:16.15"], check=True)
+        subprocess.run(["kind", "load", "image-archive", "--name", "otel-dd", "--nodes", "otel-dd-worker", archive], check=True)
     found = subprocess.check_output(KUBE + ["get", "secret", "dbm-postgres-password", "--ignore-not-found", "-o", "name"], text=True)
     if not found.strip():
         # Credentials are only passed to kubectl on stdin, never printed or committed.

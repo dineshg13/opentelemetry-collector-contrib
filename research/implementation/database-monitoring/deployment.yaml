@@ -37,42 +37,54 @@ spec:
         app.kubernetes.io/part-of: ddot-products-poc
     spec:
       containers:
-        - name: postgres
-          image: postgres:16-alpine
-          imagePullPolicy: Never
-          args: [postgres, -c, shared_preload_libraries=pg_stat_statements, -c, track_activity_query_size=4096]
-          env:
-            - name: POSTGRES_DB
-              value: dbm
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dbm-postgres-password
-                  key: password
-          ports:
-            - containerPort: 5432
-          readinessProbe:
-            exec:
-              command: [pg_isready, -U, postgres, -d, dbm]
-            initialDelaySeconds: 5
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: "1"
-              memory: 512Mi
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/postgresql/data
-            - name: init
-              mountPath: /docker-entrypoint-initdb.d
-      volumes:
+      - name: postgres
+        image: ddot-postgres:16.15
+        imagePullPolicy: Never
+        args:
+        - postgres
+        - -c
+        - shared_preload_libraries=pg_stat_statements
+        - -c
+        - track_activity_query_size=4096
+        env:
+        - name: POSTGRES_DB
+          value: dbm
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dbm-postgres-password
+              key: password
+        ports:
+        - containerPort: 5432
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+            - -d
+            - dbm
+          initialDelaySeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
         - name: data
-          emptyDir: {}
+          mountPath: /var/lib/postgresql/data
         - name: init
-          configMap:
-            name: dbm-postgres-init
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: init
+        configMap:
+          name: dbm-postgres-init
+      nodeSelector:
+        kubernetes.io/hostname: otel-dd-worker
 ---
 apiVersion: v1
 kind: Service
@@ -83,8 +95,8 @@ spec:
   selector:
     app: dbm-postgres
   ports:
-    - port: 5432
-      targetPort: 5432
+  - port: 5432
+    targetPort: 5432
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -105,46 +117,48 @@ spec:
         app.kubernetes.io/part-of: ddot-products-poc
     spec:
       containers:
-        - name: workload
-          image: ddot-dbm-python:poc
-          imagePullPolicy: Never
-          env:
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dbm-postgres-password
-                  key: password
-            - name: DD_SERVICE
-              value: ddot-dbm-python
-            - name: DD_ENV
-              value: ddot-poc
-            - name: DD_VERSION
-              value: "1"
-            - name: DD_DBM_PROPAGATION_MODE
-              value: full
-            - name: OTEL_TRACES_EXPORTER
-              value: otlp
-            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
-            - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-              value: http/json
-            - name: DD_INSTRUMENTATION_TELEMETRY_ENABLED
-              value: "false"
-            - name: DD_REMOTE_CONFIGURATION_ENABLED
-              value: "false"
-            - name: DD_TRACE_SAMPLE_RATE
-              value: "1"
-          ports:
-            - containerPort: 8080
-              name: health
-          readinessProbe:
-            httpGet:
-              port: health
-              path: /
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: "1"
-              memory: 256Mi
+      - name: workload
+        image: ddot-dbm-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dbm-postgres-password
+              key: password
+        - name: DD_SERVICE
+          value: ddot-dbm-python
+        - name: DD_ENV
+          value: ddot-poc
+        - name: DD_VERSION
+          value: '1'
+        - name: DD_DBM_PROPAGATION_MODE
+          value: full
+        - name: OTEL_TRACES_EXPORTER
+          value: otlp
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: DD_INSTRUMENTATION_TELEMETRY_ENABLED
+          value: 'false'
+        - name: DD_REMOTE_CONFIGURATION_ENABLED
+          value: 'false'
+        - name: DD_TRACE_SAMPLE_RATE
+          value: '1'
+        ports:
+        - containerPort: 8080
+          name: health
+        readinessProbe:
+          httpGet:
+            port: health
+            path: /
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: '1'
+            memory: 256Mi
+      nodeSelector:
+        kubernetes.io/hostname: otel-dd-worker
