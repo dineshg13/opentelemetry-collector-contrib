@@ -1,18 +1,20 @@
 #### Description
 
-Adds research and local transport prototypes for Continuous Profiling through the Collector, with no production changes. Recommends a native profile proxy and documents a narrow configuration-only path using Java's exact profiling URL override.
+Adds real Python, Java and Node profiling workloads with ordinary traces over OTLP, plus independently built Datadog-extension and generic-forwarder paths. Profile payloads stay opaque; backend 202 is mapped to SDK 200. Datadog flamegraph visibility and trace correlation remain unverified.
+
+This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
 #### Link to tracking issue
 
-None provided.
+No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
 
 #### Testing
 
-Exercised real Python ddtrace 4.13.0rc1 and Java agent 1.66.0 profile uploads through the actual HTTP forwarder against local mocks: default Agent paths failed and Java's exact backend-path override succeeded. No authenticated Datadog backend or UI validation was performed.
+All three released SDKs generated real profiles and OTLP traces in local semantic tests and both kind alternatives. Real US5 profile intake returned 202. SDK disable and both proxy gates passed. Java JFR temporary storage and memory bounds were corrected after a documented disk incident.
 
 #### Documentation
 
-[Continuous Profiling research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-continuous-profiling/research/products/continuous-profiling/README.md).
+[Runnable implementation, configuration, SDK coverage and evidence](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-continuous-profiling/research/implementation/continuous-profiling/README.md). [Combined build, deployment and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md).
 
 #### Authorship
 

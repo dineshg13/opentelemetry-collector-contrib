@@ -74,11 +74,13 @@ exporters:
       dd-api-key: ${env:DD_API_KEY}
       dd-otel-config: '{"traces":{"compute_stats":true}}'
   debug:
-    verbosity: detailed
+    verbosity: basic
 service:
   telemetry:
     logs:
       level: debug
+      sampling:
+        enabled: false
     metrics:
       readers:
       - pull:

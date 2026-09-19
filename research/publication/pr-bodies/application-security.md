@@ -1,18 +1,20 @@
 #### Description
 
-Adds research and local prototypes for Application Security through the Collector, with no production changes. Finds that the current Datadog receiver drops structured security detection payloads and recommends resolving native trace preservation and processing before claiming product support.
+Adds real Python and Node WAF workloads using standard SDK OTLP export. Structured Python security bytes survive the Collector unchanged. Java structured metadata export has a reproduced SDK gap; full IAST/RASP/SCA, remote control and backend security visibility remain incomplete.
+
+This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
 #### Link to tracking issue
 
-None provided.
+No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
 
 #### Testing
 
-Captured a real Python ddtrace 4.13.0rc1 Flask WAF event through the actual HTTP forwarder and replayed its exact payload through the actual Datadog receiver; synthetic fixtures also demonstrated structured payload loss. No authenticated Datadog backend or UI validation was performed.
+Actual Python 4.13.0rc1 and Node 6.16.0 WAF enabled/disabled tests passed through the built Collector; kind workloads ran. A real Java 1.66.0 encoder probe reproduced the structured metadata omission. Local semantics and intake transport do not establish backend AppSec behavior.
 
 #### Documentation
 
-[Application Security research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-application-security/research/products/application-security/README.md).
+[Runnable implementation, configuration, SDK coverage and evidence](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-application-security/research/implementation/application-security/README.md). [Combined build, deployment and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md).
 
 #### Authorship
 

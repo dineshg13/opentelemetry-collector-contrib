@@ -78,16 +78,17 @@ records the actual SQL comment emitted by its cursor. It sets no trace IDs itsel
 It asserts the SDK selected its OTLP writer, then exports ordinary traces to
 `collector:4318/v1/traces` using HTTP/JSON. It does not use a native APM fallback.
 
-With detailed debug export enabled in the combined Collector:
+The following disabled check is safe to rerun with the current basic Collector logs:
 
 ```sh
-python3 research/implementation/database-monitoring/verify.py --output research/implementation/database-monitoring/kind-results.json
 python3 research/implementation/database-monitoring/verify-disabled.py
 ```
 
-The first check intersects IDs from actual SDK SQL comments, collected query-sample
-logs and received database spans, and checks PostgreSQL metrics/top queries. The
-second executes the same SDK and database with propagation disabled and asserts
+The retained `verify.py` parser produced the historical correlation evidence below
+during an earlier detailed-log window. It cannot reproduce that intersection from
+the current shared Collector's basic logs. Do not enable full payload logging on the
+shared Collector to rerun it; exact fresh record readback remains unavailable.
+The disabled check executes the same SDK and database with propagation disabled and asserts
 both completed queries contain no traceparent comment. These are local integration
 checks, not backend product readback.
 

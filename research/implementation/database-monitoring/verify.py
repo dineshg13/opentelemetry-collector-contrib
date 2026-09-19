@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-"""Check real kind query/OTLP correlation. Does not claim Datadog product readback."""
+"""Historical detailed-log correlation parser; current shared basic logs cannot supply records.
+Do not enable full payload logging on the shared Collector to run this parser.
+This script never claims Datadog product readback.
+"""
 import argparse
 from datetime import datetime, timezone
 import json

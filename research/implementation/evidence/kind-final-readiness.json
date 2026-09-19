@@ -1,0 +1,101 @@
+{
+  "timestamp": "2026-09-19T22:36:36.287313+00:00",
+  "window": "last 120 seconds after pinned database rollout",
+  "collectors": {
+    "collector": {
+      "error_message_count": 0,
+      "messages": []
+    },
+    "collector-http-forwarder": {
+      "error_message_count": 0,
+      "messages": []
+    }
+  },
+  "deployments": [
+    {
+      "name": "appsec-python-otlp",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "collector",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "collector-http-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "dbm-postgres",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "dbm-python",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-java",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-java-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-node",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-node-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-python",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "ddot-profile-python-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "debugger-python",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "debugger-python-http-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "llm-python-native",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "llm-python-native-forwarder",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "llm-python-otlp",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "name": "llm-python-otlp-forwarder",
+      "desired": 1,
+      "ready": 1
+    }
+  ]
+}

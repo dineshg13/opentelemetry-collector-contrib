@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-09-19T21:59:19.795492+00:00",
+  "source_commit": "6f15642a158316f322b2876355e58c18bac7d3e1",
+  "working_tree_dirty": false,
+  "go": "go version go1.26.4 linux/arm64",
+  "binary_sha256": "aeb184b125d75b944dbb396103132ab2c5d211315a56f05c4f2a737cf4b33f98",
+  "image": "ddot-products-collector:poc",
+  "trace_agent_dependencies": [
+    "github.com/DataDog/datadog-agent/pkg/trace/log",
+    "github.com/DataDog/datadog-agent/pkg/trace/traceutil/normalize"
+  ],
+  "image_id": "sha256:6df0454008d20583944ebc4112297c27d250b0a4a4a7b912b99c406a9aff07dd",
+  "record_type": "original build executed in kind; retained before clean-source rebuild"
+}

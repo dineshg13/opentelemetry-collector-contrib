@@ -1,18 +1,20 @@
 #### Description
 
-Adds research and local transport prototypes for LLM Observability through the Collector, with no production changes. Recommends shared native event proxy routes and separate trace compatibility work for Python LLM payloads carried in native traces; documents the distinct OTLP option.
+Adds Python, Java and Node GenAI workloads over SDK OTLP paths, plus Python native LLM span/evaluation forwarding through both proxy alternatives. Backend LLM conversion, session/evaluation visibility and product correlation remain unverified.
+
+This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
 #### Link to tracking issue
 
-None provided.
+No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
 
 #### Testing
 
-Exercised pinned JavaScript writer components with explicit stubs and real Python ddtrace 4.13.0rc1 span/evaluation uploads through the actual HTTP forwarder against local mocks, including missing path rewrites. No authenticated Datadog backend or UI validation was performed.
+Actual Python 4.13.0rc1, Java 1.66.0 and Node 6.16.0 SDK semantic tests passed and kind workloads completed. Both real US5 native span/evaluation intakes returned 202. Native proxy gates and explicit OTLP LLM conversion-disable attributes were checked independently.
 
 #### Documentation
 
-[LLM Observability research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-llm-observability/research/products/llm-observability/README.md).
+[Runnable implementation, configuration, SDK coverage and evidence](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-llm-observability/research/implementation/llm-observability/README.md). [Combined build, deployment and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md).
 
 #### Authorship
 

@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-09-19T22:05:23.869346+00:00",
+  "scope": "Collector debug log tail of controlled synthetic PoC workload",
+  "appsec_json_attribute_occurrences": 0,
+  "appsec_bytes_attribute_occurrences": 1,
+  "appsec_event_occurrences": 13,
+  "gen_ai_attribute_occurrences": 9,
+  "not_product_readback": true
+}

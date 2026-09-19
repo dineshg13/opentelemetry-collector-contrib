@@ -23,11 +23,15 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("/tmp/ddot-poc-build"))
     parser.add_argument("--image", default="ddot-products-collector:poc")
     parser.add_argument("--skip-image", action="store_true")
+    parser.add_argument("--generic-only", action="store_true", help="Build without the Datadog extension or its dependencies")
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     dist = output / "collector"
     manifest = (ROOT / "research/implementation/collector/builder-config.yaml").read_text()
+    if args.generic_only:
+        manifest = "\n".join(line for line in manifest.splitlines()
+                             if "extension/datadogextension" not in line) + "\n"
     manifest = manifest.replace("__BUILD_OUTPUT__", json.dumps(str(dist)))
     modules = subprocess.check_output(["git", "ls-files", "--", "*go.mod"], cwd=ROOT, text=True).splitlines()
     replacements = []
@@ -53,6 +57,8 @@ def main():
     imports = (dist / "components.go").read_text()
     for forbidden in ["receiver/datadogreceiver", "exporter/datadogexporter", "connector/datadogconnector"]:
         assert forbidden not in imports, forbidden
+    if args.generic_only:
+        assert "extension/datadogextension" not in imports
     dependencies = subprocess.check_output(["go", "list", "-deps", "./..."], cwd=dist, env=env, text=True)
     (output / "dependencies.txt").write_text(dependencies)
     record = {
@@ -62,8 +68,11 @@ def main():
         "go": subprocess.check_output(["go", "version"], env=env, text=True).strip(),
         "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "image": args.image,
+        "generic_only": args.generic_only,
         "trace_agent_dependencies": [x for x in dependencies.splitlines() if "datadog-agent/pkg/trace" in x],
     }
+    if args.generic_only:
+        assert not record["trace_agent_dependencies"], record["trace_agent_dependencies"]
     if not args.skip_image:
         context = output / "image"
         context.mkdir(exist_ok=True)

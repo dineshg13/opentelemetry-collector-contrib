@@ -1,18 +1,20 @@
 #### Description
 
-Adds research and local prototypes for CI Visibility / Test Optimization through the Collector, with no production changes. Recommends shared native proxy routes with discovery and bidirectional settings/API support, alongside the separate legacy trace path.
+Adds real pytest lifecycle, coverage and synchronous control forwarding, while ordinary application traces use OTLP. The Python path requires an existing private context-provider flag; Java OTLP writer selection bypasses native CI envelopes. These SDK limitations and backend optimization/UI verification remain open.
+
+This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
 #### Link to tracking issue
 
-None provided.
+No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
 
 #### Testing
 
-Exercised real Python ddtrace 4.13.0rc1 pytest and Java agent 1.66.0 manual CI events through the actual HTTP forwarder plus a prototype adapter, and pinned JavaScript discovery/writer components with explicit stubs. Local mocks covered event payloads, settings, Git metadata, failures, and route disablement; no authenticated Datadog backend or UI validation was performed.
+Actual Python SDK/Collector tests cover test hierarchy, pass/skip, coverage, settings/git controls, 429/Retry-After, SDK disable and proxy disable. Corrected kind Jobs ran through both alternatives with separate OTLP endpoints; real settings returned 200 and CI intake returned 202. Java 1.66.0 writer-selection limitation was reproduced.
 
 #### Documentation
 
-[CI Visibility research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-ci-visibility/research/products/ci-visibility/README.md).
+[Runnable implementation, configuration, SDK coverage and evidence](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-ci-visibility/research/implementation/ci-visibility/README.md). [Combined build, deployment and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md).
 
 #### Authorship
 

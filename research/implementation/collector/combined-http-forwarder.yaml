@@ -685,6 +685,8 @@ service:
   telemetry:
     logs:
       level: debug
+      sampling:
+        enabled: false
     metrics:
       readers:
       - pull:

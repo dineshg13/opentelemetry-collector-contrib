@@ -1,4 +1,5 @@
-# Real SDK workloads; root coordinates kind load/apply.
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -113,13 +114,15 @@ spec:
           value: http/json
         - name: DD_OTLP_TRACES_ENDPOINT
           value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: JAVA_TOOL_OPTIONS
+          value: -Xms64m -Xmx128m -XX:MaxDirectMemorySize=64m
         resources:
           requests:
             cpu: 100m
             memory: 192Mi
           limits:
             cpu: 1000m
-            memory: 512Mi
+            memory: 2Gi
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
@@ -132,6 +135,16 @@ spec:
             - /tmp/ready
           initialDelaySeconds: 5
           periodSeconds: 5
+        volumeMounts:
+        - name: profile-tmp
+          mountPath: /tmp
+      securityContext:
+        fsGroup: 65532
+      volumes:
+      - name: profile-tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 256Mi
 ---
 apiVersion: apps/v1
 kind: Deployment

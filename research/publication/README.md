@@ -1,34 +1,29 @@
-# Published draft PRs
+# Draft PR publication
 
-The user explicitly authorized overriding the human-written-description rule for these nine
-PRs and publishing the prepared basic summaries in their fork. All nine PRs are open drafts
-in `dineshg13/opentelemetry-collector-contrib`. Authorship checkboxes remain unchecked; no
-issue/PR comments, readiness changes or PR merges were performed.
+All publication targets the user's fork `dineshg13/opentelemetry-collector-contrib`.
+The user authorized assistant-written basic summaries for these eight product drafts
+and the final integration draft. Human-authorship checkboxes remain unchecked.
+No issue/PR discussion comments or default-branch merges are part of this work.
 
-The [pr-bodies](pr-bodies) directory records the published descriptions. This authorization
-applies to these nine drafts; it is not a general change to [AGENTS.md](../../AGENTS.md).
+| Product | Draft PR | Target |
+| --- | --- | --- |
+| Live Debugging | [11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) | poc-all-products |
+| LLM Observability | [12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) | poc-all-products |
+| Application Security | [13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) | poc-all-products |
+| CI Visibility | [14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) | poc-all-products |
+| Data Jobs Monitoring | [15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) | poc-all-products |
+| Continuous Profiling | [16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) | poc-all-products |
+| Database Monitoring | [17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) | poc-all-products |
+| Data Streams Monitoring | [18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) | poc-all-products |
 
-| Product | Head | Base | Draft PR |
-| --- | --- | --- | --- |
-| Live Debugging | `dinesh.gurumurthy/poc-live-debugging` | `dinesh.gurumurthy/poc-all-products` | [#11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) |
-| LLM Observability | `dinesh.gurumurthy/poc-llm-observability` | `dinesh.gurumurthy/poc-all-products` | [#12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) |
-| Application Security | `dinesh.gurumurthy/poc-application-security` | `dinesh.gurumurthy/poc-all-products` | [#13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) |
-| CI Visibility | `dinesh.gurumurthy/poc-ci-visibility` | `dinesh.gurumurthy/poc-all-products` | [#14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) |
-| Data Jobs Monitoring | `dinesh.gurumurthy/poc-data-jobs-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) |
-| Continuous Profiling | `dinesh.gurumurthy/poc-continuous-profiling` | `dinesh.gurumurthy/poc-all-products` | [#16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) |
-| Database Monitoring | `dinesh.gurumurthy/poc-database-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) |
-| Data Streams Monitoring | `dinesh.gurumurthy/poc-data-streams-monitoring` | `dinesh.gurumurthy/poc-all-products` | [#18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) |
-| Integration | `dinesh.gurumurthy/poc-review-snapshot` | `main` | [#19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19) |
+The corrected final draft is being published from
+`dinesh.gurumurthy/poc-all-products` to fork `main`, replacing the obsolete
+research-only [PR19](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19)
+whose head was `poc-review-snapshot`. The final PR URL will be recorded after publication.
 
-## Integration while product PRs remain drafts
-
-The complete integration draft uses `dinesh.gurumurthy/poc-review-snapshot` into the fork's
-`main`. This preserves useful product-only diffs for the eight draft PRs targeting
-`dinesh.gurumurthy/poc-all-products`, which contains the shared research. Merging product
-heads into their target now would consume those diffs. This publication arrangement replaces
-the earlier plan to merge product PRs before opening the integration draft, accommodating
-the user's request to leave all nine PRs in draft state.
-
-No PR targets the OpenTelemetry project. Do not mark ready, merge, or check the human-authorship
-box on the user's behalf. Backend/UI validation remains unperformed; local protocol and SDK
-results retain the evidence limits in the product reports and independent review.
+All products remain incomplete under the required product/backend verification bar.
+Their implementation content is staged into the combined branch for joint testing;
+blocked product drafts are not marked complete or merged. See the
+[implementation checkpoint](../implementation/PROGRESS.md),
+[independent review](../implementation/INDEPENDENT_REVIEW.md), and
+[exact prepared bodies](pr-bodies).

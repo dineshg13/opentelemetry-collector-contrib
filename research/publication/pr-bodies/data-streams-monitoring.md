@@ -1,18 +1,20 @@
 #### Description
 
-Adds research and local prototypes for Data Streams Monitoring through the Collector, with no production changes. Recommends an SDK statistics proxy with discovery and metadata support, while retaining Agent broker collection and handling trace correlation separately.
+Adds actual Python, Java and Node linked checkpoints, opaque DSM statistics through both forwarding alternatives, and ordinary OTLP traces. Backend topology, broker lag, schema/action collection and product UI/readback remain incomplete.
+
+This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
 #### Link to tracking issue
 
-None provided.
+No tracking issue was provided. Targets the combined implementation branch `dinesh.gurumurthy/poc-all-products`.
 
 #### Testing
 
-Exercised real Python ddtrace 4.13.0rc1 and Java agent 1.66.0 pathway statistics through the actual HTTP forwarder, a prototype path adapter where needed, and local mocks, covering path rewriting, compressed payloads, errors, disablement, and Java discovery gating. No authenticated Datadog backend or UI validation was performed.
+All three SDKs passed enabled/disabled checkpoint tests and actual Collector semantics. Kind Jobs completed for both alternatives, and fresh bounded logs show real US5 DSM intake 202 on each. Disabled proxy routes return 404 while ordinary OTLP traces continue; Java empty discovery probes are distinguished from native trace data.
 
 #### Documentation
 
-[Data Streams Monitoring research, configuration proposal, and validation details](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-data-streams-monitoring/research/products/data-streams-monitoring/README.md).
+[Runnable implementation, configuration, SDK coverage and evidence](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-data-streams-monitoring/research/implementation/data-streams-monitoring/README.md). [Combined build, deployment and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md).
 
 #### Authorship
 

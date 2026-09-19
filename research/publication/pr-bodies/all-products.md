@@ -1,29 +1,24 @@
 #### Description
 
-Combines research, local prototypes, architecture recommendations, and a proposed configuration model for eight Datadog products through the Collector: Live Debugging, LLM Observability, Application Security, CI Visibility, Data Jobs Monitoring, Continuous Profiling, Database Monitoring, and Data Streams Monitoring. Research only; no production components were changed.
+Builds and deploys an OTLP-native proof of concept for all eight Datadog product workstreams, replacing the earlier research-only proposal. Ordinary traces, logs and metrics use standard Collector components. Product HTTP traffic uses either the Datadog extension's policy adapter or an independently built generic HTTP forwarder. The PostgreSQL receiver extracts SQL-comment trace context; native Spark, real WAF, profiling, CI, LLM, DSM and debugger workloads are included.
 
-This draft uses `dinesh.gurumurthy/poc-review-snapshot` into this fork's `main` so the complete result can be reviewed while individual product drafts retain their own diffs against `dinesh.gurumurthy/poc-all-products`.
+The generic distribution has no Trace Agent dependencies. The Datadog-extension distribution retains two existing transitive utilities and does not embed the Agent. Both run in kind with real US5 destinations; fake Datadog and mock routing were removed. Existing unrelated workloads/data were preserved.
+
+**All products remain incomplete** until their behavior is verified in Datadog. Authenticated readback is unavailable; additional SDK, DBM event-mapping, signed remote-configuration and long-running Spark gaps are documented. Product drafts remain open and are staged for combined testing, not marked complete or merged.
 
 #### Link to tracking issue
 
-None provided. Related product drafts:
-
-- [Live Debugging](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11)
-- [LLM Observability](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12)
-- [Application Security](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13)
-- [CI Visibility](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14)
-- [Data Jobs Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15)
-- [Continuous Profiling](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16)
-- [Database Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17)
-- [Data Streams Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18)
+No tracking issue was provided. Product drafts: [Live Debugging](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11), [LLM Observability](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12), [Application Security](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13), [CI Visibility](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14), [Data Jobs Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15), [Continuous Profiling](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16), [Database Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17), [Data Streams Monitoring](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18).
 
 #### Testing
 
-Independent integration review and local product prototypes completed. Documentation inventory and pinned source-link checks passed for all eight reports; prototype syntax, formatting, and whitespace checks passed. No authenticated Datadog backend or UI validation was performed.
+Both actual Collector distributions build and their configurations validate. Meaningful extension and PostgreSQL tests pass. Real Python 4.13.0rc1, Java 1.66.0 and Node 6.16.0 traces/logs/metrics pass local semantic and correlation checks; all three SDK workloads also ran through kind and the real OTLP exporter. Node correlated logs require HTTP/protobuf.
+
+Real kind SDK workloads cover all eight workstreams, including native Spark; observed HTTP intake responses, control responses, SDK opt-out behavior and image identities are recorded separately from product readback. Both alternatives deny all 33 product routes when disabled while ordinary OTLP continues. An independent implementation review checked architecture, source, configurations, tests and cluster state; actionable findings were corrected. Disk exhaustion and recovery are documented rather than omitted.
 
 #### Documentation
 
-[Research index, product reports, coverage, implementation plan, and independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/tree/dinesh.gurumurthy/poc-review-snapshot/research).
+[Implementation, architecture, coverage, alternatives and reproduction](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/README.md), [progress and blockers](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/PROGRESS.md), and [independent review](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/INDEPENDENT_REVIEW.md).
 
 #### Authorship
 

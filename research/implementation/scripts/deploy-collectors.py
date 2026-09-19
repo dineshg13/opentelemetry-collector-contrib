@@ -9,6 +9,14 @@ import subprocess
 import tempfile
 import yaml
 
+
+def literal_strings(dumper, value):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', value,
+                                   style='|' if '\n' in value else None)
+
+
+yaml.SafeDumper.add_representer(str, literal_strings)
+
 ROOT = Path(__file__).resolve().parents[1]
 KUBE = ['kubectl', '--context', 'kind-otel-dd', '-n', 'ddot-poc']
 
@@ -19,7 +27,7 @@ def load_image(image):
     with tempfile.TemporaryDirectory(prefix='ddot-kind-image-') as directory:
         archive = str(Path(directory) / 'image.tar')
         subprocess.run(['docker', 'image', 'save', '--platform=linux/arm64', '-o', archive, image], check=True)
-        subprocess.run(['kind', 'load', 'image-archive', '--name', 'otel-dd', archive], check=True)
+        subprocess.run(['kind', 'load', 'image-archive', '--name', 'otel-dd', '--nodes', 'otel-dd-worker', archive], check=True)
 
 
 def main():
@@ -33,7 +41,9 @@ def main():
         if document['kind'] == 'ConfigMap':
             filename = 'combined.yaml' if document['metadata']['name'] == 'collector' else 'combined-http-forwarder.yaml'
             document['data']['collector.yaml'] = (ROOT / 'collector' / filename).read_text()
-    target.write_text('# ConfigMaps refreshed from collector/combined*.yaml by scripts/deploy-collectors.py.\n' + yaml.safe_dump_all(documents, sort_keys=False))
+    target.write_text('# Copyright The OpenTelemetry Authors\n# SPDX-License-Identifier: Apache-2.0\n'
+                      '# ConfigMaps refreshed from collector/combined*.yaml by scripts/deploy-collectors.py.\n'
+                      + yaml.safe_dump_all(documents, sort_keys=False))
     if args.render_only:
         return
     context = subprocess.check_output(['kubectl', 'config', 'current-context'], text=True).strip()
@@ -42,6 +52,7 @@ def main():
     assert nodes and all(n['metadata']['name'].startswith('otel-dd-') for n in nodes)
     if not args.skip_load:
         load_image('ddot-products-collector:poc')
+        load_image('ddot-products-collector-generic:poc')
     subprocess.run(KUBE + ['apply', '-f', str(ROOT / 'kind/namespace.yaml')], check=True)
     # Secret values must be supplied separately; manifests contain references only.
     subprocess.run(KUBE + ['get', 'secret', 'datadog-api-key', 'dbm-postgres-password', '-o', 'name'], check=True)
