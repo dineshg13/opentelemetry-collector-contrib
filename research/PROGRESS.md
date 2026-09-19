@@ -10,11 +10,11 @@ Original checkout and untracked research inputs remain untouched.
 | --- | --- | --- | --- | --- |
 | Live Debugging | `/root/live_debugging` | live-debugging | complete; reviewed in snapshot | pending human sections |
 | LLM Observability | `/root/llm_observability` | llm-observability | complete; reviewed in snapshot | pending human sections |
-| Application Security | `/root/application_security` | application-security | investigating | pending human sections |
+| Application Security | `/root/application_security` | application-security | complete; reviewed in snapshot | pending human sections |
 | CI Visibility | `/root/ci_visibility` | ci-visibility | investigating | pending human sections |
-| Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | investigating | pending human sections |
-| Continuous Profiling | queued | continuous-profiling | queued | pending human sections |
-| Database Monitoring | queued | database-monitoring | queued | pending human sections |
+| Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; reviewed in snapshot | pending human sections |
+| Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | investigating | pending human sections |
+| Database Monitoring | `/root/database_monitoring` | database-monitoring | investigating | pending human sections |
 | Data Streams Monitoring | queued | data-streams-monitoring | queued | pending human sections |
 
 Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
@@ -62,10 +62,10 @@ forwarder harness, and proposed configuration model in its own isolated worktree
 
 - Shared component report/harness: commit `2496c1cb3be`, integrated into combined branch.
 - Live Debugging: `c00317469b436b3b57dc6e558caa0494d34f8df7`. Four source-component
-  assertions pass; full Python4.13.0rc1 local probe emitted 18 snapshots plus diagnostics to
+  assertions pass; full Python 4.13.0rc1 local probe emitted 18 snapshots plus diagnostics to
   a mock through actual forwarder and experimental adapter. No signed RC/backend/UI result.
 - LLM Observability: `449c9a0cbe8657fdc69fc495db1d384830b19c4c`. Pinned JS writer
-  fixtures and full Python4.13.0rc1 emitted native EVP paths through actual forwarder; strict
+  fixtures and full Python 4.13.0rc1 emitted native EVP paths through actual forwarder; strict
   mock rejected preserved prefixes. Rewritten controls passed. No backend result.
 - Shared canonical configuration changed to `modes` lists and `pipelines` maps because a
   product can use native traces, native event/evaluation uploads, and OTLP simultaneously.
@@ -82,3 +82,36 @@ forwarder harness, and proposed configuration model in its own isolated worktree
   trailers. Global/repository signing settings were not changed.
 - Research integrity check on snapshot: 2/8 product reports, 33 local links, 48 pinned
   source files checked; passing for completed inventory. Full-inventory check awaits queue.
+
+## Third product and publication recovery
+
+AppSec commit `eef3baba88b8e3b260c2afd61d49f37d94ca9ce6` integrated into review snapshot.
+Actual Python WAF output (published 4.13.0rc1 plus Flask) passed through current forwarder;
+replay of exact payload through current Datadog receiver lost structured trigger details.
+Legacy scalar markers remain, so HTTP 200 is not compatibility. WAF/IAST/RASP/API Security
+paths researched; SCA breadth remains an explicit product-scope question.
+
+Initial shared/Live/LLM/combined/review branches pushed to fork. A later SSH push failed
+because signing-agent communication was unavailable and global Git rewrote HTTPS to SSH.
+HTTPS push succeeded with per-command `GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1`
+and `gh auth git-credential`; no stored Git or SSH settings changed.
+
+Transient sandbox No-space-left error recovered without file deletion; host df/inodes
+showed available space. No user caches were removed.
+
+## Fourth product and additional runtime evidence
+
+Data Jobs commit `50cf528275ca2de651b4debab8f5f13b157426e3` integrated into review snapshot.
+Actual OSS OpenLineage Python 1.45.0 client passes backend-path gzip/Bearer/response tests
+through current forwarder; Agent-prefixed path is preserved and rejected by strict mock.
+Java native Spark requires separate trace processing and remains runtime/backend unverified.
+Python/JS lack dedicated DJM instrumentation in inspected SDK source; external OL is separate.
+
+Profiling experiments now demonstrate real Java 1.66.0 JFR uploads through unchanged forwarder
+using exact profiling URL override; Python native default and Agent URL-prefix variants fail
+strict backend path contract. Final report in progress. Java artifact checksum recorded in
+`java-runtime.json`; runtime used by product must be taken from product results, not assumed
+from coordinator shell inventory. CI is also exercising manual Java product APIs.
+
+Supplemental integrations-core DBM sources: clean master snapshot
+`916e4f4364609494986417f9a5efc4b3b0281e52`; SDK/Agent original checkouts still preserved.

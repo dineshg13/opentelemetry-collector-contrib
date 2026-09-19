@@ -33,6 +33,13 @@
       "reference": "main",
       "commit": "761050392a732097645b76d9845d36629f1ef3dc",
       "describe": "serverless-init-1.10.3-968-g761050392a7"
+    },
+    {
+      "repository": "DataDog/integrations-core",
+      "path": "/home/bits/dd/integrations-core",
+      "reference": "master",
+      "commit": "916e4f4364609494986417f9a5efc4b3b0281e52",
+      "scope": "Supplemental DBM check/correlation source; clean older snapshot preserved"
     }
   ],
   "runtime": {
