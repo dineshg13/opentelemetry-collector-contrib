@@ -11,11 +11,11 @@ Original checkout and untracked research inputs remain untouched.
 | Live Debugging | `/root/live_debugging` | live-debugging | complete; reviewed in snapshot | pending human sections |
 | LLM Observability | `/root/llm_observability` | llm-observability | complete; reviewed in snapshot | pending human sections |
 | Application Security | `/root/application_security` | application-security | complete; reviewed in snapshot | pending human sections |
-| CI Visibility | `/root/ci_visibility` | ci-visibility | investigating | pending human sections |
+| CI Visibility | `/root/ci_visibility` | ci-visibility | complete; reviewed in snapshot | pending human sections |
 | Data Jobs Monitoring | `/root/data_jobs_monitoring` | data-jobs-monitoring | complete; reviewed in snapshot | pending human sections |
-| Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | investigating | pending human sections |
+| Continuous Profiling | `/root/continuous_profiling` | continuous-profiling | complete; reviewed in snapshot | pending human sections |
 | Database Monitoring | `/root/database_monitoring` | database-monitoring | investigating | pending human sections |
-| Data Streams Monitoring | queued | data-streams-monitoring | queued | pending human sections |
+| Data Streams Monitoring | `/root/data_streams_monitoring` | data-streams-monitoring | investigating | pending human sections |
 
 Product branches use `dinesh.gurumurthy/poc-` + suffix. Product worktrees use
 `/tmp/ddot-research-` + suffix. Shared worktree: `/tmp/ddot-research-shared`.
@@ -115,3 +115,29 @@ from coordinator shell inventory. CI is also exercising manual Java product APIs
 
 Supplemental integrations-core DBM sources: clean master snapshot
 `916e4f4364609494986417f9a5efc4b3b0281e52`; SDK/Agent original checkouts still preserved.
+
+## Fifth product complete; all workstreams assigned
+
+CI commit `37ff6cac1f271277ef8db44bd474bb740fe424dc` assembled in snapshot. Real Python
+legacy/default pytest and real Java 1.66.0 manual APIs through actual forwarder plus bounded
+research adapter validate test hierarchy events, Python coverage, settings/known/skippable/
+test-management requests and git search/packfile. Pinned JS source components have explicit
+stubs. No authenticated backend, full Java/JS test framework or optimization behavior result.
+Current Python default plugin can disable CI while pytest succeeds if discovery is missing;
+legacy fallback behavior must not be generalized to the new plugin.
+
+DSM is now assigned; every product has its own dedicated owner and isolated worktree.
+Independent integration review follows completed profiling; DBM/DSM results will be added
+to its review scope as they land.
+
+## Independent review in progress
+
+Profiling commit `36ab96ae274f3ea9d57c16a5ba3cc0c55ff34357` integrated; six reports
+assembled. Reviewer `/root/integration_review` independently verified critical source claims
+and reran JS CI component checks and all shared forwarder tests successfully.
+
+Resolved findings: Live Debugging singular mode corrected to modes list; CI primary example
+now disabled; historical CI JDK runtime explicitly unrecorded; profiling actual Microsoft
+JDK 21 distinguished from coordinator shell Temurin 25; CI source path portable; documentation
+checker gained source-root override and scope clarification. No product runtime behavior
+changed by these documentation corrections. Full review waits for DBM and DSM reports.
