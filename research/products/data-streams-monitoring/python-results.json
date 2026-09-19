@@ -1,0 +1,118 @@
+{
+  "validation": "local HTTP transport only; no authenticated backend",
+  "cases": [
+    {
+      "case": "configured_api_prefix_is_ignored",
+      "sdk_version": "4.13.0rc1",
+      "requests": 1,
+      "backend_path": "/v0.1/pipeline_stats",
+      "response_status": 404,
+      "content_encoding": "gzip",
+      "payload_keys": [
+        "Env",
+        "Hostname",
+        "Lang",
+        "ProcessTags",
+        "Service",
+        "Stats",
+        "TracerVersion",
+        "Version"
+      ],
+      "point_count": 2,
+      "sketches_are_nonempty_bytes": true,
+      "backlog_values": [
+        8,
+        12
+      ],
+      "propagation_parent_link": true,
+      "adapter_body_unchanged": null,
+      "compressed_body_sha256": "d02bdeef10be0194d3a94ce0186b67563457a66d1134cbb58b129fbe2c6671e7"
+    },
+    {
+      "case": "default_ingress_decompresses",
+      "sdk_version": "4.13.0rc1",
+      "requests": 1,
+      "backend_path": "/v0.1/pipeline_stats",
+      "response_status": 404,
+      "content_encoding": null,
+      "payload_keys": [
+        "Env",
+        "Hostname",
+        "Lang",
+        "ProcessTags",
+        "Service",
+        "Stats",
+        "TracerVersion",
+        "Version"
+      ],
+      "point_count": 2,
+      "sketches_are_nonempty_bytes": true,
+      "backlog_values": [
+        8,
+        12
+      ],
+      "propagation_parent_link": true,
+      "adapter_body_unchanged": null,
+      "compressed_body_sha256": null
+    },
+    {
+      "case": "separate_path_adapter",
+      "sdk_version": "4.13.0rc1",
+      "requests": 1,
+      "backend_path": "/api/v0.1/pipeline_stats",
+      "response_status": 202,
+      "content_encoding": "gzip",
+      "payload_keys": [
+        "Env",
+        "Hostname",
+        "Lang",
+        "ProcessTags",
+        "Service",
+        "Stats",
+        "TracerVersion",
+        "Version"
+      ],
+      "point_count": 2,
+      "sketches_are_nonempty_bytes": true,
+      "backlog_values": [
+        8,
+        12
+      ],
+      "propagation_parent_link": true,
+      "adapter_body_unchanged": true,
+      "compressed_body_sha256": "5d710982ae956e678f069f7b06dee1e13ebdade65bb3e51d889f1b2ae5983d31"
+    },
+    {
+      "case": "backend_503_returns_to_sdk",
+      "sdk_version": "4.13.0rc1",
+      "requests": 1,
+      "backend_path": "/api/v0.1/pipeline_stats",
+      "response_status": 503,
+      "content_encoding": "gzip",
+      "payload_keys": [
+        "Env",
+        "Hostname",
+        "Lang",
+        "ProcessTags",
+        "Service",
+        "Stats",
+        "TracerVersion",
+        "Version"
+      ],
+      "point_count": 2,
+      "sketches_are_nonempty_bytes": true,
+      "backlog_values": [
+        8,
+        12
+      ],
+      "propagation_parent_link": true,
+      "adapter_body_unchanged": true,
+      "compressed_body_sha256": "7800c5de964f61cec56babcf30a09d501ce84e75a1902041309fd1677828444c"
+    },
+    {
+      "case": "sdk_disabled",
+      "sdk_version": "4.13.0rc1",
+      "requests": 0
+    }
+  ]
+}
