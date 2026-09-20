@@ -1,5 +1,9 @@
 # Data Jobs Monitoring implementation
 
+**Backend update, 2026-09-20:** Both exact Spark runs return job health with duration, CPU, shuffle and stage metrics; the PoC application is in the product catalog. Four queried stage plans lack _dd.spark.sql_plan, and the bounded lineage graph has zero edges.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 Status: real OpenLineage jobs run in kind through both Collector alternatives, with real
 US5 intake responses of **201**. Actual Spark 4 SQL execution with Datadog Java 1.66.0
 produces native DJM spans through OTLP and OpenLineage through the product proxy. Local
@@ -209,8 +213,9 @@ its OTLP writer. However `LongRunningTracesTracker.flushAndCompact` still checks
 been established. Short completed Spark jobs work locally; live long-running job views
 need an SDK/backend capability contract and verification before this flag can be enabled.
 
-Product readback is blocked by missing authenticated UI or application-key read access. Verify actual job/performance visibility,
-task metric/histogram interpretation, lineage-to-performance joining, executor coverage
+Authenticated product job health and catalog reads now pass for the PoC. SQL plans are
+missing on four queried stages, and the bounded lineage graph has zero edges. Verify
+complete plan/histogram interpretation, lineage-to-performance joining, executor coverage
 outside `local[2]`, failures and structured streaming before calling DJM complete. Native
 OpenLineage's `emit_spans:false` contract means lineage cannot substitute for missing Spark
 performance spans. JavaScript and Python native DJM product support remain unestablished;
