@@ -1,8 +1,12 @@
 # Live Debugging implementation
 
+**Backend update, 2026-09-20:** Actual snapshots with the exact probe ID and captured locals are stored for both forwarding alternatives. Backend trace correlation, diagnostics readback, signed remote configuration and UI-managed probes remain unverified.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 **Real SDK snapshots and diagnostics reach Datadog through both forwarding
 alternatives. The complete product remains blocked on signed remote configuration
-and authenticated UI/API readback.** This deployment uses a real local probe installed
+and trace correlation/diagnostic/control readback.** This deployment uses a real local probe installed
 by Datadog Python `4.13.0rc1`, actual captured function state, and ordinary OTLP traces.
 It does not emulate probe installation, synthesize snapshots or acknowledge requests
 without a real upstream response.
@@ -20,7 +24,7 @@ flowchart LR
     SDK -->|Ordinary OTLP traces| OTLP[OTLP receiver + OTLP HTTP exporter]
     OTLP --> DD[Real Datadog OTLP intake]
     RC[Signed backend probe configuration] -. not implemented .-> SDK
-    INTAKE -. readback unavailable .-> UI[Datadog Live Debugging UI]
+    INTAKE -. UI workflow unverified .-> UI[Datadog Live Debugging UI]
 ```
 
 ## Run
