@@ -1,0 +1,127 @@
+{
+  "timestamp": "2026-09-19T22:28:46.741564+00:00",
+  "context": "kind-otel-dd",
+  "namespace": "ddot-poc",
+  "product_ui_verified": false,
+  "image_built": true,
+  "workload": "DjmSparkWorkload.java with actual Spark SQL 4.0.0 and Datadog Java 1.66.0",
+  "collector_trace_logging": "Summary only; no claim of per-run Spark attributes or backend job visibility from these logs. Local spark-contract.json proves native Spark attribute preservation.",
+  "jobs": [
+    {
+      "name": "djm-spark",
+      "start_time": "2026-09-19T22:27:06Z",
+      "completion_time": "2026-09-19T22:27:19Z",
+      "succeeded": 1,
+      "node": "otel-dd-worker",
+      "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be",
+      "exit_code": 0,
+      "summary": {
+        "spark_version": "4.0.0",
+        "count": 3,
+        "total": 60
+      },
+      "java_version": "21.0.8",
+      "sdk_version": "1.66.0~a099fffb31",
+      "otlp_traces_export_enabled": true,
+      "agent_url": "http://collector.ddot-poc.svc.cluster.local:8126",
+      "native_djm_enabled": true,
+      "lineage_event_run_ids": [
+        "01a0bbc7-dbdb-7af8-aaaa-971ca116f58c",
+        "01a0bbc7-dbdb-7af8-aaaa-971ca116f58c"
+      ],
+      "native_trace_finish_logged": true
+    },
+    {
+      "name": "djm-spark-alternative",
+      "start_time": "2026-09-19T22:27:34Z",
+      "completion_time": "2026-09-19T22:27:47Z",
+      "succeeded": 1,
+      "node": "otel-dd-worker",
+      "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be",
+      "exit_code": 0,
+      "summary": {
+        "spark_version": "4.0.0",
+        "count": 3,
+        "total": 60
+      },
+      "java_version": "21.0.8",
+      "sdk_version": "1.66.0~a099fffb31",
+      "otlp_traces_export_enabled": true,
+      "agent_url": "http://collector-http-forwarder.ddot-poc.svc.cluster.local:8126",
+      "native_djm_enabled": true,
+      "lineage_event_run_ids": [
+        "01a0bbc8-4cbb-72f9-8067-ccf908e55803",
+        "01a0bbc8-4cbb-72f9-8067-ccf908e55803"
+      ],
+      "native_trace_finish_logged": true
+    },
+    {
+      "name": "djm-spark-disabled",
+      "start_time": "2026-09-19T22:27:34Z",
+      "completion_time": "2026-09-19T22:27:46Z",
+      "succeeded": 1,
+      "node": "otel-dd-worker",
+      "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be",
+      "exit_code": 0,
+      "summary": {
+        "spark_version": "4.0.0",
+        "count": 3,
+        "total": 60
+      },
+      "java_version": "21.0.8",
+      "sdk_version": "1.66.0~a099fffb31",
+      "otlp_traces_export_enabled": true,
+      "agent_url": "http://collector.ddot-poc.svc.cluster.local:8126",
+      "native_djm_enabled": false,
+      "lineage_event_run_ids": [],
+      "native_trace_finish_logged": false
+    },
+    {
+      "name": "djm-spark-alternative-disabled",
+      "start_time": "2026-09-19T22:27:34Z",
+      "completion_time": "2026-09-19T22:27:46Z",
+      "succeeded": 1,
+      "node": "otel-dd-worker",
+      "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be",
+      "exit_code": 0,
+      "summary": {
+        "spark_version": "4.0.0",
+        "count": 3,
+        "total": 60
+      },
+      "java_version": "21.0.8",
+      "sdk_version": "1.66.0~a099fffb31",
+      "otlp_traces_export_enabled": true,
+      "agent_url": "http://collector-http-forwarder.ddot-poc.svc.cluster.local:8126",
+      "native_djm_enabled": false,
+      "lineage_event_run_ids": [],
+      "native_trace_finish_logged": false
+    }
+  ],
+  "lineage_forwards": [
+    {
+      "collector": "collector",
+      "timestamp": "2026-09-19T22:27:13.290Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status_code": 201
+    },
+    {
+      "collector": "collector",
+      "timestamp": "2026-09-19T22:27:16.390Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status_code": 201
+    },
+    {
+      "collector": "collector-http-forwarder",
+      "timestamp": "2026-09-19T22:27:42.152Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status_code": 201
+    },
+    {
+      "collector": "collector-http-forwarder",
+      "timestamp": "2026-09-19T22:27:45.078Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status_code": 201
+    }
+  ]
+}

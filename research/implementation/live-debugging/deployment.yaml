@@ -1,0 +1,91 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debugger-python
+  namespace: ddot-poc
+  labels: &id001
+    app: debugger-python
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debugger-python
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      containers:
+      - name: workload
+        image: ddot-debugger-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_SERVICE
+          value: ddot-debugger-python
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector.ddot-poc.svc.cluster.local:8126
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        ports:
+        - containerPort: 8080
+          name: health
+        readinessProbe:
+          httpGet:
+            port: health
+            path: /
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: '1'
+            memory: 256Mi
+      nodeSelector:
+        kubernetes.io/hostname: otel-dd-worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debugger-python-http-forwarder
+  namespace: ddot-poc
+  labels: &id001
+    app: debugger-python-http-forwarder
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debugger-python-http-forwarder
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      containers:
+      - name: workload
+        image: ddot-debugger-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_SERVICE
+          value: ddot-debugger-python-http-forwarder
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector-http-forwarder.ddot-poc.svc.cluster.local:8126
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector-http-forwarder.ddot-poc.svc.cluster.local:4318/v1/traces
+        ports:
+        - containerPort: 8080
+          name: health
+        readinessProbe:
+          httpGet:
+            port: health
+            path: /
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: '1'
+            memory: 256Mi
+      nodeSelector:
+        kubernetes.io/hostname: otel-dd-worker

@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-09-19T21:55:01.466790+00:00",
+  "component_change_commit": "897414bdca0",
+  "unit_test_command": "GOCACHE=/tmp/ddot-research-go-cache GOMAXPROCS=2 go test ./...",
+  "unit_tests": "passed",
+  "sdk_image_id": "sha256:62417d79b6c44cf84c93fdb76d1460199ec5cfef69593596eb13fdfc8e15aab2",
+  "postgres_image_id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+  "packages": [
+    "bytecode==0.19.0",
+    "ddtrace==4.13.0rc1",
+    "envier==0.6.1",
+    "opentelemetry-api==1.44.0",
+    "psycopg2-binary==2.9.11",
+    "typing_extensions==4.16.0",
+    "wrapt==2.4.1"
+  ],
+  "python": "Python 3.12.13",
+  "database": "PostgreSQL 16.15 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "backend_product_verified": false
+}

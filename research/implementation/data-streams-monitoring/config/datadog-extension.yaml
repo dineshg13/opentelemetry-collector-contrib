@@ -1,0 +1,35 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+extensions:
+  datadog:
+    api:
+      site: ${env:DD_SITE}
+      key: ${env:DD_API_KEY}
+    hostname: ${env:DD_HOSTNAME}
+    product_proxy:
+      endpoint: 0.0.0.0:8126
+      transport: tcp
+      default_env: ddot-poc
+      tags: [env:ddot-poc]
+    products:
+      data_streams_monitoring:
+        enabled: true
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+processors:
+  batch: {}
+exporters:
+  otlphttp:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+service:
+  extensions: [datadog]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]

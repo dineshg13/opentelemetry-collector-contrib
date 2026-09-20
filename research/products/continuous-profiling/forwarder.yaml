@@ -1,0 +1,11 @@
+# CURRENT http_forwarder extension subtree, used by shared/forwarder/main.go.
+# The harness substitutes ephemeral loopback ports. No live credential.
+ingress:
+  endpoint: 127.0.0.1:18426
+  compression_algorithms: []
+egress:
+  endpoint: http://127.0.0.1:18427/api/v2/profile
+  headers:
+    DD-API-KEY: research-only-key
+    X-Datadog-Additional-Tags: host:research-host,default_env:research
+  timeout: 10s

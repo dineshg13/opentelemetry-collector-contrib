@@ -1,0 +1,87 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-python-otlp
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-python-otlp
+  template:
+    metadata:
+      labels:
+        app: llm-python-otlp
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      containers:
+        - name: workload
+          image: ddot-llm-python:poc
+          imagePullPolicy: Never
+          args: [--mode, otlp, --interval, "30"]
+          env:
+            - name: DD_SERVICE
+              value: ddot-llm-python
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+          ports:
+            - containerPort: 8080
+              name: health
+          readinessProbe:
+            httpGet:
+              port: health
+              path: /health
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-python-native
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-python-native
+  template:
+    metadata:
+      labels:
+        app: llm-python-native
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      containers:
+        - name: workload
+          image: ddot-llm-python:poc
+          imagePullPolicy: Never
+          args: [--mode, native, --interval, "30"]
+          env:
+            - name: DD_SERVICE
+              value: ddot-llm-python-native
+            - name: DD_TRACE_AGENT_URL
+              value: http://collector.ddot-poc.svc.cluster.local:8126
+          ports:
+            - containerPort: 8080
+              name: health
+          readinessProbe:
+            httpGet:
+              port: health
+              path: /health
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi

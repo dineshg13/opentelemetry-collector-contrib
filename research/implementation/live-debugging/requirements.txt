@@ -1,0 +1,6 @@
+bytecode==0.19.0
+ddtrace==4.13.0rc1
+envier==0.6.1
+opentelemetry-api==1.44.0
+typing_extensions==4.16.0
+wrapt==2.4.1

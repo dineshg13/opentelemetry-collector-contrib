@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-09-19T22:16:19.417288+00:00",
+  "workload_location": "host runtime through temporary port-forward to kind collector",
+  "context": "kind-otel-dd",
+  "namespace": "ddot-poc",
+  "service": "ddot-djm-spark-kind",
+  "product_ui_verified": false,
+  "spark_container_built": false,
+  "spark_container_blocker": "Docker root filesystem exhausted during image layer export",
+  "workload_summary": {
+    "spark_version": "4.0.0",
+    "count": 3,
+    "total": 60,
+    "exit_code": 0
+  },
+  "collector_trace_logging": "Summary only; per-service Spark span count and IDs are not observable from retained Collector logs.",
+  "otlp_connection_observed": true,
+  "lineage_forwards": [
+    {
+      "timestamp": "2026-09-19T22:10:46.253Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status": 201
+    },
+    {
+      "timestamp": "2026-09-19T22:10:50.093Z",
+      "upstream_host": "data-obs-intake.us5.datadoghq.com",
+      "upstream_status": 201
+    }
+  ],
+  "historical_checkpoint": "This host-run checkpoint preceded successful container build and four native Spark kind jobs; see kind-spark-jobs.json and spark-build.json."
+}

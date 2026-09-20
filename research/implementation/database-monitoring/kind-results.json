@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-09-19T22:01:53.635938+00:00",
+  "context": "kind-otel-dd",
+  "namespace": "ddot-poc",
+  "sdk": "ddtrace 4.13.0rc1",
+  "driver": "psycopg2 2.9.11",
+  "database": "PostgreSQL 16.15",
+  "sdk_sql_contexts_observed": 76,
+  "query_samples_with_ids": 14,
+  "otlp_db_span_contexts": 11,
+  "matched_query_log_and_otlp_span_contexts": 11,
+  "example_matches": [
+    {
+      "trace_id": "6aaf062400000000f81f1976ddcab9a7",
+      "span_id": "f51eee447b835fbe"
+    },
+    {
+      "trace_id": "6aaf062800000000f644fa4b3edd9be1",
+      "span_id": "ddf7d4c944e7e2aa"
+    },
+    {
+      "trace_id": "6aaf062c00000000e6cca2d4b3cb2975",
+      "span_id": "4854493588e3a87e"
+    }
+  ],
+  "postgresql_metrics": true,
+  "top_queries": true,
+  "backend_product_verified": false,
+  "backend_blocker": "Standard OTLP query logs/metrics are not Datadog DBM event-platform payloads; no supported mapping or DBM UI/API readback is available."
+}

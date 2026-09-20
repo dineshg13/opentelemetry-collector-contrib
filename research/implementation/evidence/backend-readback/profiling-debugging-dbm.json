@@ -1,0 +1,530 @@
+{
+  "observed_at": "2026-09-20T12:00:24Z",
+  "window": {
+    "from": "2026-09-19T19:00:00Z",
+    "to": "2026-09-20T12:00:24Z"
+  },
+  "read_only": true,
+  "queries": [
+    {
+      "product": "live_debugging",
+      "kind": "snapshots",
+      "endpoint": "https://api.us5.datadoghq.com/api/v2/logs/events/search",
+      "query": "service:(ddot-debugger-python OR ddot-debugger-python-http-forwarder) env:ddot-poc @debugger.snapshot.probe.id:d086e0b0-38f1-4620-80a9-bb3726b39106",
+      "limit": 5,
+      "http_status": 200,
+      "returned_records": 5,
+      "has_more": true,
+      "records": [
+        {
+          "event_id": "AwAAAaC-sBak6MJxdQAAABhBYUMtc0Jha0FBQU9tbW9ibFhsRmV3QUEAAAAkZjFhMGJlYjAtMTZhNC00ZGFmLWI2MWEtMzgyNDUwODFiNDIxAAAAEA",
+          "timestamp": "2026-09-20T12:00:06.308Z",
+          "service": "ddot-debugger-python-http-forwarder",
+          "has_snapshot": true,
+          "has_diagnostic": false,
+          "has_db_query_text": false,
+          "debugger.snapshot.id": "59435cbb-af08-4f7c-9964-f6787f84f7d2",
+          "debugger.snapshot.probe.id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+          "has_captures_object": true
+        },
+        {
+          "event_id": "AwAAAaC-sBWb4TtxdQAAABhBYUMtc0JXYkFBQU9tbW9ibFhrOTlBQUEAAAAkZjFhMGJlYjAtMTZhNC00ZGFmLWI2MWEtMzgyNDUwODFiNDIxAAAADA",
+          "timestamp": "2026-09-20T12:00:06.043Z",
+          "service": "ddot-debugger-python",
+          "has_snapshot": true,
+          "has_diagnostic": false,
+          "has_db_query_text": false,
+          "debugger.snapshot.id": "611779d2-2615-44c9-8ddc-0a1ecb6750b4",
+          "debugger.snapshot.probe.id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+          "has_captures_object": true
+        },
+        {
+          "event_id": "AwAAAaC-sBLNZT2lOgAAABhBYUMtc0JMTkFBREpFcml4OEZpS3Z3QUEAAAAkZjFhMGJlYjAtMTZhNC00ZGFmLWI2MWEtMzgyNDUwODFiNDIxAAAADQ",
+          "timestamp": "2026-09-20T12:00:05.325Z",
+          "service": "ddot-debugger-python",
+          "has_snapshot": true,
+          "has_diagnostic": false,
+          "has_db_query_text": false,
+          "debugger.snapshot.id": "aabb07e7-fdd0-4bd8-b0b2-d9e0d13b25b7",
+          "debugger.snapshot.probe.id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+          "has_captures_object": true
+        },
+        {
+          "event_id": "AwAAAaC-sAzXLfelOgAAABhBYUMtc0F6WEFBQVNfOXlsZlhNa0VRQUEAAAAkZjFhMGJlYjAtMTZhNC00ZGFmLWI2MWEtMzgyNDUwODFiNDIxAAAAEQ",
+          "timestamp": "2026-09-20T12:00:03.799Z",
+          "service": "ddot-debugger-python-http-forwarder",
+          "has_snapshot": true,
+          "has_diagnostic": false,
+          "has_db_query_text": false,
+          "debugger.snapshot.id": "25620b2e-0889-40ee-a2b4-b56a148b7779",
+          "debugger.snapshot.probe.id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+          "has_captures_object": true
+        },
+        {
+          "event_id": "AwAAAaC-sAluHMalOgAAABhBYUMtc0FsdUFBQVNfOXlsZlhNUzRBQUEAAAAkZjFhMGJlYjAtMTZhNC00ZGFmLWI2MWEtMzgyNDUwODFiNDIxAAAADg",
+          "timestamp": "2026-09-20T12:00:02.926Z",
+          "service": "ddot-debugger-python",
+          "has_snapshot": true,
+          "has_diagnostic": false,
+          "has_db_query_text": false,
+          "debugger.snapshot.id": "91789f2c-4a1d-4739-9b83-61fa5d73bc49",
+          "debugger.snapshot.probe.id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+          "has_captures_object": true
+        }
+      ],
+      "query_succeeded": true,
+      "record_count_scope": "bounded returned rows; not total matches"
+    },
+    {
+      "product": "live_debugging",
+      "kind": "diagnostics",
+      "endpoint": "https://api.us5.datadoghq.com/api/v2/logs/events/search",
+      "query": "service:(ddot-debugger-python OR ddot-debugger-python-http-forwarder) env:ddot-poc @debugger.diagnostics.probeId:d086e0b0-38f1-4620-80a9-bb3726b39106",
+      "limit": 5,
+      "http_status": 200,
+      "returned_records": 0,
+      "has_more": false,
+      "records": [],
+      "query_succeeded": true,
+      "record_count_scope": "bounded returned rows; not total matches"
+    },
+    {
+      "product": "database_monitoring",
+      "kind": "generic_otlp_query_logs",
+      "endpoint": "https://api.us5.datadoghq.com/api/v2/logs/events/search",
+      "query": "@postgresql.application_name:ddot-dbm-python @db.namespace:dbm",
+      "limit": 5,
+      "http_status": 429,
+      "returned_records": 0,
+      "has_more": false,
+      "records": [],
+      "error_codes": [],
+      "query_succeeded": false,
+      "record_count_scope": "no count established: request failed"
+    },
+    {
+      "product": "database_monitoring",
+      "kind": "dbm_activity_product_records",
+      "endpoint": "https://app.us5.datadoghq.com/api/v1/logs-analytics/list?type=databasequery",
+      "query": "dbm_type:activity (service:ddot-dbm-python OR @db.application:ddot-dbm-python OR @db.application_name:ddot-dbm-python OR @postgresql.application_name:ddot-dbm-python OR host:dbm-postgres.ddot-poc.svc.cluster.local)",
+      "limit": 5,
+      "http_status": 200,
+      "returned_records": 0,
+      "records": [],
+      "query_succeeded": true,
+      "record_count_scope": "bounded returned rows; not total matches"
+    },
+    {
+      "product": "database_monitoring",
+      "kind": "dbm_product_records_by_database_or_application",
+      "endpoint": "https://app.us5.datadoghq.com/api/v1/logs-analytics/list?type=databasequery",
+      "query": "(service:ddot-dbm-python OR @db.application:ddot-dbm-python OR @db.application_name:ddot-dbm-python OR @postgresql.application_name:ddot-dbm-python OR host:dbm-postgres* OR (env:ddot-poc AND (@db.name:dbm OR @db.instance:dbm OR @db.namespace:dbm)))",
+      "limit": 5,
+      "http_status": 200,
+      "returned_records": 0,
+      "records": [],
+      "response_top_level_fields": [
+        "elapsed",
+        "hitCount",
+        "requestId",
+        "result",
+        "status",
+        "type"
+      ],
+      "response_result_fields": [
+        "count",
+        "events"
+      ],
+      "expected_events_field_present": true,
+      "query_succeeded": true,
+      "record_count_scope": "bounded returned rows; not total matches"
+    }
+  ],
+  "completed_at": "2026-09-20T12:08:57Z",
+  "site": "us5.datadoghq.com",
+  "credential_handling": "Named Kubernetes Secrets and MCP session headers were held only in memory. Credentials, raw profile stacks, raw captured variables and raw SQL were not retained; known synthetic function names, IDs, bounded counts and field-presence were retained.",
+  "scope": "Continuous Profiling, Live Debugging and Database Monitoring PoC services only. No backend or cluster mutation. No repository edits.",
+  "products": {
+    "live_debugging": {
+      "backend_status": "verified_actual_snapshot_records_for_both_forwarder_variants",
+      "returned_snapshot_count": 5,
+      "returned_snapshot_counts_by_service": {
+        "ddot-debugger-python-http-forwarder": 2,
+        "ddot-debugger-python": 3
+      },
+      "minimum_count_only": true,
+      "proof": "HTTP 200 authenticated Logs Search returned actual debugger.snapshot objects, snapshot IDs, the exact configured probe UUID, and captures objects for both PoC services. These are debugger payloads indexed as logs, not ordinary trace or process-log evidence.",
+      "captures_content_retained": false,
+      "probe_id": "d086e0b0-38f1-4620-80a9-bb3726b39106",
+      "diagnostic_search_returned_records": 0,
+      "diagnostic_search_limit": "No matching diagnostic event was returned by the exact probe/service Logs Search; this does not prove diagnostic intake absence or a searchable diagnostics product surface.",
+      "remaining_limits": [
+        "The probe was installed locally in the real SDK. Cloud-created session/probe delivery through Remote Configuration is not implemented or verified.",
+        "Snapshot UI rendering, captured-variable expansion in the UI, source-code navigation and trace-to-snapshot linking were not verified.",
+        "Captured payload values were withheld. Presence of the captures object was checked; individual variable correctness was not assessed."
+      ],
+      "ui_links": {
+        "live_debugger": "https://us5.datadoghq.com/debugging/",
+        "exact_snapshot_search": "https://us5.datadoghq.com/logs?query=service%3A%28ddot-debugger-python+OR+ddot-debugger-python-http-forwarder%29+env%3Addot-poc+%40debugger.snapshot.probe.id%3Ad086e0b0-38f1-4620-80a9-bb3726b39106&from_ts=1789844400000&to_ts=1789905624000&live=false"
+      },
+      "sources": [
+        "https://docs.datadoghq.com/api/latest/logs/search-logs-post/",
+        "https://docs.datadoghq.com/tracing/live_debugger/",
+        "https://docs.datadoghq.com/mcp_server/tools/"
+      ]
+    },
+    "database_monitoring": {
+      "backend_status": "no_matching_dbm_product_records_in_two_successful_scoped_queries",
+      "dbm_product_query_http_statuses": [
+        200,
+        200
+      ],
+      "dbm_product_returned_counts": [
+        0,
+        0
+      ],
+      "proof": "The documented databasequery analytics endpoint accepted supplied credentials. Both activity-only and any-type searches scoped to the PoC application/database/host returned zero events; the second response explicitly contained result.count and result.events.",
+      "generic_otlp_database_logs_status": "unverified_due_to_HTTP_429; no retries made",
+      "interpretation": "Zero scoped DBM matches is consistent with the implementation gap: the upstream PostgreSQL receiver emits ordinary OTLP logs and metrics, with no DBM event-platform conversion/export contract. This is not a global claim that the organization has no DBM data.",
+      "remaining_limits": [
+        "No DBM query table, query signature, normalized query metric, explain plan or trace-to-database UI link was verified. Query-plan execution is intentionally disabled.",
+        "Earlier local Collector evidence establishes exact SDK query-span correlation, but it does not establish a Datadog DBM product record."
+      ],
+      "credential_note": "Official DBM guidance requires an unscoped application key for built_in_features. This supplied key successfully authorized these reads; no permission blocker was observed.",
+      "ui_links": {
+        "query_samples": "https://us5.datadoghq.com/databases/samples?query=%28service%3Addot-dbm-python+OR+%40db.application%3Addot-dbm-python+OR+%40db.application_name%3Addot-dbm-python+OR+%40postgresql.application_name%3Addot-dbm-python+OR+host%3Adbm-postgres%2A+OR+%28env%3Addot-poc+AND+%28%40db.name%3Adbm+OR+%40db.instance%3Adbm+OR+%40db.namespace%3Adbm%29%29%29&from_ts=1789844400000&to_ts=1789905624000&live=false"
+      },
+      "sources": [
+        "https://docs.datadoghq.com/database_monitoring/guide/build_apps_with_dbm_api/"
+      ]
+    },
+    "continuous_profiling": {
+      "backend_status": "verified_actual_cpu_flamegraphs_for_python_java_and_node",
+      "actual_profile_or_flamegraph_records_read": "Three service-scoped CPU flamegraph results; returned matching stacktrace counts are recorded separately and are not profile upload counts.",
+      "product_read_request_executed": true,
+      "services": [
+        "ddot-profile-python",
+        "ddot-profile-java",
+        "ddot-profile-node"
+      ],
+      "environment": "poc",
+      "documented_read_tools": [
+        "get_profiling_profile_types",
+        "get_profiling_services",
+        "explore_profiling_flame_graph"
+      ],
+      "documented_read_permission": "Continuous Profiler Read",
+      "alternative_attribution_limit": "Both forwarding variants share service/env/version; a time or runtime-ID filter is required to attribute a retrieved profile to a particular variant.",
+      "ui_links": {
+        "ddot-profile-python": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-python+family%3Apython&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28function%3A%22profile_hot_loop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true",
+        "ddot-profile-java": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-java+family%3Ajava&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28method%3A%22profileHotLoop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true",
+        "ddot-profile-node": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-node+family%3Anode&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28function%3A%22profileHotLoop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true"
+      },
+      "sources": [
+        "https://docs.datadoghq.com/mcp_server/tools/",
+        "https://docs.datadoghq.com/getting_started/profiler/",
+        "https://docs.datadoghq.com/profiler/profile_visualizations/",
+        "https://docs.datadoghq.com/mcp_server/setup/?lang_pref=en",
+        "https://docs.datadoghq.com/static/region-redirects.f6139463d7af58e784c5f07f2f1567fddd44ba0dc2f61eb5492f5d5b5556db385858721a0e9ba08e0ddc59c6f76772ed9526980ef67914ed6f25652bc1d864f2.js"
+      ],
+      "proof": "Authenticated official Datadog MCP profile-type and flamegraph read tools returned CPU profiling data with nonzero matching contribution and the exact named synthetic workload functions for all three SDK services.",
+      "mcp_endpoint": "https://mcp.us5.datadoghq.com/v1/mcp?toolsets=profiling",
+      "initialize_http_status": 200,
+      "tools_list_http_status": 200,
+      "profile_type_queries": [
+        {
+          "service": "ddot-profile-python",
+          "query": "env:poc service:ddot-profile-python",
+          "tool": "get_profiling_profile_types",
+          "http_status": 200,
+          "profile_types": [
+            {
+              "family": "python",
+              "profile_type": "lock-hold-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "python",
+              "profile_type": "exception-samples",
+              "unit": "exception"
+            },
+            {
+              "family": "python",
+              "profile_type": "lock-acquire-samples",
+              "unit": "acquire"
+            },
+            {
+              "family": "python",
+              "profile_type": "heap-live-size",
+              "unit": "byte"
+            },
+            {
+              "family": "python",
+              "profile_type": "cpu-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "python",
+              "profile_type": "lock-acquire-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "python",
+              "profile_type": "alloc-size",
+              "unit": "byte"
+            },
+            {
+              "family": "python",
+              "profile_type": "alloc-samples",
+              "unit": "allocation"
+            },
+            {
+              "family": "python",
+              "profile_type": "wall-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "python",
+              "profile_type": "heap-live-samples",
+              "unit": "sample"
+            }
+          ]
+        },
+        {
+          "service": "ddot-profile-java",
+          "query": "env:poc service:ddot-profile-java",
+          "tool": "get_profiling_profile_types",
+          "http_status": 200,
+          "profile_types": [
+            {
+              "family": "java",
+              "profile_type": "socket-write-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "java",
+              "profile_type": "file-io-write-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "alloc-samples",
+              "unit": "allocation"
+            },
+            {
+              "family": "java",
+              "profile_type": "file-io-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "java",
+              "profile_type": "socket-read-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "wall-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "java",
+              "profile_type": "file-io-read-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "cpu-samples",
+              "unit": "sample"
+            },
+            {
+              "family": "java",
+              "profile_type": "exception-samples",
+              "unit": "exception"
+            },
+            {
+              "family": "java",
+              "profile_type": "lock-acquire-samples",
+              "unit": "acquire"
+            },
+            {
+              "family": "java",
+              "profile_type": "thread-creation",
+              "unit": "thread"
+            },
+            {
+              "family": "java",
+              "profile_type": "heap-live-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "cpu-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "java",
+              "profile_type": "direct-alloc-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "lock-acquire-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "java",
+              "profile_type": "socket-write-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "alloc-size",
+              "unit": "byte"
+            },
+            {
+              "family": "java",
+              "profile_type": "heap-live-samples",
+              "unit": "sample"
+            },
+            {
+              "family": "java",
+              "profile_type": "socket-read-time",
+              "unit": "nanosecond"
+            }
+          ]
+        },
+        {
+          "service": "ddot-profile-node",
+          "query": "env:poc service:ddot-profile-node",
+          "tool": "get_profiling_profile_types",
+          "http_status": 200,
+          "profile_types": [
+            {
+              "family": "node",
+              "profile_type": "heap-live-size",
+              "unit": "byte"
+            },
+            {
+              "family": "node",
+              "profile_type": "cpu-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "node",
+              "profile_type": "alloc-size",
+              "unit": "byte"
+            },
+            {
+              "family": "node",
+              "profile_type": "alloc-samples",
+              "unit": "allocation"
+            },
+            {
+              "family": "node",
+              "profile_type": "wall-time",
+              "unit": "nanosecond"
+            },
+            {
+              "family": "node",
+              "profile_type": "heap-live-samples",
+              "unit": "sample"
+            }
+          ]
+        }
+      ],
+      "flamegraph_queries": [
+        {
+          "service": "ddot-profile-python",
+          "tool": "explore_profiling_flame_graph",
+          "arguments": {
+            "queryString": "env:poc service:ddot-profile-python family:python",
+            "profileType": "cpu-time",
+            "frameRegexFilter": "profile_hot_loop",
+            "fromString": "2026-09-19T19:00:00Z",
+            "toString": "2026-09-20T12:00:24Z",
+            "telemetry": {
+              "intent": "Verify backend CPU flamegraph includes the known synthetic workload function."
+            }
+          },
+          "http_status": 200,
+          "rpc_error": null,
+          "tool_is_error": false,
+          "decoded_profiling_data": true,
+          "returned_matching_stacktraces": 3,
+          "matching_application_frames": [
+            "(my-code) /app/app.py:profile_hot_loop.<locals>.<genexpr>:16",
+            "(my-code) /app/app.py:profile_hot_loop:16"
+          ],
+          "nonzero_matching_cpu_contribution": true,
+          "ui_link": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-python+family%3Apython&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28function%3A%22profile_hot_loop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true"
+        },
+        {
+          "service": "ddot-profile-java",
+          "tool": "explore_profiling_flame_graph",
+          "arguments": {
+            "queryString": "env:poc service:ddot-profile-java family:java",
+            "profileType": "cpu-time",
+            "frameRegexFilter": "profileHotLoop",
+            "fromString": "2026-09-19T19:00:00Z",
+            "toString": "2026-09-20T12:00:24Z",
+            "telemetry": {
+              "intent": "Verify backend CPU flamegraph includes the known synthetic workload function."
+            }
+          },
+          "http_status": 200,
+          "rpc_error": null,
+          "tool_is_error": false,
+          "decoded_profiling_data": true,
+          "returned_matching_stacktraces": 1,
+          "matching_application_frames": [
+            "(my-code) UNKNOWN_PACKAGE:ProfileWorkload.profileHotLoop():18,19"
+          ],
+          "nonzero_matching_cpu_contribution": true,
+          "ui_link": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-java+family%3Ajava&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28method%3A%22profileHotLoop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true"
+        },
+        {
+          "service": "ddot-profile-node",
+          "tool": "explore_profiling_flame_graph",
+          "arguments": {
+            "queryString": "env:poc service:ddot-profile-node family:node",
+            "profileType": "cpu-time",
+            "frameRegexFilter": "profileHotLoop",
+            "fromString": "2026-09-19T19:00:00Z",
+            "toString": "2026-09-20T12:00:24Z",
+            "telemetry": {
+              "intent": "Verify backend CPU flamegraph includes the known synthetic workload function."
+            }
+          },
+          "http_status": 200,
+          "rpc_error": null,
+          "tool_is_error": false,
+          "decoded_profiling_data": true,
+          "returned_matching_stacktraces": 1,
+          "matching_application_frames": [
+            "(my-code) /app/app.cjs:profileHotLoop:13"
+          ],
+          "nonzero_matching_cpu_contribution": true,
+          "ui_link": "https://us5.datadoghq.com/profiling/explorer?query=env%3Apoc+service%3Addot-profile-node+family%3Anode&profile_type=cpu-time&profiling-flame-graph__filter=focus_on%28function%3A%22profileHotLoop%22%29&start=1789844400000&end=1789905624000&viz=flame_graph&my_code=enabled&paused=true"
+        }
+      ],
+      "remaining_limits": [
+        "Forwarder-variant attribution remains unverified because both variants share service/env/version and no runtime-ID-to-variant mapping was established.",
+        "Trace-to-profile links and interactive UI navigation remain unverified.",
+        "The result verifies sampled application stacks, not exact uploaded profile counts."
+      ]
+    }
+  },
+  "rate_limit_handling": "The third public Logs Search request returned HTTP 429. No log/APM retries followed; only two separately documented DBM analytics reads were performed afterward.",
+  "source_scripts": [
+    "/tmp/ddot_backend_client.py",
+    "/tmp/ddot_backend_three.py",
+    "/tmp/ddot_backend_dbm.py",
+    "/tmp/ddot_backend_dbm_database.py",
+    "/tmp/ddot_backend_finalize_three.py",
+    "/tmp/ddot_mcp_read_client.py",
+    "/tmp/ddot_mcp_discover_profiling.py",
+    "/tmp/ddot_mcp_profile_types.py",
+    "/tmp/ddot_mcp_profile_flames.py",
+    "/tmp/ddot_mcp_finalize_profiles.py"
+  ]
+}

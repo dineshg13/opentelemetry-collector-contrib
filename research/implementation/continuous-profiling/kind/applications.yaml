@@ -1,0 +1,214 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddot-profile-python
+  namespace: ddot-poc
+  labels:
+    app: ddot-profile-python
+    ddot-product: continuous-profiling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ddot-profile-python
+  template:
+    metadata:
+      labels:
+        app: ddot-profile-python
+        ddot-product: continuous-profiling
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: python
+        image: ddot-profile-python:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector.ddot-poc.svc.cluster.local:8126
+        - name: DD_TRACE_ENABLED
+          value: 'true'
+        - name: OTEL_TRACES_EXPORTER
+          value: otlp
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: DD_PROFILING_ENABLED
+          value: 'true'
+        - name: DD_PROFILING_UPLOAD_INTERVAL
+          value: '10'
+        - name: DD_TRACE_OTEL_ENABLED
+          value: 'true'
+        - name: DD_TRACE_OTEL_EXPORTER
+          value: otlp
+        - name: DD_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: DD_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        resources:
+          requests:
+            cpu: 100m
+            memory: 192Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65532
+        readinessProbe:
+          exec:
+            command:
+            - test
+            - -f
+            - /tmp/ready
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddot-profile-java
+  namespace: ddot-poc
+  labels:
+    app: ddot-profile-java
+    ddot-product: continuous-profiling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ddot-profile-java
+  template:
+    metadata:
+      labels:
+        app: ddot-profile-java
+        ddot-product: continuous-profiling
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: java
+        image: ddot-profile-java:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector.ddot-poc.svc.cluster.local:8126
+        - name: DD_TRACE_ENABLED
+          value: 'true'
+        - name: OTEL_TRACES_EXPORTER
+          value: otlp
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: DD_PROFILING_ENABLED
+          value: 'true'
+        - name: DD_PROFILING_UPLOAD_INTERVAL
+          value: '10'
+        - name: DD_TRACE_OTEL_ENABLED
+          value: 'true'
+        - name: DD_TRACE_OTEL_EXPORTER
+          value: otlp
+        - name: DD_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: DD_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: JAVA_TOOL_OPTIONS
+          value: -Xms64m -Xmx128m -XX:MaxDirectMemorySize=64m
+        resources:
+          requests:
+            cpu: 100m
+            memory: 192Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65532
+        readinessProbe:
+          exec:
+            command:
+            - test
+            - -f
+            - /tmp/ready
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: profile-tmp
+          mountPath: /tmp
+      securityContext:
+        fsGroup: 65532
+      volumes:
+      - name: profile-tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddot-profile-node
+  namespace: ddot-poc
+  labels:
+    app: ddot-profile-node
+    ddot-product: continuous-profiling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ddot-profile-node
+  template:
+    metadata:
+      labels:
+        app: ddot-profile-node
+        ddot-product: continuous-profiling
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: node
+        image: ddot-profile-node:poc
+        imagePullPolicy: Never
+        env:
+        - name: DD_TRACE_AGENT_URL
+          value: http://collector.ddot-poc.svc.cluster.local:8126
+        - name: DD_TRACE_ENABLED
+          value: 'true'
+        - name: OTEL_TRACES_EXPORTER
+          value: otlp
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        - name: DD_PROFILING_ENABLED
+          value: 'true'
+        - name: DD_PROFILING_UPLOAD_INTERVAL
+          value: '10'
+        - name: DD_TRACE_OTEL_ENABLED
+          value: 'true'
+        - name: DD_TRACE_OTEL_EXPORTER
+          value: otlp
+        - name: DD_OTLP_TRACES_PROTOCOL
+          value: http/json
+        - name: DD_OTLP_TRACES_ENDPOINT
+          value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+        resources:
+          requests:
+            cpu: 100m
+            memory: 192Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65532
+        readinessProbe:
+          exec:
+            command:
+            - test
+            - -f
+            - /tmp/ready
+          initialDelaySeconds: 5
+          periodSeconds: 5

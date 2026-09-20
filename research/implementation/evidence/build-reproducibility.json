@@ -1,0 +1,21 @@
+{
+  "scope": "Both clean-source binary rebuilds match the binaries used to build the already-executed kind images. No image rebuild or new rollout was needed.",
+  "variants": [
+    {
+      "variant": "datadog-extension",
+      "clean_source_commit": "f34e6a129cbbbce1fb4566a89adf1f642a6ec9e0",
+      "clean_binary_sha256": "aeb184b125d75b944dbb396103132ab2c5d211315a56f05c4f2a737cf4b33f98",
+      "executed_image_id": "sha256:6df0454008d20583944ebc4112297c27d250b0a4a4a7b912b99c406a9aff07dd",
+      "matches_executed_binary": true,
+      "image_rebuilt": false
+    },
+    {
+      "variant": "http-forwarder",
+      "clean_source_commit": "f34e6a129cbbbce1fb4566a89adf1f642a6ec9e0",
+      "clean_binary_sha256": "c20ba3e8a82bb35477fd3e78a9f2c5ddd3da076085884841cbe76aea4affc72a",
+      "executed_image_id": "sha256:2aa861951e4024115c3beed5672406679610f080029a24488af80545dddbfbf0",
+      "matches_executed_binary": true,
+      "image_rebuilt": false
+    }
+  ]
+}

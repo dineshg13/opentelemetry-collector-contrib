@@ -1,0 +1,5 @@
+change_type: enhancement
+component: httpforwarderextension
+note: Add exact HTTP routes with header matching, endpoint rewriting, static responses and response status mapping.
+issues: []
+subtext: ''

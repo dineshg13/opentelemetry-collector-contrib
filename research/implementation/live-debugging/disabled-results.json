@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-09-19T22:11:47.949655+00:00",
+  "sdk_dynamic_instrumentation_enabled": false,
+  "checks": [
+    {
+      "application": "debugger-python",
+      "job": "debugger-disabled-phbzh",
+      "activity_iterations": 5,
+      "debugger_uploads": 0,
+      "ordinary_otlp_configured": true
+    },
+    {
+      "application": "debugger-python-http-forwarder",
+      "job": "debugger-disabled-rlhmm",
+      "activity_iterations": 5,
+      "debugger_uploads": 0,
+      "ordinary_otlp_configured": true
+    }
+  ],
+  "scope": "SDK opt-out; route-gate tests belong to shared forwarding component validation",
+  "backend_product_verified": false
+}

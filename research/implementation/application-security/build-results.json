@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-19T21:56:43.399218+00:00",
+  "images": [
+    {
+      "tag": "ddot-appsec-python:poc",
+      "id": "sha256:e55f49cca1c993625efa0e92d5988c1163361e58ef29464e259ab96838fb3ec6"
+    },
+    {
+      "tag": "ddot-appsec-node:poc",
+      "id": "sha256:78433aad918006a0e5311dbf84c822e0aa2ee0f0070f8a4e7166c7398c1b0cd1"
+    }
+  ],
+  "collector_binary_sha256": "aeb184b125d75b944dbb396103132ab2c5d211315a56f05c4f2a737cf4b33f98",
+  "kind_deployment": "coordinator-owned; see combined evidence",
+  "backend_verified": false
+}

@@ -1,0 +1,52 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Apply only after the native Spark image has been built and loaded to otel-dd-worker.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: djm-spark
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: djm-spark
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: otel-dd-worker
+      # Hadoop's UnixLoginModule needs a passwd entry; Ubuntu supplies nobody at 65534.
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+      restartPolicy: Never
+      containers:
+        - name: spark
+          image: ddot-djm-spark:poc
+          imagePullPolicy: Never
+          # Spark 4 creates its artifacts directory relative to the working directory.
+          workingDir: /tmp
+          env:
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+            - name: DD_TRACE_AGENT_URL
+              value: http://collector.ddot-poc.svc.cluster.local:8126
+            - name: DD_AGENT_HOST
+              value: collector.ddot-poc.svc.cluster.local
+            - name: DD_TRACE_AGENT_PORT
+              value: "8126"
+            - name: SPARK_LOCAL_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi

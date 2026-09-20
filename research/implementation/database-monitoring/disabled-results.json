@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-09-19T22:02:05.432014+00:00",
+  "job": "dbm-disabled-42ccf",
+  "queries": 2,
+  "sql_trace_contexts": 0,
+  "ordinary_otlp_export_configured": true,
+  "backend_product_verified": false
+}

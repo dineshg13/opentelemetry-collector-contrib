@@ -1,0 +1,730 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:8126
+      compression_algorithms: []
+      max_request_body_size: 33554432
+    egress:
+      endpoint: https://api.${env:DD_SITE}
+    routes:
+    - path: /profiling/v1/input
+      method: POST
+      endpoint: https://intake.profile.${env:DD_SITE}/api/v2/profile
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      response_status:
+        202: 200
+    - path: /v0.1/pipeline_stats
+      method: POST
+      endpoint: https://trace.agent.${env:DD_SITE}/api/v0.1/pipeline_stats
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+    - path: /openlineage/api/v1/lineage
+      method: POST
+      endpoint: https://data-obs-intake.${env:DD_SITE}/api/v1/lineage?api-version=2
+      headers:
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        Authorization: Bearer ${env:DD_API_KEY}
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      - DD-API-KEY
+    - path: /evp_proxy/v2/api/v2/llmobs
+      method: POST
+      endpoint: https://llmobs-intake.${env:DD_SITE}/api/v2/llmobs
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: llmobs-intake
+    - path: /evp_proxy/v4/api/v2/llmobs
+      method: POST
+      endpoint: https://llmobs-intake.${env:DD_SITE}/api/v2/llmobs
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: llmobs-intake
+    - path: /evp_proxy/v2/api/intake/llm-obs/v1/eval-metric
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v1/eval-metric
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/intake/llm-obs/v1/eval-metric
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v1/eval-metric
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/intake/llm-obs/v2/eval-metric
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v2/eval-metric
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/intake/llm-obs/v2/eval-metric
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/intake/llm-obs/v2/eval-metric
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/citestcycle
+      method: POST
+      endpoint: https://citestcycle-intake.${env:DD_SITE}/api/v2/citestcycle
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: citestcycle-intake
+    - path: /evp_proxy/v4/api/v2/citestcycle
+      method: POST
+      endpoint: https://citestcycle-intake.${env:DD_SITE}/api/v2/citestcycle
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: citestcycle-intake
+    - path: /evp_proxy/v2/api/v2/citestcov
+      method: POST
+      endpoint: https://citestcov-intake.${env:DD_SITE}/api/v2/citestcov
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: citestcov-intake
+    - path: /evp_proxy/v4/api/v2/citestcov
+      method: POST
+      endpoint: https://citestcov-intake.${env:DD_SITE}/api/v2/citestcov
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: citestcov-intake
+    - path: /evp_proxy/v2/api/v2/cicovreprt
+      method: POST
+      endpoint: https://ci-intake.${env:DD_SITE}/api/v2/cicovreprt
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: ci-intake
+    - path: /evp_proxy/v4/api/v2/cicovreprt
+      method: POST
+      endpoint: https://ci-intake.${env:DD_SITE}/api/v2/cicovreprt
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: ci-intake
+    - path: /evp_proxy/v2/api/v2/libraries/tests/services/setting
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/libraries/tests/services/setting
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/libraries/tests/services/setting
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/libraries/tests/services/setting
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/ci/tests/skippable
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/tests/skippable
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/ci/tests/skippable
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/tests/skippable
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/ci/libraries/tests
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/libraries/tests
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/ci/libraries/tests
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/libraries/tests
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/ci/libraries/tests/flaky
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/libraries/tests/flaky
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/ci/libraries/tests/flaky
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/ci/libraries/tests/flaky
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/test/libraries/test-management/tests
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/test/libraries/test-management/tests
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/test/libraries/test-management/tests
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/test/libraries/test-management/tests
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/git/repository/search_commits
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/git/repository/search_commits
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/git/repository/search_commits
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/git/repository/search_commits
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v2/api/v2/git/repository/packfile
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/git/repository/packfile
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /evp_proxy/v4/api/v2/git/repository/packfile
+      method: POST
+      endpoint: https://api.${env:DD_SITE}/api/v2/git/repository/packfile
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      match_headers:
+        X-Datadog-EVP-Subdomain: api
+    - path: /debugger/v1/input
+      method: POST
+      endpoint: https://http-intake.logs.${env:DD_SITE}/api/v2/logs
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /debugger/v1/diagnostics
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /debugger/v2/input
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-debugger
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /symdb/v1/input
+      method: POST
+      endpoint: https://debugger-intake.${env:DD_SITE}/api/v2/debugger
+      headers:
+        DD-API-KEY: ${env:DD_API_KEY}
+        X-Datadog-Hostname: ${env:DD_HOSTNAME}
+        X-Datadog-AgentDefaultEnv: ddot-poc
+        X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+        DD-EVP-ORIGIN: agent-symdb
+      remove_headers:
+      - Authorization
+      - DD-APPLICATION-KEY
+      - Cookie
+      - X-Datadog-EVP-Subdomain
+      - X-Datadog-NeedsAppKey
+      - X-Forwarded-For
+      - X-Forwarded-Host
+      - X-Forwarded-Proto
+      append_query:
+        ddtags: host:${env:DD_HOSTNAME},default_env:ddot-poc,env:ddot-poc
+      request_id_header: DD-REQUEST-ID
+    - path: /info
+      method: GET
+      response:
+        status: 200
+        headers:
+          Content-Type: application/json
+        body: '{"endpoints":["/profiling/v1/input","/v0.1/pipeline_stats","/openlineage/api/v1/lineage","/evp_proxy/v2/","/evp_proxy/v4/","/debugger/v1/input","/debugger/v1/diagnostics","/debugger/v2/input","/symdb/v1/input"],"client_drop_p0s":false,"span_meta_structs":false,"long_running_spans":false,"version":"otel-collector-product-proxy","config":{"default_env":"ddot-poc"}}'
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 768
+    spike_limit_mib: 192
+  resource/poc:
+    attributes:
+    - key: deployment.environment.name
+      value: ddot-poc
+      action: upsert
+    - key: host.name
+      value: ${env:DD_HOSTNAME}
+      action: insert
+  batch:
+    timeout: 2s
+    send_batch_size: 512
+exporters:
+  otlp_http/datadog:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+      dd-otel-config: '{"traces":{"compute_stats":true}}'
+  debug:
+    verbosity: basic
+service:
+  telemetry:
+    logs:
+      level: debug
+      sampling:
+        enabled: false
+    metrics:
+      readers:
+      - pull:
+          exporter:
+            prometheus:
+              host: 0.0.0.0
+              port: 8888
+  extensions:
+  - health_check
+  - http_forwarder
+  pipelines:
+    traces:
+      receivers:
+      - otlp
+      processors:
+      - memory_limiter
+      - resource/poc
+      - batch
+      exporters:
+      - otlp_http/datadog
+      - debug
+    metrics:
+      receivers:
+      - otlp
+      processors:
+      - memory_limiter
+      - resource/poc
+      - batch
+      exporters:
+      - otlp_http/datadog
+      - debug
+    logs:
+      receivers:
+      - otlp
+      processors:
+      - memory_limiter
+      - resource/poc
+      - batch
+      exporters:
+      - otlp_http/datadog
+      - debug

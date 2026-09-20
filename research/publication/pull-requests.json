@@ -1,0 +1,81 @@
+{
+  "repository": "dineshg13/opentelemetry-collector-contrib",
+  "products": [
+    {
+      "slug": "live-debugging",
+      "product": "Live Debugging",
+      "head": "dinesh.gurumurthy/poc-live-debugging",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11",
+      "number": 11
+    },
+    {
+      "slug": "llm-observability",
+      "product": "LLM Observability",
+      "head": "dinesh.gurumurthy/poc-llm-observability",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12",
+      "number": 12
+    },
+    {
+      "slug": "application-security",
+      "product": "Application Security",
+      "head": "dinesh.gurumurthy/poc-application-security",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13",
+      "number": 13
+    },
+    {
+      "slug": "ci-visibility",
+      "product": "CI Visibility",
+      "head": "dinesh.gurumurthy/poc-ci-visibility",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14",
+      "number": 14
+    },
+    {
+      "slug": "data-jobs-monitoring",
+      "product": "Data Jobs Monitoring",
+      "head": "dinesh.gurumurthy/poc-data-jobs-monitoring",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15",
+      "number": 15
+    },
+    {
+      "slug": "continuous-profiling",
+      "product": "Continuous Profiling",
+      "head": "dinesh.gurumurthy/poc-continuous-profiling",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16",
+      "number": 16
+    },
+    {
+      "slug": "database-monitoring",
+      "product": "Database Monitoring",
+      "head": "dinesh.gurumurthy/poc-database-monitoring",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17",
+      "number": 17
+    },
+    {
+      "slug": "data-streams-monitoring",
+      "product": "Data Streams Monitoring",
+      "head": "dinesh.gurumurthy/poc-data-streams-monitoring",
+      "base": "dinesh.gurumurthy/poc-all-products",
+      "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18",
+      "number": 18
+    }
+  ],
+  "integration": {
+    "head": "dinesh.gurumurthy/poc-all-products",
+    "base": "main",
+    "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/20",
+    "number": 20
+  },
+  "superseded_integration": {
+    "head": "dinesh.gurumurthy/poc-review-snapshot",
+    "base": "main",
+    "url": "https://github.com/dineshg13/opentelemetry-collector-contrib/pull/19",
+    "number": 19
+  }
+}

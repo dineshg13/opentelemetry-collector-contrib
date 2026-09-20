@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-09-19T22:09:40.827847+00:00",
+  "image": "ddot-ci-python:poc",
+  "image_id": "sha256:6fb6fde0fac0722dd65e4a4259e956b79a677a7b6455c4359cdd0a4ef3bb84a5",
+  "collector_binary_sha256": "aeb184b125d75b944dbb396103132ab2c5d211315a56f05c4f2a737cf4b33f98",
+  "collector_configs_validated": [
+    "collector.yaml",
+    "collector-http-forwarder.yaml"
+  ],
+  "backend_verified": false
+}

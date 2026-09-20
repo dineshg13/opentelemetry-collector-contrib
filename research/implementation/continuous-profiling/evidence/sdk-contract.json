@@ -1,0 +1,271 @@
+{
+  "timestamp": "2026-09-19T21:35:57.351834+00:00",
+  "kind": "local SDK contract test, not Datadog backend",
+  "enabled": [
+    {
+      "language": "python",
+      "exit_code": 0,
+      "stdout": "{\"language\": \"python\", \"sdk\": \"4.13.0rc1\", \"profiling\": true, \"otlp_tracing\": true}\n{\"complete\": true, \"checksum_positive\": true}\n",
+      "stderr": "",
+      "profile_count": 4,
+      "otlp_trace_batches": 14,
+      "native_trace_requests": 0,
+      "passed": true,
+      "profile_requests": [
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 26668,
+          "content_type": "multipart/form-data; boundary=6802fd9a8e0de80d-d4115baf6871748e-eb6b2ac09ae6c044-3ed6c863f6fedb97",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2315
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 605
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 23175
+            }
+          ],
+          "family": "python",
+          "attachments": [
+            "code-provenance.json",
+            "profile.pprof"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 27116,
+          "content_type": "multipart/form-data; boundary=7f6f6a94b9048e2c-2430a0a98c648aec-8533c6af65b883ab-969b0ddb42dad194",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2315
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 605
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 23623
+            }
+          ],
+          "family": "python",
+          "attachments": [
+            "code-provenance.json",
+            "profile.pprof"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 31848,
+          "content_type": "multipart/form-data; boundary=0d3a73daf21726c6-3797dcc3357ba58c-c37f9c573d832042-ba035fe03f61e1fc",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2315
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 605
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 28355
+            }
+          ],
+          "family": "python",
+          "attachments": [
+            "code-provenance.json",
+            "profile.pprof"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 18670,
+          "content_type": "multipart/form-data; boundary=fff397ff2d14489e-aa44ab93ec1e7c7f-36c849d387a03a65-18ab25ba767dd54d",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 2314
+            },
+            {
+              "filename": "code-provenance.json",
+              "bytes": 605
+            },
+            {
+              "filename": "profile.pprof",
+              "bytes": 15178
+            }
+          ],
+          "family": "python",
+          "attachments": [
+            "code-provenance.json",
+            "profile.pprof"
+          ]
+        }
+      ],
+      "otlp_trace_samples": [
+        {
+          "path": "/v1/traces",
+          "bytes": 9055,
+          "content_type": "application/json",
+          "span_count": 8
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 9055,
+          "content_type": "application/json",
+          "span_count": 8
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 7993,
+          "content_type": "application/json",
+          "span_count": 7
+        }
+      ],
+      "total_requests": 18
+    },
+    {
+      "language": "node",
+      "exit_code": 0,
+      "stdout": "{\"language\":\"node\",\"sdk\":\"6.16.0\",\"profiling\":\"true\",\"otlp_tracing\":true}\n{\"complete\":true,\"checksum_positive\":true}\n",
+      "stderr": "",
+      "profile_count": 3,
+      "otlp_trace_batches": 278,
+      "native_trace_requests": 0,
+      "passed": true,
+      "profile_requests": [
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 16497,
+          "content_type": "multipart/form-data; boundary=78a90d313ce0dae1",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 1708
+            },
+            {
+              "filename": "events.pprof",
+              "bytes": 324
+            },
+            {
+              "filename": "space.pprof",
+              "bytes": 3509
+            },
+            {
+              "filename": "wall.pprof",
+              "bytes": 10389
+            }
+          ],
+          "family": "node",
+          "attachments": [
+            "events.pprof",
+            "space.pprof",
+            "wall.pprof"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 16377,
+          "content_type": "multipart/form-data; boundary=10b933abd7f41795",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 1710
+            },
+            {
+              "filename": "space.pprof",
+              "bytes": 4379
+            },
+            {
+              "filename": "wall.pprof",
+              "bytes": 9598
+            },
+            {
+              "filename": "events.pprof",
+              "bytes": 123
+            }
+          ],
+          "family": "node",
+          "attachments": [
+            "space.pprof",
+            "wall.pprof",
+            "events.pprof"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 14793,
+          "content_type": "multipart/form-data; boundary=08bd55fc8f432bfb",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 1710
+            },
+            {
+              "filename": "events.pprof",
+              "bytes": 301
+            },
+            {
+              "filename": "space.pprof",
+              "bytes": 4441
+            },
+            {
+              "filename": "wall.pprof",
+              "bytes": 7774
+            }
+          ],
+          "family": "node",
+          "attachments": [
+            "events.pprof",
+            "space.pprof",
+            "wall.pprof"
+          ]
+        }
+      ],
+      "otlp_trace_samples": [
+        {
+          "path": "/v1/traces",
+          "bytes": 2117,
+          "content_type": "application/json",
+          "span_count": 1
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 2117,
+          "content_type": "application/json",
+          "span_count": 1
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 2117,
+          "content_type": "application/json",
+          "span_count": 1
+        }
+      ],
+      "total_requests": 282
+    }
+  ],
+  "disabled": [
+    {
+      "language": "python",
+      "profile_requests": 0,
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "language": "node",
+      "profile_requests": 0,
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "passed": true,
+  "note": "Python and Node portion of first execution. Initial Java image permissions corrected; see java-contract.json for subsequent passing/failed result."
+}

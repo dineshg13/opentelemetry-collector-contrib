@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-09-19T22:28:38.223148+00:00",
+  "backend_verified": false,
+  "logs_metrics_enabled": true,
+  "scope": "Real SDKs through the actual standard OTLP Collector receiver/batch/exporter; local semantic assertions",
+  "checks": [
+    {
+      "language": "python",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 1,
+      "counter_points_with_value_3": 1,
+      "paths": [
+        "/v1/logs",
+        "/v1/metrics",
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\": \"python\", \"trace_id\": \"6aaf0c8c000000001a6c053fb5642c7f\", \"span_id\": \"51287e6dfcb68b94\"}\npython: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "",
+      "all_signals_verified": true,
+      "log_trace_id_matches": true,
+      "log_span_id_matches": true,
+      "expected_signals_verified": true
+    },
+    {
+      "language": "javascript",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 1,
+      "counter_points_with_value_3": 1,
+      "paths": [
+        "/v1/logs",
+        "/v1/metrics",
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\":\"javascript\",\"trace_id\":\"6aaf0c8d00000000640da409bb11f691\",\"span_id\":\"640da409bb11f691\"}\n{\"logger_provider\":\"LoggerProvider\",\"meter_provider\":\"MeterProvider\"}\njavascript: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "",
+      "all_signals_verified": true,
+      "log_trace_id_matches": true,
+      "log_span_id_matches": true,
+      "expected_signals_verified": true
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 1,
+      "counter_points_with_value_3": 1,
+      "paths": [
+        "/v1/logs",
+        "/v1/metrics",
+        "/v1/traces"
+      ],
+      "stdout": "{\"language\":\"java\",\"trace_id\":\"6aaf0c910000000059399e42899624ba\",\"span_id\":\"161dc4544fe914df\"}\njava: executed trace, log and counter API calls",
+      "stderr_without_startup_inventory": "OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended\n[dd.trace 2026-09-19 22:28:33:224 +0000] [dd-task-scheduler] WARN datadog.trace.agent.common.metrics.MetricsAggregatorFactory - Both OTLP trace span metrics and native tracer metrics are enabled; using OTLP export and ignoring native tracer metrics (the two are mutually exclusive).",
+      "all_signals_verified": true,
+      "log_trace_id_matches": true,
+      "log_span_id_matches": true,
+      "expected_signals_verified": true
+    }
+  ]
+}

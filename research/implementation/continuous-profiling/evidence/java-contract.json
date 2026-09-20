@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-09-19T21:39:32.551308+00:00",
+  "kind": "local SDK contract test, not Datadog backend",
+  "enabled": [
+    {
+      "language": "java",
+      "exit_code": 0,
+      "stdout": "{\"language\":\"java\",\"sdk\":\"1.66.0\",\"otlp_tracing\":true}\n{\"complete\":true,\"checksum_positive\":true}\n",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended\n[dd.trace 2026-09-19 21:39:09:154 +0000] [main] WARN datadog.trace.bootstrap.config.provider.OtelEnvironmentConfigSource - Both DD_OTLP_TRACES_PROTOCOL and OTEL_EXPORTER_OTLP_TRACES_PROTOCOL are set, ignoring OTEL_EXPORTER_OTLP_TRACES_PROTOCOL\n[dd.trace 2026-09-19 21:39:09:157 +0000] [main] WARN datadog.trace.bootstrap.config.provider.OtelEnvironmentConfigSource - Both DD_OTLP_TRACES_ENDPOINT and OTEL_EXPORTER_OTLP_TRACES_ENDPOINT are set, ignoring OTEL_EXPORTER_OTLP_TRACES_ENDPOINT\n[dd.trace 2026-09-19 21:39:09:176 +0000] [main] INFO com.datadog.profiling.agent.ProcessContext - Registering process context for OTel profiler\n[dd.trace 2026-09-19 21:39:09:945 +0000] [main] INFO com.datadog.appsec.config.AppSecConfigServiceImpl - Remote config is disabled; AppSec will not be able to use it\n[dd.trace 2026-09-19 21:39:10:007 +0000] [main] INFO com.datadog.profiling.agent.ProcessContext - Registering process context for OTel profiler\n[dd.trace 2026-09-19 21:39:10:425 +0000] [dd-task-scheduler] INFO datadog.trace.agent.core.StatusLogger - DATADOG TRACER CONFIGURATION {\"version\":\"1.66.0~a099fffb31\",\"os_name\":\"Linux\",\"os_version\":\"6.8.0-1057-aws\",\"architecture\":\"aarch64\",\"lang\":\"jvm\",\"lang_version\":\"21.0.8\",\"jvm_vendor\":\"Eclipse Adoptium\",\"jvm_version\":\"21.0.8+9-LTS\",\"java_class_version\":\"65.0\",\"http_nonProxyHosts\":\"null\",\"http_proxyHost\":\"null\",\"enabled\":true,\"service\":\"ddot-profile-java\",\"agent_url\":\"http://127.0.0.1:37965\",\"agent_error\":false,\"debug\":false,\"trace_propagation_style_extract\":[\"datadog\",\"tracecontext\",\"baggage\"],\"trace_propagation_style_inject\":[\"datadog\",\"tracecontext\",\"baggage\"],\"analytics_enabled\":false,\"priority_sampling_enabled\":true,\"logs_correlation_enabled\":true,\"profiling_enabled\":true,\"remote_config_enabled\":false,\"debugger_enabled\":false,\"debugger_exception_enabled\":false,\"debugger_span_origin_enabled\":true,\"debugger_distributed_debugger_enabled\":false,\"appsec_enabled\":\"ENABLED_INACTIVE\",\"rasp_enabled\":true,\"telemetry_enabled\":false,\"telemetry_dependency_collection_enabled\":true,\"telemetry_log_collection_enabled\":false,\"dd_version\":\"1\",\"health_checks_enabled\":false,\"configuration_file\":\"no config file present\",\"runtime_id\":\"1a24c06f-ce3e-4d82-a476-0a5a03ccc3a0\",\"logging_settings\":{\"levelInBrackets\":false,\"dateTimeFormat\":\"'[dd.trace 'yyyy-MM-dd HH:mm:ss:SSS Z']'\",\"logFile\":\"System.err\",\"configurationFile\":\"simplelogger.properties\",\"showShortLogName\":false,\"showDateTime\":true,\"showLogName\":true,\"jsonEnabled\":false,\"showThreadName\":true,\"defaultLogLevel\":\"INFO\",\"warnLevelString\":\"WARN\",\"embedException\":false},\"cws_enabled\":false,\"cws_tls_refresh\":5000,\"datadog_profiler_enabled\":true,\"datadog_profiler_safe\":true,\"datadog_profiler_enabled_overridden\":false,\"data_streams_enabled\":false,\"otlp_traces_export_enabled\":true,\"otlp_metrics_export_enabled\":false,\"otlp_logs_export_enabled\":false,\"app_logs_collection_enabled\":false}\n",
+      "profile_requests": [
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 91841,
+          "content_type": "multipart/form-data; boundary=681f6a5b-f638-452f-8836-cc4534bac835",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 542
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 90941
+            }
+          ],
+          "family": "java",
+          "attachments": [
+            "main.jfr"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 92384,
+          "content_type": "multipart/form-data; boundary=e66efdb0-d9b6-488d-814b-d5e16252ae60",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 542
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 91484
+            }
+          ],
+          "family": "java",
+          "attachments": [
+            "main.jfr"
+          ]
+        },
+        {
+          "path": "/profiling/v1/input",
+          "bytes": 94256,
+          "content_type": "multipart/form-data; boundary=824acabb-f8ea-48ea-9ca8-f7acab7659d7",
+          "parts": [
+            {
+              "filename": "event.json",
+              "bytes": 545
+            },
+            {
+              "filename": "main.jfr",
+              "bytes": 93353
+            }
+          ],
+          "family": "java",
+          "attachments": [
+            "main.jfr"
+          ]
+        }
+      ],
+      "otlp_trace_samples": [
+        {
+          "path": "/v1/traces",
+          "bytes": 12315,
+          "content_type": "application/json",
+          "span_count": 7
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 23998,
+          "content_type": "application/json",
+          "span_count": 14
+        },
+        {
+          "path": "/v1/traces",
+          "bytes": 23998,
+          "content_type": "application/json",
+          "span_count": 14
+        }
+      ],
+      "total_requests": 17,
+      "profile_count": 3,
+      "otlp_trace_batches": 14,
+      "native_trace_requests": 0,
+      "passed": true
+    }
+  ],
+  "disabled": [
+    {
+      "language": "java",
+      "profile_requests": 0,
+      "otlp_trace_batches": 7,
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "passed": true
+}

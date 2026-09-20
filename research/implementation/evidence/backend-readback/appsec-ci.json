@@ -1,0 +1,1038 @@
+{
+  "timestamp": "2026-09-20T11:58:20.723362+00:00",
+  "site": "us5.datadoghq.com",
+  "scope": "Authenticated read-only exact PoC service searches; allowlisted attributes only",
+  "documentation": [
+    "https://docs.datadoghq.com/api/latest/ci-visibility-tests/search-tests-events/",
+    "https://docs.datadoghq.com/api/latest/security-monitoring/get-a-list-of-security-signals/",
+    "https://docs.datadoghq.com/api/latest/spans/search-spans/",
+    "https://docs.datadoghq.com/security/application_security/threat_protection/security_signals/",
+    "https://docs.datadoghq.com/security/application_security/troubleshooting/"
+  ],
+  "searches": [
+    {
+      "category": "ci-test-events",
+      "service": "ddot-ci-python-datadog-extension",
+      "method": "POST",
+      "path": "/api/v2/ci/tests/events/search",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "@test.service:ddot-ci-python-datadog-extension"
+        },
+        "page": {
+          "limit": 20
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 10,
+      "has_more": false,
+      "records": [],
+      "sample_note": "Same exact query repeated below as ci-test-event-correlation to extract lifecycle/status/version and timestamp fields.",
+      "stored_sample_count": 0
+    },
+    {
+      "category": "ci-test-events",
+      "service": "ddot-ci-python-http-forwarder",
+      "method": "POST",
+      "path": "/api/v2/ci/tests/events/search",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "@test.service:ddot-ci-python-http-forwarder"
+        },
+        "page": {
+          "limit": 20
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 10,
+      "has_more": false,
+      "records": [],
+      "sample_note": "Same exact query repeated below as ci-test-event-correlation to extract lifecycle/status/version and timestamp fields.",
+      "stored_sample_count": 0
+    },
+    {
+      "category": "security-signals",
+      "service": "ddot-appsec-python",
+      "method": "POST",
+      "path": "/api/v2/security_monitoring/signals/search",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "service:ddot-appsec-python"
+        },
+        "page": {
+          "limit": 10
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 0,
+      "has_more": false,
+      "records": [],
+      "stored_sample_count": 0
+    },
+    {
+      "category": "ordinary-apm-spans",
+      "service": "ddot-appsec-python",
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-python"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 5,
+      "has_more": true,
+      "records": [
+        {
+          "id": "AaC-rRWRAADld7Qf9V6la0gv",
+          "type": "spans",
+          "fields": {
+            "end_timestamp": "2026-09-20T11:56:47.609Z",
+            "env": "ddot-poc",
+            "operation_name": "flask.response",
+            "resource_name": "flask.response",
+            "service": "ddot-appsec-python",
+            "span_id": "3354449828407282335",
+            "start_timestamp": "2026-09-20T11:56:47.608Z",
+            "trace_id": "6aafc9ff000000002f486a34db982e05"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AaC-rRWRAABWQlTbtdag4Egv",
+          "type": "spans",
+          "fields": {
+            "end_timestamp": "2026-09-20T11:56:47.609Z",
+            "env": "ddot-poc",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "7560048357171814448",
+            "start_timestamp": "2026-09-20T11:56:47.606Z",
+            "trace_id": "6aafc9ff000000002f486a34db982e05"
+          },
+          "security_attribute_keys": [
+            "custom.api.security.response_key_count"
+          ]
+        }
+      ],
+      "stored_sample_count": 2
+    },
+    {
+      "category": "security-signals",
+      "service": "ddot-appsec-node",
+      "method": "POST",
+      "path": "/api/v2/security_monitoring/signals/search",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "service:ddot-appsec-node"
+        },
+        "page": {
+          "limit": 10
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 0,
+      "has_more": false,
+      "records": [],
+      "stored_sample_count": 0
+    },
+    {
+      "category": "ordinary-apm-spans",
+      "service": "ddot-appsec-node",
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-node"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 5,
+      "has_more": true,
+      "records": [
+        {
+          "id": "AaC7sl_2AADM7A6S1mJnMI9K",
+          "type": "spans",
+          "fields": {
+            "end_timestamp": "2026-09-19T22:03:42.529Z",
+            "env": "ddot-poc",
+            "operation_name": "http.request",
+            "resource_name": "GET",
+            "service": "ddot-appsec-node",
+            "span_id": "5372558384002185822",
+            "start_timestamp": "2026-09-19T22:03:42.517Z",
+            "trace_id": "6aaf06be000000004a8f29629d7f3a5e"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AaC7sl_2AABEBzzaKUfd2o9K",
+          "type": "spans",
+          "fields": {
+            "end_timestamp": "2026-09-19T22:03:42.524Z",
+            "env": "ddot-poc",
+            "operation_name": "web.request",
+            "resource_name": "GET",
+            "service": "ddot-appsec-node",
+            "span_id": "4852170687849417706",
+            "start_timestamp": "2026-09-19T22:03:42.523Z",
+            "trace_id": "6aaf06be000000004a8f29629d7f3a5e"
+          },
+          "security_attribute_keys": []
+        }
+      ],
+      "stored_sample_count": 2
+    },
+    {
+      "category": "appsec-tagged-apm-spans",
+      "service": "ddot-appsec-python",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-python @appsec.event:true"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 5,
+      "has_more": true,
+      "records": [
+        {
+          "id": "AaC-q7XnAAA5m90CKKFjSFca",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "end_timestamp": "2026-09-20T11:55:17.595Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "1800960000756935856",
+            "start_timestamp": "2026-09-20T11:55:17.594Z",
+            "trace_id": "6aafc9a5000000001a57e6c59c23f039"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        },
+        {
+          "id": "AaC-qst2AAC9eZLunwdVz9w_",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "end_timestamp": "2026-09-20T11:54:17.585Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "3324909372023816104",
+            "start_timestamp": "2026-09-20T11:54:17.584Z",
+            "trace_id": "6aafc969000000003fdcbce3a514c9f3"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        }
+      ],
+      "stored_sample_count": 2
+    },
+    {
+      "category": "scanner-request-apm-spans",
+      "service": "ddot-appsec-python",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-python @http.useragent:dd-test-scanner-log"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 5,
+      "has_more": true,
+      "records": [
+        {
+          "id": "AaC-q7XnAAA5m90CKKFjSFca",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "end_timestamp": "2026-09-20T11:55:17.595Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "1800960000756935856",
+            "start_timestamp": "2026-09-20T11:55:17.594Z",
+            "trace_id": "6aafc9a5000000001a57e6c59c23f039"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        },
+        {
+          "id": "AaC-qst2AAC9eZLunwdVz9w_",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "end_timestamp": "2026-09-20T11:54:17.585Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "3324909372023816104",
+            "start_timestamp": "2026-09-20T11:54:17.584Z",
+            "trace_id": "6aafc969000000003fdcbce3a514c9f3"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        }
+      ],
+      "stored_sample_count": 2
+    },
+    {
+      "category": "appsec-tagged-apm-spans",
+      "service": "ddot-appsec-node",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-node @appsec.event:true"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 1,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AaC7slA9AACcBPQdvaVoTJIx",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "service": "ddot-appsec-node",
+            "end_timestamp": "2026-09-19T22:03:38.74Z",
+            "operation_name": "web.request",
+            "resource_name": "GET",
+            "span_id": "6139676280843085476",
+            "start_timestamp": "2026-09-19T22:03:38.739Z",
+            "trace_id": "6aaf06ba00000000319254995e7f989c"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        }
+      ],
+      "stored_sample_count": 1
+    },
+    {
+      "category": "scanner-request-apm-spans",
+      "service": "ddot-appsec-node",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-node @http.useragent:dd-test-scanner-log"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 1,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AaC7slA9AACcBPQdvaVoTJIx",
+          "type": "spans",
+          "fields": {
+            "appsec.event": "true",
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "dd-test-scanner-log",
+            "http.useragent": "dd-test-scanner-log",
+            "service": "ddot-appsec-node",
+            "end_timestamp": "2026-09-19T22:03:38.74Z",
+            "operation_name": "web.request",
+            "resource_name": "GET",
+            "span_id": "6139676280843085476",
+            "start_timestamp": "2026-09-19T22:03:38.739Z",
+            "trace_id": "6aaf06ba00000000319254995e7f989c"
+          },
+          "security_attribute_keys": [
+            "custom.appsec.event"
+          ]
+        }
+      ],
+      "stored_sample_count": 1
+    },
+    {
+      "category": "ci-test-event-correlation",
+      "service": "ddot-ci-python-datadog-extension",
+      "path": "/api/v2/ci/tests/events/search",
+      "method": "POST",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "@test.service:ddot-ci-python-datadog-extension"
+        },
+        "page": {
+          "limit": 20
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 10,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AwAAAaC7x2jDbvhxdQAAABhBYUM3eDJrQ0FBRGk5TGJ3RHdOS0RYaG0AAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAABQ",
+          "type": "citest",
+          "fields": {
+            "test_level": "suite",
+            "test_suite.fingerprint": "690c3fe35879da4d",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-datadog-extension",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803008902282,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "3b154a9530f77a19",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.008902+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jDQd0YCwAAABhBYUM3eDJrQ0FBQjJBc25MdU0wRFVvSVcAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAACQ",
+          "type": "citest",
+          "fields": {
+            "test_level": "test",
+            "test_suite.fingerprint": "690c3fe35879da4d",
+            "test.module": "",
+            "test.type": "test",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-datadog-extension",
+            "test.name": "test_skipped",
+            "test.status": "skip",
+            "start": 1789856803010746434,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "3b154a9530f77a19",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.010746+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jDHToCtAAAABhBYUM3eDJrQ0FBQkxaVnV2NzZSMV8zaG0AAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAAAw",
+          "type": "citest",
+          "fields": {
+            "test_level": "session",
+            "test.framework": "pytest",
+            "test.service": "ddot-ci-python-datadog-extension",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803001171907,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "3b154a9530f77a19",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.001172+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jDyXF7QAAAABhBYUM3eDJrQ0FBRDFHRmxVZ1ZSY25IaG0AAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAAAQ",
+          "type": "citest",
+          "fields": {
+            "test_level": "module",
+            "test.framework": "pytest",
+            "test.service": "ddot-ci-python-datadog-extension",
+            "test.module": "",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803008886005,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "3b154a9530f77a19",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.008886+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jCMMyQFQAAABhBYUM3eDJrQ0FBQlhnczdNZGppUXJISFgAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAABw",
+          "type": "citest",
+          "fields": {
+            "test_level": "test",
+            "test_suite.fingerprint": "690c3fe35879da4d",
+            "test.module": "",
+            "test.type": "test",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-datadog-extension",
+            "test.name": "test_addition",
+            "test.status": "pass",
+            "start": 1789856803009166786,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "3b154a9530f77a19",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.009167+00:00"
+          },
+          "security_attribute_keys": []
+        }
+      ],
+      "sample_note": "One example per lifecycle/test/status combination; full bounded response breakdown is in summary.",
+      "stored_sample_count": 5
+    },
+    {
+      "category": "ci-ordinary-apm-spans",
+      "service": "ddot-ci-python-datadog-extension",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-ci-python-datadog-extension operation_name:poc.ci.ordinary-operation"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 0,
+      "has_more": false,
+      "records": [],
+      "stored_sample_count": 0
+    },
+    {
+      "category": "ci-test-event-correlation",
+      "service": "ddot-ci-python-http-forwarder",
+      "path": "/api/v2/ci/tests/events/search",
+      "method": "POST",
+      "request": {
+        "filter": {
+          "from": "2026-09-19T18:00:00Z",
+          "to": "2026-09-20T12:00:00Z",
+          "query": "@test.service:ddot-ci-python-http-forwarder"
+        },
+        "page": {
+          "limit": 20
+        },
+        "sort": "-timestamp"
+      },
+      "http_status": 200,
+      "record_count": 10,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AwAAAaC7x2jPNHqlOgAAABhBYUM3eDJrRUFBQV9HU05sTE1scVlkRHMAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAAAA",
+          "type": "citest",
+          "fields": {
+            "test_level": "module",
+            "test.framework": "pytest",
+            "test.service": "ddot-ci-python-http-forwarder",
+            "test.module": "",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803021017184,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "abd4b8d2f60f3e51",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.021017+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jPLkSlOgAAABhBYUM3eDJrRUFBQTZSTkRscEFfTmd5LWUAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAACA",
+          "type": "citest",
+          "fields": {
+            "test_level": "test",
+            "test_suite.fingerprint": "6ca8f9f67752906b",
+            "test.module": "",
+            "test.type": "test",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-http-forwarder",
+            "test.name": "test_skipped",
+            "test.status": "skip",
+            "start": 1789856803022891848,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "abd4b8d2f60f3e51",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.022892+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jP317pfwAAABhBYUM3eDJrRUFBQ3BLNVM2WUpWSzdORHMAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAAAg",
+          "type": "citest",
+          "fields": {
+            "test_level": "session",
+            "test.framework": "pytest",
+            "test.service": "ddot-ci-python-http-forwarder",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803013011890,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "abd4b8d2f60f3e51",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.013012+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jP1f7pfwAAABhBYUM3eDJrRUFBQUNnc0VCdDRMRi1kRHMAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAABA",
+          "type": "citest",
+          "fields": {
+            "test_level": "suite",
+            "test_suite.fingerprint": "6ca8f9f67752906b",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-http-forwarder",
+            "test.type": "test",
+            "test.status": "pass",
+            "start": 1789856803021033756,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "abd4b8d2f60f3e51",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.021034+00:00"
+          },
+          "security_attribute_keys": []
+        },
+        {
+          "id": "AwAAAaC7x2jOypulOgAAABhBYUM3eDJrRUFBRGlHZ0NHQ0RSRjZ1ZXEAAAAkZjFhMGJiYzctNjhjZi00MjQ0LWFjNjctYWZiYjVkNDcyYjkzAAAABg",
+          "type": "citest",
+          "fields": {
+            "test_level": "test",
+            "test_suite.fingerprint": "6ca8f9f67752906b",
+            "test.module": "",
+            "test.type": "test",
+            "test.framework": "pytest",
+            "test.suite": "test_workload.py",
+            "test.service": "ddot-ci-python-http-forwarder",
+            "test.name": "test_addition",
+            "test.status": "pass",
+            "start": 1789856803021304184,
+            "env": "ddot-poc",
+            "test_session.fingerprint": "abd4b8d2f60f3e51",
+            "library_version": "4.13.0rc1",
+            "git.commit.sha": "37e9700de89e41510ab2d63606e5d960a3242b38",
+            "start_timestamp_utc": "2026-09-19T22:26:43.021304+00:00"
+          },
+          "security_attribute_keys": []
+        }
+      ],
+      "sample_note": "One example per lifecycle/test/status combination; full bounded response breakdown is in summary.",
+      "stored_sample_count": 5
+    },
+    {
+      "category": "ci-ordinary-apm-spans",
+      "service": "ddot-ci-python-http-forwarder",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-ci-python-http-forwarder operation_name:poc.ci.ordinary-operation"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 0,
+      "has_more": false,
+      "records": [],
+      "stored_sample_count": 0
+    },
+    {
+      "category": "ci-service-apm-spans",
+      "service": "ddot-ci-python-datadog-extension",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-ci-python-datadog-extension"
+            },
+            "page": {
+              "limit": 10
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 1,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AaC7vIl_AADopco96mK_qBOG",
+          "type": "spans",
+          "fields": {
+            "env": "ddot-poc",
+            "end_timestamp": "2026-09-19T22:14:48.37Z",
+            "operation_name": "poc.ci.ordinary_operation",
+            "resource_name": "poc.ci.ordinary-operation",
+            "service": "ddot-ci-python-datadog-extension",
+            "span_id": "12674561674749588400",
+            "start_timestamp": "2026-09-19T22:14:48.37Z",
+            "trace_id": "6aaf09580000000086137c69464eb583"
+          },
+          "security_attribute_keys": []
+        }
+      ],
+      "stored_sample_count": 1
+    },
+    {
+      "category": "ci-service-apm-spans",
+      "service": "ddot-ci-python-http-forwarder",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-ci-python-http-forwarder"
+            },
+            "page": {
+              "limit": 10
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 1,
+      "has_more": false,
+      "records": [
+        {
+          "id": "AaC7vIl_AACNE8jVwKwTKsSt",
+          "type": "spans",
+          "fields": {
+            "env": "ddot-poc",
+            "end_timestamp": "2026-09-19T22:14:48.332Z",
+            "operation_name": "poc.ci.ordinary_operation",
+            "resource_name": "poc.ci.ordinary-operation",
+            "service": "ddot-ci-python-http-forwarder",
+            "span_id": "6346696274552040460",
+            "start_timestamp": "2026-09-19T22:14:48.332Z",
+            "trace_id": "6aaf095800000000adc418051b0d97e1"
+          },
+          "security_attribute_keys": []
+        }
+      ],
+      "stored_sample_count": 1
+    },
+    {
+      "category": "appsec-api-schema-apm-spans",
+      "service": "ddot-appsec-python",
+      "path": "/api/v2/spans/events/search",
+      "method": "POST",
+      "request": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T18:00:00Z",
+              "to": "2026-09-20T12:00:00Z",
+              "query": "service:ddot-appsec-python @schema.source:*"
+            },
+            "page": {
+              "limit": 10
+            },
+            "sort": "-timestamp"
+          }
+        }
+      },
+      "http_status": 200,
+      "record_count": 10,
+      "has_more": true,
+      "records": [
+        {
+          "id": "AaC-rRWRAABWQlTbtdag4Egv",
+          "type": "spans",
+          "fields": {
+            "api.security.response_key_count": 1,
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "ddot-benign-fixture",
+            "http.useragent": "ddot-benign-fixture",
+            "schema.id": "f032bfbdef5411d558f2f5341d223586",
+            "schema.source": "asm",
+            "schema.type": "openapi",
+            "end_timestamp": "2026-09-20T11:56:47.609Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /fixture",
+            "service": "ddot-appsec-python",
+            "span_id": "7560048357171814448",
+            "start_timestamp": "2026-09-20T11:56:47.606Z",
+            "trace_id": "6aafc9ff000000002f486a34db982e05"
+          },
+          "security_attribute_keys": [
+            "custom.api.security.response_key_count"
+          ]
+        },
+        {
+          "id": "AaC-rCsgAAAMI3YHk2ffVjnO",
+          "type": "spans",
+          "fields": {
+            "api.security.response_key_count": 1,
+            "env": "ddot-poc",
+            "http.request.headers.user-agent": "kube-probe/1.36",
+            "http.useragent": "kube-probe/1.36",
+            "schema.id": "2389cd5e4ca2ae80e1bb48807745d892",
+            "schema.source": "asm",
+            "schema.type": "openapi",
+            "end_timestamp": "2026-09-20T11:55:48.515Z",
+            "operation_name": "flask.request",
+            "resource_name": "GET /health",
+            "service": "ddot-appsec-python",
+            "span_id": "2603515834470508201",
+            "start_timestamp": "2026-09-20T11:55:48.513Z",
+            "trace_id": "6aafc9c400000000ce399bfe7836c960"
+          },
+          "security_attribute_keys": [
+            "custom.api.security.response_key_count"
+          ]
+        }
+      ],
+      "stored_sample_count": 2
+    }
+  ],
+  "last_query_timestamp": "2026-09-20T12:01:12.788009+00:00",
+  "summary": {
+    "ci_visibility": [
+      {
+        "service": "ddot-ci-python-datadog-extension",
+        "stored_event_count": 10,
+        "event_breakdown": [
+          {
+            "level": "module",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "session",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "suite",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "test",
+            "test_name": "test_addition",
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "test",
+            "test_name": "test_skipped",
+            "status": "skip",
+            "count": 2
+          }
+        ],
+        "library_versions": [
+          "4.13.0rc1"
+        ],
+        "ordinary_apm_spans_found": 1
+      },
+      {
+        "service": "ddot-ci-python-http-forwarder",
+        "stored_event_count": 10,
+        "event_breakdown": [
+          {
+            "level": "module",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "session",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "suite",
+            "test_name": null,
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "test",
+            "test_name": "test_addition",
+            "status": "pass",
+            "count": 2
+          },
+          {
+            "level": "test",
+            "test_name": "test_skipped",
+            "status": "skip",
+            "count": 2
+          }
+        ],
+        "library_versions": [
+          "4.13.0rc1"
+        ],
+        "ordinary_apm_spans_found": 1
+      }
+    ],
+    "application_security": [
+      {
+        "service": "ddot-appsec-python",
+        "returned_appsec_marker_spans": 5,
+        "scanner_useragent_matches": true,
+        "security_signal_query_returned_records": 0,
+        "signal_absence_proven": false,
+        "python_asm_openapi_schema_metadata_observed": true
+      },
+      {
+        "service": "ddot-appsec-node",
+        "returned_appsec_marker_spans": 1,
+        "scanner_useragent_matches": true,
+        "security_signal_query_returned_records": 0,
+        "signal_absence_proven": false,
+        "python_asm_openapi_schema_metadata_observed": false
+      }
+    ],
+    "limitations": [
+      "All searches are read-only and restricted to exact PoC services and the recorded time window. Result counts are bounded returned records, not aggregate totals.",
+      "APM search reads indexed spans. Empty results under a query or security-signal API do not establish that detections, raw traces, or product records are absent elsewhere.",
+      "The first CI APM query used operation_name:poc.ci.ordinary-operation and returned zero. Exact-service followup found resource_name:poc.ci.ordinary-operation with normalized operation_name:poc.ci.ordinary_operation.",
+      "CI stored lifecycle/pass/skip events and ordinary APM spans are verified. Shared trace/session parent correlation, coverage UI, test-management behavior, Java compatibility and Node framework parity remain unverified.",
+      "AppSec stored scanner-request markers and Python ASM/OpenAPI schema metadata are verified. Full WAF trigger/rule findings, AAP service/API inventory, security-signal correlation, RC/blocking, IAST/RASP and Java parity remain unverified.",
+      "No missing-credential blocker remains for the three queried endpoints: every recorded response was HTTP200. Product-specific UI and correlation remain distinct validation gaps."
+    ]
+  },
+  "query_execution_notes": [
+    "One Node appsec-tagged query was repeated after a local parser did not handle null pagination metadata; the completed repeat is recorded.",
+    "All backend queries stopped after coordinator reported account search rate limits in other workstreams. No 429 occurred in the recorded AppSec/CI requests."
+  ],
+  "source_scripts": [
+    "/tmp/ddot_backend_appsec_ci.py",
+    "/tmp/ddot_backend_appsec_ci_followup.py",
+    "/tmp/ddot_backend_appsec_ci_extra.py"
+  ]
+}

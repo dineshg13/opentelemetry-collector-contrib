@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-09-19T21:54:40.950138+00:00",
+  "scope": "actual SDK images against local HTTP wire fixture",
+  "backend_verified": false,
+  "checks": [
+    {
+      "language": "python",
+      "enabled": true,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 1,
+      "pathway_points": 4,
+      "linked_points": true,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v0.1/pipeline_stats",
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 0, \"producer_hash\": 7133959521526319588, \"consumer_hash\": 13896206670220814781, \"propagation\": {\"dd-pathway-ctx-base64\": \"5ImXMmPqAGOmudC6l2imudC6l2g=\"}, \"workload\": \"manual-in-process-checkpoints\"}",
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 1, \"producer_hash\": 3082163636081570341, \"consumer_hash\": 8299286221375471748, \"propagation\": {\"dd-pathway-ctx-base64\": \"JbJEPH8LxiqmudC6l2jUu9C6l2g=\"}, \"workload\": \"manual-in-process-checkpoints\"}"
+      ]
+    },
+    {
+      "language": "python",
+      "enabled": false,
+      "advertise_pipeline_stats": true,
+      "stats_requests": 0,
+      "pathway_points": 0,
+      "linked_points": false,
+      "otlp_spans": 4,
+      "native_trace_requests": 0,
+      "empty_native_discovery_probes": [],
+      "paths": [
+        "/v1/traces"
+      ],
+      "stdout": [
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 0, \"producer_hash\": null, \"consumer_hash\": null, \"propagation\": {}, \"workload\": \"manual-in-process-checkpoints\"}",
+        "{\"sdk\": \"ddtrace\", \"version\": \"4.13.0rc1\", \"sequence\": 1, \"producer_hash\": null, \"consumer_hash\": null, \"propagation\": {}, \"workload\": \"manual-in-process-checkpoints\"}"
+      ]
+    }
+  ]
+}

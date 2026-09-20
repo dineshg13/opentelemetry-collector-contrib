@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-09-19T22:16:37.617383+00:00",
+  "backend_verified": false,
+  "scope": "Real Node 6.16.0 SDK through the actual standard OTLP Collector using HTTP/JSON logs: missing correlated log; HTTP/protobuf passes in local-results.json",
+  "checks": [
+    {
+      "language": "javascript",
+      "exit_code": 0,
+      "trace_spans": 1,
+      "log_records": 0,
+      "counter_points_with_value_3": 1,
+      "paths": [
+        "/v1/metrics",
+        "/v1/traces"
+      ],
+      "stdout": "{\"logger_provider\":\"LoggerProvider\",\"meter_provider\":\"MeterProvider\"}\njavascript: emitted trace, log and counter through Datadog-configured providers",
+      "all_signals_verified": false
+    }
+  ]
+}

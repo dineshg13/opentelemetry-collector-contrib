@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-09-19T22:25:53.222919+00:00",
+  "context": "kind-otel-dd",
+  "namespace": "ddot-poc",
+  "collector_ready_replicas": 1,
+  "scope": "Host SDK processes through port-forward to actual kind Collector using real Datadog export destinations",
+  "backend_product_readback_verified": false,
+  "counter_attribution": "Aggregate counters include concurrent PoC traffic; workload IDs support later readback, not exact per-workload backend attribution",
+  "baseline_counters": {
+    "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"}": 332.0,
+    "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"}": 833.0,
+    "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"}": 3803.0,
+    "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"}": 3830.0,
+    "otelcol_receiver_refused_spans{receiver=\"otlp\",transport=\"http\"}": 0.0
+  },
+  "final_counters": {
+    "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"}": 394.0,
+    "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"}": 991.0,
+    "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"}": 4601.0,
+    "otelcol_receiver_accepted_log_records{receiver=\"otlp\",transport=\"http\"}": 3.0,
+    "otelcol_receiver_accepted_metric_points{receiver=\"otlp\",transport=\"http\"}": 5.0,
+    "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"}": 4644.0,
+    "otelcol_receiver_refused_log_records{receiver=\"otlp\",transport=\"http\"}": 0.0,
+    "otelcol_receiver_refused_metric_points{receiver=\"otlp\",transport=\"http\"}": 0.0,
+    "otelcol_receiver_refused_spans{receiver=\"otlp\",transport=\"http\"}": 0.0
+  },
+  "runs": [
+    {
+      "language": "python",
+      "exit_code": 0,
+      "stdout": "{\"language\": \"python\", \"trace_id\": \"6aaf0bdf00000000b70a3f91f01c03a4\", \"span_id\": \"961853fe3b81db91\"}\npython: emitted trace, log and counter through Datadog-configured providers",
+      "stderr_without_startup_inventory": "",
+      "counter_deltas": {
+        "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"}": 22.0,
+        "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"}": 36.0,
+        "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"}": 173.0,
+        "otelcol_receiver_accepted_log_records{receiver=\"otlp\",transport=\"http\"}": 1.0,
+        "otelcol_receiver_accepted_metric_points{receiver=\"otlp\",transport=\"http\"}": 2.0,
+        "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"}": 159.0
+      }
+    },
+    {
+      "language": "javascript",
+      "exit_code": 0,
+      "stdout": "{\"language\":\"javascript\",\"trace_id\":\"6aaf0be300000000134b0b2e5bbfcb02\",\"span_id\":\"134b0b2e5bbfcb02\"}\n{\"logger_provider\":\"LoggerProvider\",\"meter_provider\":\"MeterProvider\"}\njavascript: emitted trace, log and counter through Datadog-configured providers",
+      "stderr_without_startup_inventory": "",
+      "counter_deltas": {
+        "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"}": 11.0,
+        "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"}": 52.0,
+        "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"}": 274.0,
+        "otelcol_receiver_accepted_log_records{receiver=\"otlp\",transport=\"http\"}": 1.0,
+        "otelcol_receiver_accepted_metric_points{receiver=\"otlp\",transport=\"http\"}": 1.0,
+        "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"}": 291.0
+      }
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "stdout": "{\"language\":\"java\",\"trace_id\":\"6aaf0bea0000000022a28f7e3fb8a7ba\",\"span_id\":\"55f395293273ed3f\"}\njava: emitted trace, log and counter through Datadog API shims",
+      "stderr_without_startup_inventory": "OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended\n[dd.trace 2026-09-19 22:25:45:968 +0000] [dd-task-scheduler] WARN datadog.trace.agent.common.metrics.MetricsAggregatorFactory - Both OTLP trace span metrics and native tracer metrics are enabled; using OTLP export and ignoring native tracer metrics (the two are mutually exclusive).",
+      "counter_deltas": {
+        "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"}": 29.0,
+        "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"}": 70.0,
+        "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"}": 351.0,
+        "otelcol_receiver_accepted_log_records{receiver=\"otlp\",transport=\"http\"}": 1.0,
+        "otelcol_receiver_accepted_metric_points{receiver=\"otlp\",transport=\"http\"}": 2.0,
+        "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"}": 350.0
+      }
+    }
+  ]
+}
