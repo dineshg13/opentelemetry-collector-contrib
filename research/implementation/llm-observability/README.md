@@ -1,8 +1,12 @@
 # LLM Observability implementation
 
-Status: runnable Python, Java and JavaScript Datadog SDK workloads built; actual SDK OTLP
-wire tests passed. Kind deployment and real Datadog product readback are **pending** the
-coordinator's combined Collector deployment. This is not completed end-to-end validation.
+**Backend update, 2026-09-20:** All eight language/mode/Collector workloads have matching LLM product records, correct token counts and expected input/output; both Python native evaluations have score 1. This verifies the deterministic core PoC, not every LLM feature.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
+Status: real SDK workloads build and run in kind. Authenticated product queries now verify
+the implemented deterministic LLM paths through both Collector alternatives. Broader
+automatic instrumentation and product-feature coverage were not exercised.
 Product PR: [#12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12).
 
 The ordinary trace path uses the SDK's own OTLP writer, the upstream OTLP receiver,
@@ -144,14 +148,13 @@ independent LLM Node image was built.
 
 ## Remaining evidence
 
-The coordinator found a usable US5 API key and is building the combined Collector. No
-application key or authenticated product UI/readback session was supplied. API-key
-validity alone cannot establish LLM product entitlement or query the resulting product
-state. Remaining checks are actual kind readiness, successful forwarding through both
-alternatives, native gate rejection, OTLP conversion suppression, backend observation
-fields and a score attached to the native LLM span. Record these against emitted trace
-and span IDs. Until then this product remains incomplete; HTTP 2xx is not the completion
-criterion.
+Kind execution, both forwarding alternatives, product gates and explicit OTLP conversion
+disable checks are recorded in the combined evidence. Authenticated September 20 queries
+match all eight workload identities, observations, session tags and native score evaluations.
+Node identity matching uses its emitted low 64 trace bits plus exact span ID; the original
+OTLP trace ID is retained in `otel.trace_id` when LLM conversion assigns another trace ID.
+Browser UI, real provider automatic instrumentation, Java/Node native evaluation paths and
+other product features remain outside the verified deterministic PoC.
 
 Source references for the selected writers: Python `ddtrace/internal/writer/writer.py`
 and `ddtrace/internal/settings/_opentelemetry.py`; Java `WriterFactory.java`, `Config.java`
