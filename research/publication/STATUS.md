@@ -11,8 +11,8 @@ uses `dinesh.gurumurthy/poc-all-products` into the fork's `main`, as new-instr.m
 The obsolete research-only #19 is closed without merge; its historical branch is retained.
 All active drafts target the user's fork `dineshg13/opentelemetry-collector-contrib`.
 
-All eight products remain incomplete because backend product behavior is unverified,
-with additional documented SDK, DBM mapping and remote-control gaps. Product changes are
+Authenticated readback now verifies six core product paths; full eight-product coverage
+remains incomplete because of the documented AppSec, DBM, SDK/control and feature gaps. Product changes are
 staged in the combined branch for joint execution; product PRs retain scoped nonempty
 reviewable diffs and remain unmerged drafts. No PR was marked ready or merged, no issue/PR
 comments were posted, and fork `main` remains at `16fa3257d56c299e115a558b1a668018a39990d5`.

@@ -10,7 +10,9 @@ No tracking issue was provided. Targets `dinesh.gurumurthy/poc-all-products`; [c
 
 #### Testing
 
-Real Python ddtrace 4.13.0rc1 workloads ran through both kind alternatives and received 202 for captured, trace-correlated snapshots and installed diagnostics. SDK-disabled jobs produced zero uploads. Transport-integrity tests preserve real errors and Retry-After. Exact backend product readback is unverified.
+Real Python ddtrace 4.13.0rc1 workloads ran through both kind alternatives and received 202 for captured, trace-correlated snapshots and installed diagnostics. SDK-disabled jobs produced zero uploads. Transport-integrity tests preserve real errors and Retry-After. Backend trace correlation and remote control remain unverified.
+
+**Authenticated readback, 2026-09-20:** Actual snapshots with the exact probe ID and captured locals are stored for both forwarding alternatives. Backend trace correlation, diagnostics readback, signed remote configuration and UI-managed probes remain unverified. [Evidence and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md).
 
 #### Documentation
 

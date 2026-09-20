@@ -2,8 +2,10 @@
 
 This implementation follows [new-instr.md](../new-instr.md). It builds two real Collector
 distributions, runs synthetic SDK workloads in `kind-otel-dd`, and uses real Datadog US5
-intakes. **All eight products remain incomplete until their product behavior is verified
-in Datadog.** Intake acceptance, local fixtures and ready pods are reported separately.
+intakes. **Full verification across all eight products remains incomplete.** September 20
+authenticated readback now verifies six core product paths, with partial AppSec evidence
+and no positive DBM product record. [The backend matrix](backend-readback/README.md)
+separates that proof from remaining gaps, intake acceptance and local fixtures.
 
 ## Implemented architecture
 
@@ -47,22 +49,23 @@ are accepted on native trace endpoints.
 
 | Product | Runnable path and exercised SDKs | Remaining product boundary |
 | --- | --- | --- |
-| [Profiling](continuous-profiling/README.md) | Python, Java and Node real profiles; OTLP traces; both HTTP alternatives | Datadog profile/flamegraph visibility and trace correlation |
-| [LLM](llm-observability/README.md) | All three SDKs emit GenAI OTLP spans; Python native span/evaluation forwarding | Backend LLM conversion, session/evaluation visibility and correlation |
+| [Profiling](continuous-profiling/README.md) | Python, Java and Node real profiles; OTLP traces; both HTTP alternatives | CPU flamegraphs verified; proxy attribution and trace correlation remain |
+| [LLM](llm-observability/README.md) | All three SDKs emit GenAI OTLP spans; Python native span/evaluation forwarding | Eight core paths verified in product API; broader feature coverage remains limited |
 | [AppSec](application-security/README.md) | Real Python and Node WAF events through standard OTLP; meaningful enabled/disabled tests | Java structured metadata export gap reproduced; backend security UI, full IAST/RASP/SCA and RC unverified |
 | [DBM](database-monitoring/README.md) | Real Python/psycopg queries; PostgreSQL receiver extracts SQL-comment W3C context before obfuscation | Query logs are OTel events, not a completed Datadog DBM event adapter; DBM backend/readback missing |
-| [DSM](data-streams-monitoring/README.md) | Python, Java and Node linked checkpoints, opaque statistics, OTLP traces and disable tests | Backend topology, broker lag, schemas and action/control collection |
+| [DSM](data-streams-monitoring/README.md) | Python, Java and Node linked checkpoints, opaque statistics, OTLP traces and disable tests | Product metrics verified; topology, proxy attribution, Java payload sizes, real brokers and control remain |
 | [CI](ci-visibility/README.md) | Real Python pytest lifecycle/coverage/control calls plus separate ordinary OTLP traces | Python private context-provider flag needed; Java OTLP writer bypasses CI envelopes; backend optimization/UI unverified |
 | [Live Debugging](live-debugging/README.md) | Real Python local probes, snapshot/diagnostic uploads and OTLP workload; both alternatives | Signed remote configuration and UI-created probes; full Java/Node parity |
-| [Data Jobs](data-jobs-monitoring/README.md) | Real OpenLineage Python and native Java/Spark SQL jobs in kind, both alternatives and disabled controls | In-flight Spark updates gated by unsupported Agent capability; backend job UI/readback |
+| [Data Jobs](data-jobs-monitoring/README.md) | Real OpenLineage Python and native Java/Spark SQL jobs in kind, both alternatives and disabled controls | Spark health/catalog verified; SQL plans, lineage joining and in-flight updates remain |
 
 The [three-signal SDK matrix](sdk-signals/README.md) records all nine passing local
 trace/log/metric combinations, correlated log IDs, value-preserving counters and disabled
 log/metric gates. Python uses HTTP/protobuf for logs and metrics, Java uses HTTP/JSON,
 and Node uses HTTP/protobuf for correlated logs because its JSON log encoding fails.
 All three host SDK workloads also ran through the kind Collector and real US5 exporter;
-aggregate counters rose without refused/failed deltas. That is transport evidence,
-not authenticated backend attribution. The Collector has
+aggregate counters rose without refused/failed deltas. Subsequent authenticated readback
+matched all three span IDs, correlated log IDs and counter values of 3. The original
+counter window remains transport evidence; the later exact matches are recorded separately. The Collector has
 explicit traces, logs and metrics OTLP pipelines; PostgreSQL emits actual OTel metrics
 and query log events. Unsupported SDK signals are not routed through native Agent intake.
 
@@ -169,7 +172,8 @@ contains bounded upstream status counts, exported-signal counters and pod/image 
 files distinguish source inspection, local contract fixtures, real SDK output and kind
 observations. A mock response is never product completion evidence.
 
-Required to finish: read-scoped Datadog account/application-key access plus product
-entitlements and product-specific verification. DBM event mapping, SDK gaps and signed
-remote control require implementation beyond access alone. Keep all blocked product PRs
+The supplied application key now validates and supports REST/MCP product queries.
+Remaining work includes DBM event mapping, full AppSec findings, SDK/control gaps,
+profile/debugger trace correlation, DSM topology/attribution, Spark SQL plans and lineage
+joining. Credential availability alone does not resolve those implementation gaps. Keep all blocked product PRs
 as drafts. The final draft is from `poc-all-products` into the user's fork `main`.

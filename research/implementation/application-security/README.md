@@ -1,5 +1,9 @@
 # Application Security implementation
 
+**Backend update, 2026-09-20:** Python/Node scanner spans retain appsec.event=true; Python ASM/OpenAPI schema metadata is readable. Scoped security-signal searches returned zero matches; full WAF findings/security UI and existing SDK/control gaps remain unverified.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 **Incomplete: real Python and Node WAF events survive a standard Collector OTLP
 pipeline, but Datadog security product behavior is not yet verified.** The Java SDK
 also has a reproduced structured metadata export gap. No Datadog receiver, trace
@@ -159,7 +163,7 @@ Still required for product completion:
 
 - Readable real security product results for `service:ddot-appsec-python` and
   `service:ddot-appsec-node`, matching scanner findings, request context and API schemas.
-  Available API-key intake access alone does not provide authenticated UI/readback access.
+  Authenticated APM marker/schema readback is now positive, but full security findings remain unverified.
 - Signed ASM remote configuration and application acknowledgements, managed rules and
   blocking control. These applications intentionally use local bundled rules and disable
   RC; a static HTTP proxy cannot implement the Agent's signed-state provider.

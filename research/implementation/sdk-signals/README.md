@@ -1,5 +1,9 @@
 # Datadog SDK traces, logs and metrics over standard OTLP
 
+**Backend update, 2026-09-20:** all three stored spans match emitted IDs, all three logs
+retain matching trace/span IDs, and all three counters have value 3. See
+[authenticated evidence](../evidence/backend-readback/sdk-signals.json).
+
 This fixture exercises actual released Datadog SDKs and public OpenTelemetry APIs. All nine language/signal combinations pass semantic assertions after the actual built Collector's standard `otlp` receiver, `batch` processor and `otlp_http` exporter. No Datadog receiver or native ordinary telemetry fallback is configured. This is cross-product SDK transport coverage; it does not establish that every Datadog product consumes the exported data correctly.
 
 | SDK runtime | Trace protocol | Log protocol | Metric protocol | Provider ownership |

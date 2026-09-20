@@ -1,6 +1,6 @@
 #### Description
 
-Extends the existing PostgreSQL receiver to extract W3C traceparent from SQL comments before obfuscation, preserving application_name precedence. Adds an isolated real database and Datadog Python/psycopg OTLP workload. A supported Datadog DBM event mapping and authenticated product readback remain blocked.
+Extends the existing PostgreSQL receiver to extract W3C traceparent from SQL comments before obfuscation, preserving application_name precedence. Adds an isolated real database and Datadog Python/psycopg OTLP workload. A supported Datadog DBM event mapping remains unresolved; authenticated product queries returned zero scoped records.
 
 This is an **incomplete draft PoC** in the user's fork. No Datadog receiver or embedded Trace Agent is used. Shared implementation is staged on `dinesh.gurumurthy/poc-all-products`; product completion is not claimed from HTTP success.
 
@@ -11,6 +11,8 @@ No tracking issue was provided. Targets `dinesh.gurumurthy/poc-all-products`; [c
 #### Testing
 
 The receiver suite and meaningful SQL parser edge cases pass. Kind produced 11 exact matches among SDK SQL comments, receiver query-log IDs and OTLP span IDs in an earlier controlled detailed-log window. SDK-disabled queries contained zero contexts. Current shared basic logging cannot reproduce exact record readback; the historical limitation is explicit.
+
+**Authenticated readback, 2026-09-20:** The authenticated DBM product endpoint returned HTTP 200 with zero matches in two scoped queries. Mapping/query-plan behavior remains unresolved; the generic OTLP-log query was rate-limited. [Evidence and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md).
 
 #### Documentation
 

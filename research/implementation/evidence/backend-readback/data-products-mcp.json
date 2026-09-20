@@ -1,0 +1,814 @@
+{
+  "timestamp": "2026-09-20T12:08:04.301231+00:00",
+  "status": "authenticated product readback completed with partial success and precise feature gaps",
+  "sources": [
+    "https://docs.datadoghq.com/mcp_server/tools/#data-observability",
+    "https://docs.datadoghq.com/mcp_server/setup/"
+  ],
+  "toolset": "data-observability",
+  "documented_read_tools": [
+    {
+      "name": "get_spark_job_health",
+      "description": "Retrieves health metrics for one Spark or Databricks job run, including duration, executor CPU, shuffle, spill and worst stages",
+      "permission": "APM Read"
+    },
+    {
+      "name": "get_spark_sql_plan",
+      "description": "Retrieves Spark physical execution plan for a stage",
+      "permission": "APM Read"
+    },
+    {
+      "name": "search_data_entities",
+      "description": "Searches Data Catalog by name/text or platform/schema/database/account filters",
+      "permission": "Monitors Read or APM Read"
+    },
+    {
+      "name": "get_data_entity_lineage",
+      "description": "Retrieves reachable lineage nodes and edges around anchor entities",
+      "permission": "Monitors Read or APM Read"
+    },
+    {
+      "name": "summarize_data_entity_lineage",
+      "description": "Counts lineage nodes/edges/type/depth before fetching an unknown graph",
+      "permission": "Monitors Read or APM Read"
+    }
+  ],
+  "dsm_topology_tool": "No dedicated DSM topology tool found in the published MCP tool catalog; Data Catalog lineage is not DSM topology.",
+  "requests": [
+    {
+      "tool": "get_spark_job_health",
+      "arguments": {
+        "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+        "top_stages": 2,
+        "telemetry": {
+          "intent": "Verify previously deployed synthetic product workloads through documented read-only product queries."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": false,
+      "result": [
+        {
+          "job_name": "",
+          "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+          "status": "ok",
+          "start_time": "2026-09-19T22:27:10Z",
+          "end_time": "2026-09-19T22:27:16Z",
+          "target_metrics": {
+            "duration_sec": 6.107,
+            "executor_cpu_time_ns": 184201197,
+            "allocated_executor_time_ns": 9932000000,
+            "max_executors_allocated": 1
+          },
+          "supplementary_metrics": {
+            "peak_memory_usage_bytes": 0,
+            "shuffle_read_bytes": 126,
+            "spilled_bytes": 0,
+            "disk_bytes_spilled": 0,
+            "skew_time_sec": 0
+          },
+          "run_metrics": {
+            "input_bytes": 0,
+            "input_records": 0,
+            "output_bytes": 0,
+            "output_records": 0
+          },
+          "worst_stages": [
+            {
+              "span_id": "2050855343514340397",
+              "parent_span_id": "7707537635895312155",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.415,
+              "target_metrics": {
+                "duration_sec": 0.415,
+                "executor_cpu_time_ns": 122927782,
+                "allocated_executor_time_ns": 830000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 0,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            },
+            {
+              "span_id": "2040221893939610702",
+              "parent_span_id": "8993001203540221472",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.137,
+              "target_metrics": {
+                "duration_sec": 0.137,
+                "executor_cpu_time_ns": 61273415,
+                "allocated_executor_time_ns": 274000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 126,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_job_health",
+      "arguments": {
+        "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+        "top_stages": 2,
+        "telemetry": {
+          "intent": "Verify previously deployed synthetic product workloads through documented read-only product queries."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": false,
+      "result": [
+        {
+          "job_name": "",
+          "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+          "status": "ok",
+          "start_time": "2026-09-19T22:27:39Z",
+          "end_time": "2026-09-19T22:27:45Z",
+          "target_metrics": {
+            "duration_sec": 5.955,
+            "executor_cpu_time_ns": 192586381,
+            "allocated_executor_time_ns": 9630000000,
+            "max_executors_allocated": 1
+          },
+          "supplementary_metrics": {
+            "peak_memory_usage_bytes": 0,
+            "shuffle_read_bytes": 126,
+            "spilled_bytes": 0,
+            "disk_bytes_spilled": 0,
+            "skew_time_sec": 0
+          },
+          "run_metrics": {
+            "input_bytes": 0,
+            "input_records": 0,
+            "output_bytes": 0,
+            "output_records": 0
+          },
+          "worst_stages": [
+            {
+              "span_id": "8305049741634938735",
+              "parent_span_id": "2380597632464750185",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.452,
+              "target_metrics": {
+                "duration_sec": 0.452,
+                "executor_cpu_time_ns": 129831296,
+                "allocated_executor_time_ns": 904000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 0,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            },
+            {
+              "span_id": "495339285435795187",
+              "parent_span_id": "773212278033056535",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.106,
+              "target_metrics": {
+                "duration_sec": 0.106,
+                "executor_cpu_time_ns": 62755085,
+                "allocated_executor_time_ns": 212000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 126,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "search_data_entities",
+      "arguments": {
+        "text": "ddot",
+        "entity_type": "*",
+        "limit": 5,
+        "with_attrs": false,
+        "telemetry": {
+          "intent": "Verify previously deployed synthetic product workloads through documented read-only product queries."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": false,
+      "result": [
+        {
+          "entities": [
+            {
+              "entity_id": "4caf3ae16474339d",
+              "name": "ddot-djm-spark",
+              "display_name": "ddot-djm-spark",
+              "type": "spark_application",
+              "core_attrs": {
+                "env": "ddot-poc"
+              },
+              "attrs": {
+                "dd.stale": "false",
+                "integration": "spark",
+                "jobType": "application",
+                "platform": "spark"
+              }
+            }
+          ],
+          "count": 2,
+          "query": "search for * where `all_text:\"ddot\"`",
+          "returned_count_before_sanitization": 2,
+          "sanitization": "Only current exact PoC service retained; older PoC entity omitted."
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_sql_plan",
+      "arguments": {
+        "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+        "span_id": "2050855343514340397",
+        "depth": 3,
+        "telemetry": {
+          "intent": "Verify synthetic job performance and lineage through documented bounded product reads."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": true,
+      "result": [
+        {
+          "text": "span 2050855343514340397 has no _dd.spark.sql_plan attribute"
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_sql_plan",
+      "arguments": {
+        "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+        "span_id": "8305049741634938735",
+        "depth": 3,
+        "telemetry": {
+          "intent": "Verify synthetic job performance and lineage through documented bounded product reads."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": true,
+      "result": [
+        {
+          "text": "span 8305049741634938735 has no _dd.spark.sql_plan attribute"
+        }
+      ]
+    },
+    {
+      "tool": "get_data_entity_lineage",
+      "arguments": {
+        "anchor_entity_ids": [
+          "4caf3ae16474339d"
+        ],
+        "direction": "both",
+        "max_depth": 1,
+        "max_nodes": 10,
+        "max_bytes": 8000,
+        "compact": true,
+        "telemetry": {
+          "intent": "Verify synthetic job performance and lineage through documented bounded product reads."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": false,
+      "result": [
+        {
+          "anchor_entity_ids": [
+            "4caf3ae16474339d"
+          ],
+          "direction": "both",
+          "nodes": [
+            {
+              "entity_id": "4caf3ae16474339d",
+              "name": "ddot-djm-spark",
+              "type": "spark_application",
+              "core_attrs": {
+                "env": "ddot-poc"
+              }
+            }
+          ],
+          "edges": [],
+          "total_nodes": 1,
+          "note": "Lineage subgraph reachable both from 1 anchor node(s) (max_depth=1, max_nodes=10). No both lineage edges exist within 1 hops of the anchor(s). Compact mode: attributes stripped. Use get_data_entity_details for full attributes."
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_job_health",
+      "arguments": {
+        "job_name": "ddot-djm-spark",
+        "exact_match": true,
+        "filters": [
+          {
+            "field": "env",
+            "value": "ddot-poc"
+          }
+        ],
+        "from_days": 1,
+        "top_stages": 2,
+        "telemetry": {
+          "intent": "Verify synthetic job performance and lineage through documented bounded product reads."
+        }
+      },
+      "http_status": 200,
+      "error": null,
+      "is_error": false,
+      "result": [
+        {
+          "job_name": "",
+          "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+          "status": "ok",
+          "start_time": "2026-09-19T22:27:39Z",
+          "end_time": "2026-09-19T22:27:45Z",
+          "runs_found": 3,
+          "target_metrics": {
+            "duration_sec": 5.955,
+            "executor_cpu_time_ns": 192586381,
+            "allocated_executor_time_ns": 9630000000,
+            "max_executors_allocated": 1
+          },
+          "supplementary_metrics": {
+            "peak_memory_usage_bytes": 0,
+            "shuffle_read_bytes": 126,
+            "spilled_bytes": 0,
+            "disk_bytes_spilled": 0,
+            "skew_time_sec": 0
+          },
+          "run_metrics": {
+            "input_bytes": 0,
+            "input_records": 0,
+            "output_bytes": 0,
+            "output_records": 0
+          },
+          "worst_stages": [
+            {
+              "span_id": "8305049741634938735",
+              "parent_span_id": "2380597632464750185",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.452,
+              "target_metrics": {
+                "duration_sec": 0.452,
+                "executor_cpu_time_ns": 129831296,
+                "allocated_executor_time_ns": 904000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 0,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            },
+            {
+              "span_id": "495339285435795187",
+              "parent_span_id": "773212278033056535",
+              "stage_name": "$anonfun$withThreadLocalCaptured$2 at <unknown>:0",
+              "duration_sec": 0.106,
+              "target_metrics": {
+                "duration_sec": 0.106,
+                "executor_cpu_time_ns": 62755085,
+                "allocated_executor_time_ns": 212000000,
+                "max_executors_allocated": 0
+              },
+              "supplementary_metrics": {
+                "peak_memory_usage_bytes": 0,
+                "shuffle_read_bytes": 126,
+                "spilled_bytes": 0,
+                "disk_bytes_spilled": 0,
+                "skew_time_sec": 0
+              },
+              "run_metrics": {
+                "input_bytes": 0,
+                "input_records": 0,
+                "output_bytes": 0,
+                "output_records": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_sql_plan",
+      "arguments": {
+        "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+        "span_id": "2040221893939610702",
+        "depth": 3,
+        "telemetry": {
+          "intent": "Check the remaining synthetic job stage after the first stage lacked a queryable SQL plan."
+        }
+      },
+      "http_status": 200,
+      "is_error": true,
+      "error": null,
+      "result": [
+        {
+          "text": "span 2040221893939610702 has no _dd.spark.sql_plan attribute"
+        }
+      ]
+    },
+    {
+      "tool": "get_spark_sql_plan",
+      "arguments": {
+        "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+        "span_id": "495339285435795187",
+        "depth": 3,
+        "telemetry": {
+          "intent": "Check the remaining synthetic job stage after the first stage lacked a queryable SQL plan."
+        }
+      },
+      "http_status": 200,
+      "is_error": true,
+      "error": null,
+      "result": [
+        {
+          "text": "span 495339285435795187 has no _dd.spark.sql_plan attribute"
+        }
+      ]
+    }
+  ],
+  "endpoint": "https://mcp.us5.datadoghq.com/v1/mcp?toolsets=data-observability",
+  "initialize_http_status": 200,
+  "initialize_error": null,
+  "tools_list_http_status": 200,
+  "schema": [
+    {
+      "_meta": {
+        "toolsets": [
+          "data-observability"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "Get Entity Lineage"
+      },
+      "description": "Fetch the live reachable lineage subgraph from one or more anchor entities.\nChecks direct children of the anchor entities for lineage as well. For example, you can pass a table entity id\nas an anchor, and get back the column-level lineage.\n\nIf you want to get lineage for a higher-level container entity (e.g. a database), use get_data_entity_hierarchy\nto get leaf entities (or one level above leaf entities) and pass them as anchor_entity_ids to this tool.\n\nFor aggregate statistics (counts by type, per-depth breakdowns, attribute breakdowns) use\nsummarize_data_entity_lineage. This tool returns the raw node + edge payload only.\n\nParameters:\n- anchor_entity_ids: hex entity IDs from search_data_entities or other tools (required)\n- direction: \"downstream\" (default), \"upstream\", or \"both\"\n- max_depth: Maximum number of hops from each anchor (default 3, max 10).\n- max_nodes: Cap on nodes in the response (default 100). Excess nodes are dropped.\n- max_bytes: Byte budget for the response (default 50KB). Excess nodes are dropped.\n- compact: Strip attrs/display_name from nodes (default true). Set false for full attributes.\n\nReturns:\n- nodes: entities in the reachable subgraph (entity_id, name, type, core_attrs; full attrs if compact=false).\n  Child nodes (e.g. columns of a table anchor) may appear alongside their parents when lineage edges exist\n  at the column level \u2014 this is expected and provides column-level lineage detail.\n- edges: data-flow relationships between returned nodes\n- truncated: true if max_nodes or max_bytes dropped any nodes\n- total_nodes: total nodes returned by UGP before truncation, including resolved anchors and children",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor_entity_ids": {
+            "description": "Hex entity IDs from search_data_entities or other tools. At least one is required.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "compact": {
+            "description": "Strip attrs/display_name (default true).",
+            "type": "boolean"
+          },
+          "direction": {
+            "description": "Direction to traverse: downstream (default), upstream, or both.",
+            "type": "string"
+          },
+          "max_bytes": {
+            "description": "Byte budget for response (default 51200).",
+            "type": "number"
+          },
+          "max_depth": {
+            "description": "Max hops from anchor (default 3, max 10).",
+            "type": "number"
+          },
+          "max_nodes": {
+            "description": "Cap on nodes in response (default 100).",
+            "type": "number"
+          },
+          "telemetry": {
+            "additionalProperties": false,
+            "properties": {
+              "intent": {
+                "description": "Briefly describe the wider context task, and why this tool was chosen. Omit argument values, PII/secrets. Use English.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "intent"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "anchor_entity_ids",
+          "telemetry"
+        ],
+        "type": "object"
+      },
+      "name": "get_data_entity_lineage"
+    },
+    {
+      "_meta": {
+        "toolsets": [
+          "data-observability"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "Get Spark Job Health"
+      },
+      "description": "Retrieves detailed health metrics for a single Spark or Databricks job run.\n\nThis tool extracts structured health data from Spark/Databricks job traces including:\n- Target metrics: duration, executor CPU time, allocated executor time, max executors\n- Supplementary metrics: peak memory, shuffle reads, spilled bytes, disk spill, skew time\n- Run metrics: input/output bytes and records\n- Worst stages: Top N stages ranked by executor CPU time (or other metrics)\n\nSupports both Spark jobs (operation_name:spark.application) and Databricks jobs\n(operation_name:databricks.job) transparently \u2014 no extra parameters needed.\n\nYou can either provide a trace_id directly, or provide a job_name to search for the most recent run.\nWhen searching by job_name, returns metrics for the single most recent run (runs_found indicates total matching runs).\n\nTo see ALL stages for a run (beyond worst_stages), query the trace directly and filter for spans with operation_name:spark.stage.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "exact_match": {
+            "description": "Optional. If true, search for exact job_name match. If false (default), wildcards are added for partial matching.",
+            "type": "boolean"
+          },
+          "filters": {
+            "description": "Optional. Additional exact-match filters when searching by job_name.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "field": {
+                  "description": "Required. Filter field. Allowed values: datacenter, env, git_commit_sha.",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Required. Exact value for the selected field.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "from_days": {
+            "description": "Optional. Number of days to look back when searching by job_name. Default: 7, max: 30.",
+            "type": "number"
+          },
+          "job_name": {
+            "description": "Optional. The name of the Spark job to search for. Returns metrics from the most recent run.",
+            "type": "string"
+          },
+          "sort_stages_by": {
+            "description": "Optional. How to rank worst stages: 'cpu_time' (default), 'duration', or 'spill'.",
+            "type": "string"
+          },
+          "telemetry": {
+            "additionalProperties": false,
+            "properties": {
+              "intent": {
+                "description": "Briefly describe the wider context task, and why this tool was chosen. Omit argument values, PII/secrets. Use English.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "intent"
+            ],
+            "type": "object"
+          },
+          "top_stages": {
+            "description": "Optional. Number of worst stages to return. Default: 5, max: 20.",
+            "type": "number"
+          },
+          "trace_id": {
+            "description": "Optional. The trace ID of a specific Spark job run. If provided, fetches metrics directly from this trace.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "telemetry"
+        ],
+        "type": "object"
+      },
+      "name": "get_spark_job_health"
+    },
+    {
+      "_meta": {
+        "toolsets": [
+          "data-observability"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "Get Spark SQL Plan"
+      },
+      "description": "Retrieves the Spark SQL physical execution plan from a spark.stage span.\n\nThis tool extracts and formats the _dd.spark.sql_plan attribute from a Spark stage span.\n\nThe execution plan shows:\n- Node types (Exchange, SortMergeJoin, HashAggregate, etc.)\n- Join strategies and keys\n- Shuffle/partitioning information\n- Child node relationships\n- Metrics for each node (with optional distribution decoding if available)\n\nUse get_spark_job_health to find trace_id and stage span_ids (in worst_stages[].span_id).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "description": "Optional. Maximum tree depth to return. If not specified, returns the full plan.",
+            "type": "number"
+          },
+          "span_id": {
+            "description": "Required. The span ID of a spark.stage span. Use get_spark_job_health to find stage span IDs.",
+            "type": "string"
+          },
+          "telemetry": {
+            "additionalProperties": false,
+            "properties": {
+              "intent": {
+                "description": "Briefly describe the wider context task, and why this tool was chosen. Omit argument values, PII/secrets. Use English.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "intent"
+            ],
+            "type": "object"
+          },
+          "trace_id": {
+            "description": "Required. The trace ID of the Spark job. Use get_spark_job_health to find this.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "span_id",
+          "telemetry"
+        ],
+        "type": "object"
+      },
+      "name": "get_spark_sql_plan"
+    },
+    {
+      "_meta": {
+        "toolsets": [
+          "data-observability"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "Search Data Entities"
+      },
+      "description": "Search for data entities in the data catalog.\n\nParameters:\n- name: Entity name to search for. Supports wildcards anywhere in the value: prefix (stg_*),\n  suffix (*_raw), and substring/infix (*orders*, fct_*_monthly).\n- text: Full-text search across entity name, type, and all attribute values. All words must match.\n  Use this to find entities containing a substring (e.g. text=\"orders\" finds tables, columns, and\n  other entities whose name or attributes mention \"orders\"). Can be combined with other filters.\n- entity_type: Type of entity (default \"table\"). Valid values are the entity_type names from the\n  catalog schema (call get_data_catalog_schema to discover them). Use * to match any type.\n- platform: Filter by warehouse platform (e.g. \"snowflake\", \"bigquery\", \"databricks\").\n- schema: Filter by schema name.\n- database: Filter by database name.\n- account: Filter by account identifier.\n- limit: Max results (default 50, max 500).\n- with_attrs: If true, include all custom attributes in the response (default false).\n- query: Raw AASTRA query for advanced use (OR, negation, grouping). Overrides all other filters.\n\nAll filter parameters are combined as AND conditions.\n\nTo browse all entities of a non-table type with no filters (e.g. \"list all schemas\", \"what databases\nexist\"), set entity_type to the desired type and omit all other parameters. This is supported for\nany entity_type other than the default \"table\".\n\nExamples:\n  name=\"orders\"                                    -> find tables named \"orders\"\n  name=\"stg_*\", entity_type=\"dbt_model\"            -> find dbt models starting with stg_\n  platform=\"snowflake\", database=\"analytics\"       -> find snowflake tables in analytics db\n  name=\"*_raw\", schema=\"landing\"                   -> find raw tables in landing schema\n  name=\"*orders*\"                                  -> find tables whose name contains \"orders\"\n  entity_type=\"schema\"                             -> list all schemas in the catalog\n  entity_type=\"account\"                            -> list all accounts/warehouses in the catalog\n  entity_type=\"dbt_model\"                          -> list all dbt models\n\nFor advanced queries requiring OR, negation, or grouping, use the query parameter with AASTRA syntax,\ne.g. query=\"search for table where `name:orders OR display_name:orders`\".",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "account": {
+            "description": "Account identifier filter.",
+            "type": "string"
+          },
+          "database": {
+            "description": "Database name filter.",
+            "type": "string"
+          },
+          "entity_type": {
+            "description": "Type of entity to search for (default 'table'). Use * to match any type.",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Max results (default 50, max 500).",
+            "type": "number"
+          },
+          "name": {
+            "description": "Entity name to search for. Supports prefix (stg_*) and suffix (*_raw) wildcards.",
+            "type": "string"
+          },
+          "platform": {
+            "description": "Warehouse platform filter.",
+            "type": "string"
+          },
+          "query": {
+            "description": "Raw AASTRA query for advanced use (OR, negation, grouping). Overrides all other filters.",
+            "type": "string"
+          },
+          "schema": {
+            "description": "Schema name filter.",
+            "type": "string"
+          },
+          "telemetry": {
+            "additionalProperties": false,
+            "properties": {
+              "intent": {
+                "description": "Briefly describe the wider context task, and why this tool was chosen. Omit argument values, PII/secrets. Use English.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "intent"
+            ],
+            "type": "object"
+          },
+          "text": {
+            "description": "Full-text search across entity name, type, and all attribute values. All words must match.",
+            "type": "string"
+          },
+          "with_attrs": {
+            "description": "If true, include all custom attributes in the response (default false).",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "telemetry"
+        ],
+        "type": "object"
+      },
+      "name": "search_data_entities"
+    }
+  ],
+  "read_initialize_http_status": 200,
+  "completed_at": "2026-09-20T12:09:19.313373+00:00",
+  "credential_references": {
+    "context": "kind-otel-dd",
+    "api_key": "ddot-poc/datadog-api-key:api-key",
+    "application_key": "ddot-poc/datadog-application-key:application-key"
+  },
+  "authentication": "Documented DD_API_KEY and DD_APPLICATION_KEY headers, values and session only in memory; redirects disabled.",
+  "read_only": true,
+  "summary": {
+    "spark_health": "Both exact final kind runs return status ok, matching duration, executor CPU, shuffle and two stage identities. Exact service-name/env lookup also returns the final alternative run and reports three indexed runs within one day.",
+    "catalog": "PoC ddot-djm-spark appears as a spark_application entity in env ddot-poc.",
+    "sql_plan": "All four returned stage IDs (two per final run) return tool isError=true with no _dd.spark.sql_plan attribute. HTTP 200 carries the MCP tool error, not SQL-plan success. Root cause is not established by this readback.",
+    "lineage": "The exact current Spark catalog anchor is returned, but a bounded one-hop both-direction graph returns zero edges. This is a partial negative result; it does not invalidate the positive job-health result or prove absence of all lineage elsewhere. The Spark workload uses an in-memory SQL dataset.",
+    "remaining": "No UI/browser check, demonstrated lineage/performance join, queryable SQL plan, long-running updates or distributed executor coverage. No dedicated DSM topology tool found in the documented MCP catalog.",
+    "correction_to_previous_report": "MCP supplies documented authenticated Spark health, catalog and lineage read tools. This supersedes the earlier claim that no supported product-specific read path was available; a missing installed connector does not block direct MCP access."
+  },
+  "kind_run_attribution": [
+    {
+      "job": "djm-spark",
+      "pod": "djm-spark-b79q9",
+      "collector": "collector",
+      "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+      "stage_ids": [
+        "2050855343514340397",
+        "2040221893939610702"
+      ]
+    },
+    {
+      "job": "djm-spark-alternative",
+      "pod": "djm-spark-alternative-nmnjn",
+      "collector": "collector-http-forwarder",
+      "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+      "stage_ids": [
+        "8305049741634938735",
+        "495339285435795187"
+      ]
+    }
+  ],
+  "reproduction_scripts": [
+    "/tmp/ddot_backend_client.py",
+    "/tmp/ddot_mcp_read_client.py",
+    "/tmp/ddot_mcp_data_products.py",
+    "/tmp/ddot_mcp_data_products_detail.py"
+  ]
+}

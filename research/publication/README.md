@@ -24,7 +24,7 @@ whose head was `poc-review-snapshot`, is closed without merge; its branch is pre
 unchecked authorship boxes and unchanged `main`. [Machine-readable links](pull-requests.json)
 include all eight products and the replacement final draft.
 
-All products remain incomplete under the required product/backend verification bar.
+Full eight-product verification remains incomplete. The [latest authenticated readback](../implementation/backend-readback/README.md) verifies six core product paths and records all remaining gaps.
 Their implementation content is staged into the combined branch for joint testing;
 blocked product drafts are not marked complete or merged. See the
 [implementation checkpoint](../implementation/PROGRESS.md),

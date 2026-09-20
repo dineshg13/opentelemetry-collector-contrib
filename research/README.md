@@ -6,10 +6,13 @@ SDK applications, component changes and kind deployment replace the earlier rese
 proposal. Ordinary signals use standard OTLP components. No Datadog receiver or embedded
 Trace Agent is in the implemented distribution.
 
-**All products remain incomplete until real Datadog product behavior is evidenced.**
-Real intake responses, actual SDK semantics and kind execution are recorded separately
-from product UI/readback. The missing readback access does not conceal SDK/control gaps.
+**Full eight-product verification remains incomplete.** Authenticated September 20 reads
+now establish six core product paths: LLM, CI, DSM, debugging, profiling and Spark job
+health/catalog. AppSec has partial marker/schema evidence; DBM has no positive product
+record. The [current backend matrix](implementation/backend-readback/README.md) records
+the exact proof and remaining attribution, SDK, mapping and control gaps.
 
+- [Authenticated backend evidence and limits](implementation/backend-readback/README.md)
 - [Implementation and reproducible commands](implementation/README.md)
 - [Current ownership, status and next actions](implementation/PROGRESS.md)
 - [Combined configuration](implementation/collector/combined.yaml)

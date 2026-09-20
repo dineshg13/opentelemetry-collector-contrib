@@ -1,8 +1,12 @@
 # Continuous Profiling implementation
 
+**Backend update, 2026-09-20:** Authenticated CPU flamegraphs contain the known Python, Java and Node workload functions. Per-Collector attribution and trace/profile correlation remain unverified.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 This implementation supplies real Python, Java and Node profiling applications, immutable SDK
 dependency pins, Docker builds, two Collector configurations and isolated kind deployments.
-It is **incomplete until profiles are visible and usable in the real Datadog organization**.
+Backend CPU flamegraphs are now verified; per-Collector attribution and trace links remain incomplete.
 Local fixture acknowledgements and real intake acceptance are recorded separately.
 
 ## Implemented path

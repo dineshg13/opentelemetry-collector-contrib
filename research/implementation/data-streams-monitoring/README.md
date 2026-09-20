@@ -1,9 +1,13 @@
 # Data Streams Monitoring implementation
 
+**Backend update, 2026-09-20:** Native DSM latency metrics are stored for all three SDKs, with Python/Node payload-size series and synthetic consumer lag. Separate proxy attribution, Java payload sizes, broker integration and UI topology remain unverified.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 Status: all three SDK images build and emit linked DSM checkpoint statistics alongside
 ordinary OTLP traces. Actual Collector forwarding and enable/disable tests pass locally.
-Kind image loading encountered a full Docker filesystem; deployment and real backend
-topology/readback remain incomplete. Product PR:
+The coordinator recovered the Docker filesystem and completed kind Jobs. Native product
+metrics are now readable; topology and remaining product paths are still incomplete. Product PR:
 [#18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18).
 
 This implements the SDK statistics path using the existing shared HTTP forwarding work.
@@ -171,10 +175,9 @@ with zero free bytes. The coordinator owns scoped cleanup and deployment retries
 successful image builds and local Collector tests are retained; no unrelated images or
 workloads were deleted by this product agent.
 
-A real API key is available, but product readback needs an authenticated DSM UI session or
-an application key with relevant read access. Still verify real intake acceptance, produced
-service/topic topology, edge latency and throughput, backlog interpretation, transaction
-visibility, and trace/schema correlation. HTTP 2xx alone does not establish those outcomes.
+Authenticated metric reads now verify latency for all three SDKs and synthetic backlog.
+Still verify service/topic topology, real broker throughput/backlog interpretation, transaction
+visibility, trace/schema correlation, Java payload sizes and per-Collector attribution. HTTP 2xx alone does not establish those outcomes.
 
 Full broker collection needs actual broker/schema-registry endpoints and credentials, plus
 the event-platform cluster/schema protocol that the Agent integrations produce. Existing

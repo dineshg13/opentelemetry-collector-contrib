@@ -1,0 +1,1645 @@
+{
+  "timestamp": "2026-09-20T11:58:17.552699+00:00",
+  "start": "2026-09-19T19:00:00Z",
+  "requests": [
+    {
+      "product": "llm",
+      "filter": {
+        "from": "2026-09-19T19:00:00Z",
+        "to": "2026-09-20T11:58:17.552699+00:00",
+        "ml_app": "ddot-llm-python-native"
+      },
+      "http_status": 200,
+      "returned_count": 5,
+      "observed_span_kinds": [
+        "llm"
+      ],
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "ml_app": "ddot-llm-python-native"
+            },
+            "page": {
+              "limit": 5
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "llm",
+      "filter": {
+        "from": "2026-09-19T19:00:00Z",
+        "to": "2026-09-20T11:58:17.552699+00:00",
+        "ml_app": "ddot-llm-python"
+      },
+      "http_status": 200,
+      "returned_count": 5,
+      "observed_span_kinds": [
+        "llm"
+      ],
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "ml_app": "ddot-llm-python"
+            },
+            "page": {
+              "limit": 5
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "llm",
+      "filter": {
+        "from": "2026-09-19T19:00:00Z",
+        "to": "2026-09-20T11:58:17.552699+00:00",
+        "ml_app": "ddot-llm-java"
+      },
+      "http_status": 200,
+      "returned_count": 5,
+      "observed_span_kinds": [
+        "llm"
+      ],
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "ml_app": "ddot-llm-java"
+            },
+            "page": {
+              "limit": 5
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "llm",
+      "filter": {
+        "from": "2026-09-19T19:00:00Z",
+        "to": "2026-09-20T11:58:17.552699+00:00",
+        "ml_app": "ddot-llm-node"
+      },
+      "http_status": 200,
+      "returned_count": 2,
+      "observed_span_kinds": [
+        "llm"
+      ],
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "ml_app": "ddot-llm-node"
+            },
+            "page": {
+              "limit": 5
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "dsm",
+      "query": "avg:data_streams.latency{env:ddot-poc} by {service,start,end,pathway_type,topic}",
+      "http_status": 200,
+      "series": [
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-python,env:ddot-poc,pathway_type:full,service:ddot-dsm-python,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-python",
+            "pathway_type:full",
+            "service:ddot-dsm-python",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.2024467394584901
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.2024467394584901
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-node,env:ddot-poc,pathway_type:full,service:ddot-dsm-node,start:ddot-dsm-node,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-node",
+            "pathway_type:full",
+            "service:ddot-dsm-node",
+            "start:ddot-dsm-node",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.053821180739602736
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.055493768274989454
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:full,service:ddot-dsm-node,start:ddot-dsm-node,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:full",
+            "service:ddot-dsm-node",
+            "start:ddot-dsm-node",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.0
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-python,start:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-python",
+            "start:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.05039835037693329
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-python,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-python,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-python",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-python",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.050953905835775776
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.050953905835775776
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-python,env:ddot-poc,pathway_type:internal,service:ddot-dsm-python,start:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-python",
+            "pathway_type:internal",
+            "service:ddot-dsm-python",
+            "start:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.10079670075386658
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.10079670075386658
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-node,env:ddot-poc,pathway_type:full,service:ddot-dsm-node,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-node",
+            "pathway_type:full",
+            "service:ddot-dsm-node",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.054908477320200745
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.054908477320200745
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-java,start:ddot-dsm-java,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-java",
+            "start:ddot-dsm-java",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.0
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:full,service:ddot-dsm-java,start:ddot-dsm-java,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:full",
+            "service:ddot-dsm-java",
+            "start:ddot-dsm-java",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.0
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-node,start:ddot-dsm-node,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-node",
+            "start:ddot-dsm-node",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.0
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-python,env:ddot-poc,pathway_type:full,service:ddot-dsm-python,start:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-python",
+            "pathway_type:full",
+            "service:ddot-dsm-python",
+            "start:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.20271212438471808
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.20257943192160408
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-node,env:ddot-poc,pathway_type:edge,service:ddot-dsm-node,start:ddot-dsm-node,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-node",
+            "pathway_type:edge",
+            "service:ddot-dsm-node",
+            "start:ddot-dsm-node",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.053821180739602736
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.055493768274989454
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:poc-orders,env:ddot-poc,pathway_type:full,service:ddot-dsm-python,start:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "end:poc-orders",
+            "pathway_type:full",
+            "service:ddot-dsm-python",
+            "start:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.15129691647333676
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.15129691647333676
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-java,env:ddot-poc,pathway_type:edge,service:ddot-dsm-java,start:ddot-dsm-java,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-java",
+            "pathway_type:edge",
+            "service:ddot-dsm-java",
+            "start:ddot-dsm-java",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.05644208517247296
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.057374875509328294
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-python,env:ddot-poc,pathway_type:edge,service:ddot-dsm-python,start:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-python",
+            "pathway_type:edge",
+            "service:ddot-dsm-python",
+            "start:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.051219290762003766
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.05095594725828522
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-java,env:ddot-poc,pathway_type:full,service:ddot-dsm-java,start:ddot-dsm-java,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-java",
+            "pathway_type:full",
+            "service:ddot-dsm-java",
+            "start:ddot-dsm-java",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              0.05644208517247296
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              0.057374875509328294
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-java,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-java,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-java",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-java",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.055573745400588764
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.055573745400588764
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-java,env:ddot-poc,pathway_type:full,service:ddot-dsm-java,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-java",
+            "pathway_type:full",
+            "service:ddot-dsm-java",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.055573745400588764
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.055573745400588764
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.latency",
+          "scope": "end:ddot-dsm-node,env:ddot-poc,pathway_type:partial_edge,service:ddot-dsm-node,start:poc-orders,topic:poc-orders",
+          "tag_set": [
+            "end:ddot-dsm-node",
+            "pathway_type:partial_edge",
+            "service:ddot-dsm-node",
+            "start:poc-orders",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 1,
+          "first": [
+            [
+              1789855200000.0,
+              0.054908477320200745
+            ]
+          ],
+          "last": [
+            [
+              1789855200000.0,
+              0.054908477320200745
+            ]
+          ]
+        }
+      ],
+      "method": "GET",
+      "path": "/api/v1/query",
+      "query_parameters": {
+        "from": 1789844400,
+        "to": 1789905497,
+        "query": "avg:data_streams.latency{env:ddot-poc} by {service,start,end,pathway_type,topic}"
+      }
+    },
+    {
+      "product": "dsm",
+      "query": "avg:data_streams.payload_size{env:ddot-poc} by {service,topic}",
+      "http_status": 200,
+      "series": [
+        {
+          "metric": "data_streams.payload_size",
+          "scope": "env:ddot-poc,service:ddot-dsm-python,topic:poc-orders",
+          "tag_set": [
+            "service:ddot-dsm-python",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              24.492662742343228
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              24.492662742343228
+            ]
+          ]
+        },
+        {
+          "metric": "data_streams.payload_size",
+          "scope": "env:ddot-poc,service:ddot-dsm-node,topic:poc-orders",
+          "tag_set": [
+            "service:ddot-dsm-node",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              28.132828215120636
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              28.132828215120636
+            ]
+          ]
+        }
+      ],
+      "method": "GET",
+      "path": "/api/v1/query",
+      "query_parameters": {
+        "from": 1789844400,
+        "to": 1789905497,
+        "query": "avg:data_streams.payload_size{env:ddot-poc} by {service,topic}"
+      }
+    },
+    {
+      "product": "dsm",
+      "query": "avg:data_streams.kafka.lag_messages{env:ddot-poc,topic:poc-orders} by {consumer_group,topic}",
+      "http_status": 200,
+      "series": [
+        {
+          "metric": "data_streams.kafka.lag_messages",
+          "scope": "consumer_group:poc-consumer,env:ddot-poc,topic:poc-orders",
+          "tag_set": [
+            "consumer_group:poc-consumer",
+            "topic:poc-orders"
+          ],
+          "non_null_points": 2,
+          "first": [
+            [
+              1789855200000.0,
+              5.0
+            ]
+          ],
+          "last": [
+            [
+              1789856700000.0,
+              5.0
+            ]
+          ]
+        }
+      ],
+      "method": "GET",
+      "path": "/api/v1/query",
+      "query_parameters": {
+        "from": 1789844400,
+        "to": 1789905497,
+        "query": "avg:data_streams.kafka.lag_messages{env:ddot-poc,topic:poc-orders} by {consumer_group,topic}"
+      }
+    },
+    {
+      "product": "djm",
+      "query": "env:ddot-poc service:ddot-djm-spark",
+      "http_status": 200,
+      "records": [
+        {
+          "id": "AaC7xkv-AADujeys4fqcXEND",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0bd90000000043439f28108b753b",
+            "span_id": "329210796566101387",
+            "resource_name": "setsid",
+            "start_timestamp": "2026-09-19T22:25:29.67Z",
+            "end_timestamp": "2026-09-19T22:25:29.675Z"
+          }
+        },
+        {
+          "id": "AaC7xybQAADJ4UoNnca5GEEC",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c10000000000241be8b0ddb966e",
+            "span_id": "7126145941227072565",
+            "resource_name": "setsid",
+            "start_timestamp": "2026-09-19T22:26:24.741Z",
+            "end_timestamp": "2026-09-19T22:26:24.746Z"
+          }
+        },
+        {
+          "id": "AaC7xy6gAABT-Z4Pz9PpGsJv",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c13000000006fc2ccdfccc91096",
+            "span_id": "5141939616630031098",
+            "resource_name": "chmod",
+            "start_timestamp": "2026-09-19T22:26:27.083Z",
+            "end_timestamp": "2026-09-19T22:26:27.086Z"
+          }
+        },
+        {
+          "id": "AaC7xy6gAABWsFhHbkddagoE",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c1300000000040aaf60adcbcca2",
+            "span_id": "76232103480641812",
+            "resource_name": "chmod",
+            "start_timestamp": "2026-09-19T22:26:27.089Z",
+            "end_timestamp": "2026-09-19T22:26:27.092Z"
+          }
+        },
+        {
+          "id": "AaC7xzZzAADUEBxA54efVPQQ",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c160000000010f4991d8ae02006",
+            "span_id": "4785110051026432333",
+            "resource_name": "rm",
+            "start_timestamp": "2026-09-19T22:26:30.002Z",
+            "end_timestamp": "2026-09-19T22:26:30.005Z"
+          }
+        },
+        {
+          "id": "AaC7xzZzAABPpjfsDoCxo_Z1",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c160000000075f636a6e31d1d90",
+            "span_id": "6302873944377877846",
+            "resource_name": "rm",
+            "start_timestamp": "2026-09-19T22:26:30.019Z",
+            "end_timestamp": "2026-09-19T22:26:30.028Z"
+          }
+        },
+        {
+          "id": "AaC7xzZzAAB6tX79NJ6_S9ww",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c130000000030dc89e44fd50722",
+            "span_id": "2777580223713928625",
+            "resource_name": "spark.application",
+            "start_timestamp": "2026-09-19T22:26:25.962Z",
+            "end_timestamp": "2026-09-19T22:26:30.029Z"
+          }
+        },
+        {
+          "id": "AaC7xzZzAAD-Rovm_xNeCqEW",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c160000000016a1dd6402fed673",
+            "span_id": "3728257881247596202",
+            "resource_name": "rm",
+            "start_timestamp": "2026-09-19T22:26:30.051Z",
+            "end_timestamp": "2026-09-19T22:26:30.054Z"
+          }
+        },
+        {
+          "id": "AaC7xzZzAACaqxsZHVdHXwgY",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c160000000018080777984642fe",
+            "span_id": "1924817719101383386",
+            "resource_name": "rm",
+            "start_timestamp": "2026-09-19T22:26:30.054Z",
+            "end_timestamp": "2026-09-19T22:26:30.057Z"
+          }
+        },
+        {
+          "id": "AaC7x9LFAAAEqEHugfqx708H",
+          "attributes": {
+            "service": "ddot-djm-spark",
+            "env": "ddot-poc",
+            "trace_id": "6aaf0c3d00000000074f60cfed322222",
+            "span_id": "7855217093887167865",
+            "resource_name": "setsid",
+            "start_timestamp": "2026-09-19T22:27:09.127Z",
+            "end_timestamp": "2026-09-19T22:27:09.132Z"
+          }
+        }
+      ],
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "query": "env:ddot-poc service:ddot-djm-spark"
+            },
+            "page": {
+              "limit": 10
+            },
+            "sort": "timestamp"
+          }
+        }
+      }
+    },
+    {
+      "product": "djm",
+      "query": "env:ddot-poc service:ddot-djm-python",
+      "http_status": 200,
+      "records": [
+        {
+          "id": "AaC7tqz5AADfTOPnPzNr7VtZ",
+          "attributes": {
+            "service": "ddot-djm-python",
+            "env": "ddot-poc",
+            "trace_id": "6aaf07d900000000595b1e607af13aeb",
+            "span_id": "14720506324899676354",
+            "resource_name": "orders-summary",
+            "start_timestamp": "2026-09-19T22:08:25.717Z",
+            "end_timestamp": "2026-09-19T22:08:25.871Z"
+          },
+          "kind_attribution": {
+            "exact_trace_id_match": true,
+            "job": "djm-python-alternative",
+            "openlineage_run_id": "2f388924-1634-4c3b-aa40-79e852b3a077",
+            "lineage_enabled": true
+          }
+        },
+        {
+          "id": "AaC7tq0GAACTd42RXNptbiFC",
+          "attributes": {
+            "service": "ddot-djm-python",
+            "env": "ddot-poc",
+            "trace_id": "6aaf07d90000000042215ae2306b0371",
+            "span_id": "13265525976647755040",
+            "resource_name": "orders-summary",
+            "start_timestamp": "2026-09-19T22:08:25.717Z",
+            "end_timestamp": "2026-09-19T22:08:25.885Z"
+          },
+          "kind_attribution": {
+            "exact_trace_id_match": true,
+            "job": "djm-python",
+            "openlineage_run_id": "af2e7153-e98e-4899-a4a9-ca23377ed8a7",
+            "lineage_enabled": true
+          }
+        },
+        {
+          "id": "AaC7uUVLAACmMJxzruuA3gjS",
+          "attributes": {
+            "service": "ddot-djm-python",
+            "env": "ddot-poc",
+            "trace_id": "6aaf088200000000d208a2574c1ef6af",
+            "span_id": "4708462762576567907",
+            "resource_name": "orders-summary",
+            "start_timestamp": "2026-09-19T22:11:14.821Z",
+            "end_timestamp": "2026-09-19T22:11:14.825Z"
+          },
+          "kind_attribution": {
+            "exact_trace_id_match": true,
+            "job": "djm-python-disabled",
+            "openlineage_run_id": "ba8d5030-ee13-4bde-bbd6-ed5b5de2769c",
+            "lineage_enabled": false
+          }
+        },
+        {
+          "id": "AaC7uUVFAADKaaYQO7m5CD8z",
+          "attributes": {
+            "service": "ddot-djm-python",
+            "env": "ddot-poc",
+            "trace_id": "6aaf088200000000333f7b5ed7a86a5d",
+            "span_id": "13682457841623197762",
+            "resource_name": "orders-summary",
+            "start_timestamp": "2026-09-19T22:11:14.821Z",
+            "end_timestamp": "2026-09-19T22:11:14.827Z"
+          },
+          "kind_attribution": {
+            "exact_trace_id_match": true,
+            "job": "djm-python-alternative-disabled",
+            "openlineage_run_id": "1a4ddd1e-69bc-49c5-960b-82a6913d948d",
+            "lineage_enabled": false
+          }
+        }
+      ],
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T11:58:17.552699+00:00",
+              "query": "env:ddot-poc service:ddot-djm-python"
+            },
+            "page": {
+              "limit": 10
+            },
+            "sort": "timestamp"
+          }
+        }
+      }
+    },
+    {
+      "product": "djm-targeted",
+      "query": "env:ddot-poc service:ddot-djm-spark resource_name:spark.application",
+      "http_status": 200,
+      "records": [
+        {
+          "id": "AaC7x_IHAAB4d7-7fCtQBuQu",
+          "service": "ddot-djm-spark",
+          "trace_id": "6aaf0c3f000000002ee4ae10d7ce7672",
+          "span_id": "1338983556088128536",
+          "start_timestamp": "2026-09-19T22:27:10.311Z",
+          "resource_name": "spark.application",
+          "product_fields": {
+            "custom.config.spark_app_id": "local-1789856831059",
+            "custom.config.spark_app_name": "ddot-spark-orders",
+            "custom.config.spark_app_startTime": "1789856830311",
+            "custom.config.spark_driver_host": "djm-spark-b79q9",
+            "custom.config.spark_version": "4.0.0",
+            "custom.djm.tags": "env:ddot-poc",
+            "custom.spark.executor_run_time": 390,
+            "custom.spark.shuffle_read_records": 2,
+            "custom.spark.shuffle_write_records": 2,
+            "custom.spark.task_completed_count": 3,
+            "custom.spark.task_failed_count": 0
+          },
+          "kind_attribution": {
+            "driver_host": "djm-spark-b79q9",
+            "existing_kind_pod_matches": true,
+            "job": "djm-spark",
+            "collector": "collector"
+          }
+        },
+        {
+          "id": "AaC7yF2qAABnrH96ypRQEDlz",
+          "service": "ddot-djm-spark",
+          "trace_id": "6aaf0c5c0000000073392e1ffa7731fc",
+          "span_id": "5528147422184909963",
+          "start_timestamp": "2026-09-19T22:27:39.153Z",
+          "resource_name": "spark.application",
+          "product_fields": {
+            "custom.config.spark_app_id": "local-1789856859868",
+            "custom.config.spark_app_name": "ddot-spark-orders",
+            "custom.config.spark_app_startTime": "1789856859153",
+            "custom.config.spark_driver_host": "djm-spark-alternative-nmnjn",
+            "custom.config.spark_version": "4.0.0",
+            "custom.djm.tags": "env:ddot-poc",
+            "custom.spark.executor_run_time": 373,
+            "custom.spark.shuffle_read_records": 2,
+            "custom.spark.shuffle_write_records": 2,
+            "custom.spark.task_completed_count": 3,
+            "custom.spark.task_failed_count": 0
+          },
+          "kind_attribution": {
+            "driver_host": "djm-spark-alternative-nmnjn",
+            "existing_kind_pod_matches": true,
+            "job": "djm-spark-alternative",
+            "collector": "collector-http-forwarder"
+          }
+        }
+      ],
+      "time_window": {
+        "from": "2026-09-19T22:27:00Z",
+        "to": "2026-09-19T22:29:00Z"
+      },
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T22:27:00Z",
+              "to": "2026-09-19T22:29:00Z",
+              "query": "env:ddot-poc service:ddot-djm-spark resource_name:spark.application"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "timestamp"
+          }
+        }
+      }
+    },
+    {
+      "product": "djm-targeted",
+      "query": "env:ddot-poc service:ddot-djm-spark @span.type:spark",
+      "http_status": 429,
+      "records": [],
+      "time_window": {
+        "from": "2026-09-19T22:27:00Z",
+        "to": "2026-09-19T22:29:00Z"
+      },
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T22:27:00Z",
+              "to": "2026-09-19T22:29:00Z",
+              "query": "env:ddot-poc service:ddot-djm-spark @span.type:spark"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "timestamp"
+          }
+        }
+      }
+    },
+    {
+      "product": "djm-targeted",
+      "query": "env:ddot-poc service:ddot-djm-python",
+      "http_status": 429,
+      "records": [],
+      "time_window": {
+        "from": "2026-09-19T22:27:00Z",
+        "to": "2026-09-19T22:29:00Z"
+      },
+      "method": "POST",
+      "path": "/api/v2/spans/events/search",
+      "request_body": {
+        "data": {
+          "type": "search_request",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T22:27:00Z",
+              "to": "2026-09-19T22:29:00Z",
+              "query": "env:ddot-poc service:ddot-djm-python"
+            },
+            "page": {
+              "limit": 5
+            },
+            "sort": "timestamp"
+          }
+        }
+      }
+    }
+  ],
+  "llm_exact_attribution": [
+    {
+      "workload": "llm-python-native",
+      "mode": "native",
+      "emitted_trace_id": "6aafc87600000000b32028d0464e8f66",
+      "emitted_span_id": "11095623234769223106",
+      "query_span_id": "11095623234769223106",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "11095623234769223106",
+          "backend_trace_id": "6aafc87600000000b32028d0464e8f66",
+          "otel_trace_id": null,
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-python-native",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": {
+            "deterministic_match": {
+              "eval_metric_type": "score",
+              "value": 1,
+              "tags": [
+                "source:undefined",
+                "ddtrace.version:4.13.0rc1",
+                "ml_app:ddot-llm-python-native"
+              ],
+              "eval_scope": "span"
+            }
+          },
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": []
+        }
+      ],
+      "collector": "collector",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-python-native",
+              "span_id": "11095623234769223106"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-python-native-forwarder",
+      "mode": "native",
+      "emitted_trace_id": "6aafc8800000000006d61595cdb35fb2",
+      "emitted_span_id": "14735495758483147594",
+      "query_span_id": "14735495758483147594",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "14735495758483147594",
+          "backend_trace_id": "6aafc8800000000006d61595cdb35fb2",
+          "otel_trace_id": null,
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-python-native",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": {
+            "deterministic_match": {
+              "eval_metric_type": "score",
+              "value": 1,
+              "tags": [
+                "source:undefined",
+                "ddtrace.version:4.13.0rc1",
+                "ml_app:ddot-llm-python-native"
+              ],
+              "eval_scope": "span"
+            }
+          },
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": []
+        }
+      ],
+      "collector": "collector-http-forwarder",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-python-native",
+              "span_id": "14735495758483147594"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-python-otlp",
+      "mode": "python-otlp",
+      "emitted_trace_id": "6aafc8710000000099b2861a53ec4f0d",
+      "emitted_span_id": "b1617720df1f3c9b",
+      "query_span_id": "12781628200520203419",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "12781628200520203419",
+          "backend_trace_id": "2408f0fd1c5a5f6bb369dab52974eec6",
+          "otel_trace_id": "6aafc8710000000099b2861a53ec4f0d",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-python",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "session_id:ddot-llm-python",
+            "conversation_id:ddot-llm-python"
+          ]
+        }
+      ],
+      "collector": "collector",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-python",
+              "span_id": "12781628200520203419"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-python-otlp-forwarder",
+      "mode": "python-otlp",
+      "emitted_trace_id": "6aafc871000000004d9df82073e25335",
+      "emitted_span_id": "0f4981b07edc17dc",
+      "query_span_id": "1101554178911377372",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "1101554178911377372",
+          "backend_trace_id": "8a2dc09efa4a50b8aef1a34518622170",
+          "otel_trace_id": "6aafc871000000004d9df82073e25335",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-python",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "session_id:ddot-llm-python",
+            "conversation_id:ddot-llm-python"
+          ]
+        }
+      ],
+      "collector": "collector-http-forwarder",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-python",
+              "span_id": "1101554178911377372"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-java-otlp",
+      "mode": "java-otlp",
+      "emitted_trace_id": "6aaf06ba0000000020c206243aaa34a2",
+      "emitted_span_id": "1270196179722854952",
+      "query_span_id": "1270196179722854952",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "1270196179722854952",
+          "backend_trace_id": "edf4616e9943511987bd45dc9f79137b",
+          "otel_trace_id": "6aaf06ba0000000020c206243aaa34a2",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-java",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "conversation_id:ddot-llm-java",
+            "session_id:ddot-llm-java"
+          ]
+        }
+      ],
+      "collector": "collector",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-java",
+              "span_id": "1270196179722854952"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-java-otlp-forwarder",
+      "mode": "java-otlp",
+      "emitted_trace_id": "6aaf06ba0000000069f0d4450ada85f1",
+      "emitted_span_id": "418277102916793082",
+      "query_span_id": "418277102916793082",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "418277102916793082",
+          "backend_trace_id": "0bb8c7e3d84a54428c22126d21165ad8",
+          "otel_trace_id": "6aaf06ba0000000069f0d4450ada85f1",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-java",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "conversation_id:ddot-llm-java",
+            "session_id:ddot-llm-java"
+          ]
+        }
+      ],
+      "collector": "collector-http-forwarder",
+      "trace_identity_comparison": "128-bit original trace ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-java",
+              "span_id": "418277102916793082"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-node-otlp",
+      "mode": "node-otlp",
+      "emitted_trace_id": "1692978365673191856",
+      "emitted_span_id": "1692978365673191856",
+      "query_span_id": "1692978365673191856",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "1692978365673191856",
+          "backend_trace_id": "f174769c97765cb3baea9d267dde648a",
+          "otel_trace_id": "6aaf06ba00000000177eaada925f39b0",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-node",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "conversation_id:ddot-llm-node",
+            "session_id:ddot-llm-node"
+          ]
+        }
+      ],
+      "collector": "collector",
+      "trace_identity_comparison": "SDK public API exposes low 64 bits; matched to low 64 bits of backend otel.trace_id plus exact span ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-node",
+              "span_id": "1692978365673191856"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": "llm-node-otlp-forwarder",
+      "mode": "node-otlp",
+      "emitted_trace_id": "9091795437841553388",
+      "emitted_span_id": "9091795437841553388",
+      "query_span_id": "9091795437841553388",
+      "http_status": 200,
+      "matches": [
+        {
+          "span_id": "9091795437841553388",
+          "backend_trace_id": "2787a4640863521dbc1b70ba8e6c161e",
+          "otel_trace_id": "6aaf06ba000000007e2c8bc7c31017ec",
+          "exact_trace_match": true,
+          "exact_span_match": true,
+          "ml_app": "ddot-llm-node",
+          "span_kind": "llm",
+          "model_name": "deterministic-poc",
+          "model_provider": "custom",
+          "metrics": {
+            "input_tokens": 4,
+            "input_tokens_for_role_user": 4,
+            "non_cached_input_tokens": 4,
+            "output_tokens": 1,
+            "output_tokens_for_role_assistant": 1,
+            "total_tokens": 5
+          },
+          "evaluation": null,
+          "input_matches_expected": true,
+          "output_matches_expected": true,
+          "session_tags": [
+            "conversation_id:ddot-llm-node",
+            "session_id:ddot-llm-node"
+          ]
+        }
+      ],
+      "collector": "collector-http-forwarder",
+      "trace_identity_comparison": "SDK public API exposes low 64 bits; matched to low 64 bits of backend otel.trace_id plus exact span ID",
+      "product_readback_matched": true,
+      "method": "POST",
+      "path": "/api/v2/llm-obs/v1/spans/events/search",
+      "request_time_note": "Original lookup used current UTC as upper bound; the frozen reproduction upper bound here covers the same exact IDs. Source start bound, ml_app, span_id, page limit and options are unchanged.",
+      "reproduction_request_body": {
+        "data": {
+          "type": "spans",
+          "attributes": {
+            "filter": {
+              "from": "2026-09-19T19:00:00Z",
+              "to": "2026-09-20T12:01:59.489821+00:00",
+              "ml_app": "ddot-llm-node",
+              "span_id": "9091795437841553388"
+            },
+            "page": {
+              "limit": 2
+            },
+            "options": {
+              "include_attachments": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "completed_at": "2026-09-20T12:01:59.489821+00:00",
+  "credential_references": {
+    "api_key": "ddot-poc/datadog-api-key:api-key",
+    "application_key": "ddot-poc/datadog-application-key:application-key",
+    "context": "kind-otel-dd"
+  },
+  "api_origin": "https://api.us5.datadoghq.com",
+  "read_only": true,
+  "sources": {
+    "llm": "https://docs.datadoghq.com/llm_observability/investigate/export_api/",
+    "llm_search": "https://docs.datadoghq.com/api/latest/agent-observability/search-agent-observability-spans/",
+    "dsm_metrics": "https://docs.datadoghq.com/data_streams/metrics_and_tags/",
+    "metric_query": "https://docs.datadoghq.com/api/latest/metrics/query-timeseries-points/",
+    "apm_spans": "https://docs.datadoghq.com/api/latest/spans/search-spans/",
+    "djm": "https://docs.datadoghq.com/data_observability/jobs_monitoring/",
+    "djm_openlineage": "https://docs.datadoghq.com/data_observability/jobs_monitoring/openlineage/"
+  },
+  "summary": {
+    "llm_observability": {
+      "status": "verified core product records via authenticated product-specific API",
+      "exact_workload_matches": 8,
+      "coverage": "Python, Java and Node SDK OTLP conversion through each Collector, plus Python native LLM span and score evaluation through each Collector. Correct deterministic-poc/custom model, 4 input tokens, 1 output token, synthetic input/output; OTLP session and conversation tags; both native score evaluations equal 1.",
+      "remaining": "No browser/UI check; no live model or automatic instrumentation, Java/Node native evaluations, experiments, prompt management or Remote Configuration coverage. This does not establish every LLM feature."
+    },
+    "data_streams_monitoring": {
+      "status": "verified native DSM-generated product metrics via authenticated metrics API",
+      "latency_series": 19,
+      "languages": [
+        "python",
+        "java",
+        "node"
+      ],
+      "payload_size_languages": [
+        "python",
+        "node"
+      ],
+      "lag_series": 1,
+      "lag_value": 5,
+      "remaining": "Shared services/tags combine both Collector alternatives, so metric records do not separately attribute each proxy. Checkpoints and offsets are synthetic in-process API exercises, not broker integration. UI topology, schema tracking and broker actions unverified. Java payload-size series was not returned."
+    },
+    "data_jobs_monitoring": {
+      "status": "partial authenticated APM readback only; DJM product readback unverified",
+      "coverage": "Two final Spark application spans with exact kind pod driver hosts, Spark 4.0.0 application identity, task and shuffle metrics; ordinary Python job traces match saved kind run trace IDs.",
+      "remaining": "Public documented job/run or lineage graph read API not identified in official API reference and Jobs Monitoring docs. Requires authenticated Jobs Monitoring UI/session or a supported product-specific query API to establish job, lineage and performance joining. APM records and prior OpenLineage HTTP 201 are not DJM UI proof; long-running job updates and distributed executor paths remain unverified."
+    }
+  },
+  "rate_limit": {
+    "endpoint": "/api/v2/spans/events/search",
+    "statuses": [
+      429,
+      429
+    ],
+    "action": "Stopped further APM queries; no retries."
+  },
+  "reproduction_scripts": [
+    "/tmp/ddot_backend_client.py",
+    "/tmp/ddot_query_data_products.py",
+    "/tmp/ddot_exact_data_products.py"
+  ]
+}

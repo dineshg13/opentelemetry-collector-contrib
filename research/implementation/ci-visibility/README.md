@@ -1,5 +1,9 @@
 # CI Visibility implementation
 
+**Backend update, 2026-09-20:** Both Python forwarding services have stored pass/skip test hierarchy and ordinary APM spans. Coverage/optimization outcomes, test/APM parenting and full SDK parity remain unverified.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 **Incomplete pending real Test Optimization results and SDK parity.** This implementation
 runs the real Python pytest integration through an actual Collector. Native CI events,
 coverage and synchronous settings/git APIs use the shared product forwarder; ordinary
@@ -148,10 +152,9 @@ span. Java reproduces its writer-selection gap. Fixture API responses are explic
 test-only and do not show that real backend optimization decisions work.
 
 [build-results.json](build-results.json) records image/build identities. The coordinator
-still must record ready/completed kind workloads through both alternatives, actual backend
-responses, visible test pass/skip hierarchy and coverage for the generated fixture commit,
-and real settings/skip/known-test/test-management effects. An authenticated readback/UI
-session and appropriate organization entitlement are needed to verify those outcomes.
+has recorded completed kind workloads, real backend responses and authenticated pass/skip
+hierarchy through both alternatives. Remaining checks cover coverage for the fixture commit
+and real settings/skip/known-test/test-management effects, plus the documented SDK gaps.
 Successful HTTP responses, a passing pytest run and Kubernetes Job completion are not
 product-complete evidence. Keep [PR #14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14)
 in draft until backend behavior and required SDK compatibility are established.

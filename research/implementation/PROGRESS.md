@@ -4,21 +4,22 @@ Active request: [new-instr.md](../new-instr.md). The coordinator owns the combin
 Collector builds, shared deployment, integration checks, index and final draft from
 `dinesh.gurumurthy/poc-all-products` into the user's fork `main`.
 
-**All products remain incomplete** under the required backend-product completion bar.
-Real intake acknowledgements and local semantics are separated from authenticated
-product UI/readback, which is blocked by missing account/application-key access.
-Some SDK and control gaps also need implementation beyond credentials.
+**Full eight-product verification remains incomplete.** The supplied application key now
+validates for US5 and is stored as `ddot-poc/datadog-application-key:application-key`.
+Authenticated September 20 REST/MCP reads verify six core product paths, with partial
+AppSec marker/schema evidence and no positive DBM product record. The exact distinction
+and remaining gaps are in the [current backend matrix](backend-readback/README.md).
 
 | Product | Dedicated implementation assignment | Executed result and remaining boundary | Draft |
 | --- | --- | --- | --- |
-| Live Debugging | `implement_dbm`, subsequent dedicated assignment | Python probes, trace-correlated snapshots and diagnostics through both kind alternatives; SDK disable passes. Signed RC and UI-created probes remain blocked. | [11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) |
-| LLM Observability | `implement_llm` | All three SDKs emit GenAI OTLP spans; kind workloads run; Python native spans/evaluations receive 202 through both alternatives. Product conversion/readback unverified. | [12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) |
-| Application Security | `implement_appsec` | Python/Node real WAF events survive OTLP; kind workloads run. Java structured encoding gap reproduced; full security product parity and UI/RC unverified. | [13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) |
-| CI Visibility | `implement_appsec`, subsequent dedicated assignment | Real pytest lifecycle, controls and separate OTLP traces; both kind Jobs complete with real 200/202 responses. Python private flag and Java writer-selection gaps remain. | [14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) |
-| Data Jobs Monitoring | `implement_llm`, subsequent dedicated assignment | Eight Python/OpenLineage and native Java/Spark kind Jobs complete across both alternatives and disabled controls. Real lineage intake returns 201; joining, long-running updates and UI unverified. | [15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) |
-| Continuous Profiling | `implement_continuous_profiling` | Python/Java/Node profiles and OTLP traces run through both kind alternatives; real 202 is translated to SDK 200. SDK disable passes; backend flamegraph/correlation unverified. | [16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) |
-| Database Monitoring | `implement_dbm` | Receiver tests pass; real PostgreSQL yields 11 exact SQL/query-log/OTLP-span matches in the earlier detailed window. Disabled queries contain no context. DBM event mapping/readback remains blocked. | [17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) |
-| Data Streams Monitoring | `implement_llm`, subsequent dedicated assignment | Three SDK checkpoint/OTLP/disable tests and kind Jobs pass; both intakes return 202. Backend topology and broker/schema/action coverage remain incomplete. | [18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) |
+| Live Debugging | `implement_dbm`, subsequent dedicated assignment | Python probes, trace-correlated snapshots and diagnostics through both kind alternatives; SDK disable passes. Stored snapshots verified through both; trace correlation, signed RC and UI-created probes remain unverified. | [11](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/11) |
+| LLM Observability | `implement_llm` | All three SDKs emit GenAI OTLP spans; kind workloads run; Python native spans/evaluations receive 202 through both alternatives. All eight core workloads match stored product records, tokens and native scores; broader features untested. | [12](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/12) |
+| Application Security | `implement_appsec` | Python/Node real WAF events survive OTLP; kind workloads run. Java structured encoding gap reproduced; backend scanner/schema markers verified; full findings, security parity and UI/RC unverified. | [13](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/13) |
+| CI Visibility | `implement_appsec`, subsequent dedicated assignment | Real pytest lifecycle, controls and separate OTLP traces; both kind Jobs complete with real 200/202 responses. Stored pass/skip hierarchy verified through both; SDK, coverage, optimization and correlation gaps remain. | [14](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/14) |
+| Data Jobs Monitoring | `implement_llm`, subsequent dedicated assignment | Eight Python/OpenLineage and native Java/Spark kind Jobs complete across both alternatives and disabled controls. Real lineage intake returns 201; backend Spark health/catalog verified; four SQL plans missing, bounded lineage graph has zero edges, long-running updates remain. | [15](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/15) |
+| Continuous Profiling | `implement_continuous_profiling` | Python/Java/Node profiles and OTLP traces run through both kind alternatives; real 202 is translated to SDK 200. SDK disable passes; backend hot-loop flamegraphs verified for all three SDKs; proxy attribution and trace correlation unverified. | [16](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/16) |
+| Database Monitoring | `implement_dbm` | Receiver tests pass; real PostgreSQL yields 11 exact SQL/query-log/OTLP-span matches in the earlier detailed window. Disabled queries contain no context. Two authenticated product queries returned zero; DBM event mapping/readback remains unresolved. | [17](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/17) |
+| Data Streams Monitoring | `implement_llm`, subsequent dedicated assignment | Three SDK checkpoint/OTLP/disable tests and kind Jobs pass; both intakes return 202. Native backend DSM metrics verified; proxy attribution, topology and broker/schema/action coverage remain incomplete. | [18](https://github.com/dineshg13/opentelemetry-collector-contrib/pull/18) |
 
 Shared owner `implement_shared` implemented the reusable HTTP forwarder and Datadog policy
 adapter. The coordinator fixed two configuration-decoding regressions found with the real
@@ -78,6 +79,7 @@ binary hashes; [provenance](evidence/build-reproducibility.json) links them to t
 image IDs. Independent review and the final bounded readiness check are complete.
 All eight product drafts and the corrected integration draft are published and verified
 in the fork; [publication evidence](../publication/verification.json) records their state.
-Remaining work: obtain read-scoped Datadog account/application-key access and verify each
-product UI/readback, then address the SDK/control/mapping gaps listed in each product README.
+September 20 follow-up: authenticated REST/MCP reads and an independent evidence audit
+are complete. All 17 Deployments remain Ready. Remaining work is the specific feature,
+attribution, correlation, SDK/control and DBM mapping gaps in the backend matrix.
 No product is marked complete merely because transport and local checks pass.

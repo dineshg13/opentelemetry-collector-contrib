@@ -1,5 +1,9 @@
 # Database collection and OTLP trace correlation
 
+**Backend update, 2026-09-20:** The authenticated DBM product endpoint returned HTTP 200 with zero matches in two scoped queries. Mapping/query-plan behavior remains unresolved; the generic OTLP-log query was rate-limited.
+
+[Current authenticated readback and limits](https://github.com/dineshg13/opentelemetry-collector-contrib/blob/dinesh.gurumurthy/poc-all-products/research/implementation/backend-readback/README.md). Earlier dated test evidence below is retained.
+
 **Implemented; Datadog DBM product behavior remains blocked.** This PoC extends the
 upstream PostgreSQL receiver and runs real Datadog Python database instrumentation.
 Query samples carry the same full trace ID and query span ID as SDK OTLP spans.
@@ -134,7 +138,6 @@ its OTLP logs and metric schemas do not establish those wire contracts.
 
 A supported OTLP-to-DBM backend mapping or an agreed, isolated exporter contract and
 real DBM UI/API readback are needed before this is a working Datadog DBM product.
-The available API key supports intake transport tests; authenticated product readback
-is not available. No mock is used in this deployment, and no HTTP success or ready
+Authenticated product queries are now available but returned zero scoped DBM records. No mock is used in this deployment, and no HTTP success or ready
 pod is reported as complete DBM behavior. Query plan collection, additional DBMSs,
 prepared Java execution and actual Java/JavaScript database runtimes remain unverified.
