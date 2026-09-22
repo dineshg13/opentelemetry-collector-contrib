@@ -21,7 +21,7 @@ func TestTopQueryCacheRetainsFetchedStatements(t *testing.T) {
 	columns := []string{
 		callsColumnName, "datname", sharedBlksDirtiedColumnName, sharedBlksHitColumnName,
 		sharedBlksReadColumnName, sharedBlksWrittenColumnName, tempBlksReadColumnName,
-		tempBlksWrittenColumnName, "query", queryidColumnName, "rolname", rowsColumnName,
+		tempBlksWrittenColumnName, "query", queryidColumnName, "rolname", "dbid", "userid", "toplevel", rowsColumnName,
 		totalExecTimeColumnName, totalPlanTimeColumnName,
 	}
 	cfg := createDefaultConfig().(*Config)
@@ -54,10 +54,10 @@ func TestTopQueryCacheRetainsFetchedStatements(t *testing.T) {
 		increment     bool
 		expectedCount int
 	}{
-		{name: "first scrape", ids: ids, expectedCount: 50},
+		{name: "first scrape establishes baselines", ids: ids},
 		{name: "unchanged counters", ids: ids},
 		{name: "reordered statements", ids: reversed},
-		{name: "changed statement membership", ids: changed, expectedCount: 50},
+		{name: "changed statement membership establishes baselines", ids: changed},
 		{name: "unchanged after membership change", ids: changed},
 		{name: "one active statement", ids: changed, increment: true, expectedCount: 1},
 	} {
@@ -68,6 +68,9 @@ func TestTopQueryCacheRetainsFetchedStatements(t *testing.T) {
 					"datname":         "postgres",
 					"query":           "SELECT 1",
 					"rolname":         "otel",
+					"dbid":            "1",
+					"userid":          "2",
+					"toplevel":        "true",
 					queryidColumnName: fmt.Sprint(id),
 				}
 				for _, column := range columns {

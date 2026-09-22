@@ -746,6 +746,9 @@ var topQueryColumns = []string{
 	tempBlksWrittenColumnName,
 	"query",
 	queryidColumnName,
+	"dbid",
+	"userid",
+	"toplevel",
 	"rolname",
 	rowsColumnName,
 	totalExecTimeColumnName,
@@ -1365,21 +1368,18 @@ func TestScrapeTopQueries(t *testing.T) {
 	queryid := "114514"
 	scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
 	require.NoError(t, scraperErr)
-	scraper.cache.Add(queryid+totalExecTimeColumnName, 10)
-	scraper.cache.Add(queryid+totalPlanTimeColumnName, 11)
-	scraper.cache.Add(queryid+callsColumnName, 120)
-	scraper.cache.Add(queryid+rowsColumnName, 20)
-
-	scraper.cache.Add(queryid+sharedBlksDirtiedColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksHitColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksWrittenColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksWrittenColumnName, 1110)
+	identity := topQueryIdentity{databaseID: "1", userID: "2", queryID: queryid, topLevel: "true"}
+	scraper.cache.Add(identity, topQueryCounters{
+		integers:  [8]int64{120, 20, 1110, 1110, 1110, 1110, 1110, 1110},
+		durations: [2]float64{10, 11},
+	})
 
 	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(newSQLMockRows(topQueryColumns, map[string]any{
 		callsColumnName:             "123",
 		"datname":                   "postgres",
+		"dbid":                      "1",
+		"userid":                    "2",
+		"toplevel":                  "true",
 		sharedBlksDirtiedColumnName: "1111",
 		sharedBlksHitColumnName:     "1112",
 		sharedBlksReadColumnName:    "1113",
@@ -1407,17 +1407,11 @@ func TestScrapeTopQueries(t *testing.T) {
 	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreResourceAttributeValue("server.address"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
-	// Verify the cache has updated with latest counter
-
-	calls, callsExists := scraper.cache.Get(queryid + callsColumnName)
-	assert.True(t, callsExists)
-	assert.Equal(t, float64(123), calls)
-	execTime, execTimeExists := scraper.cache.Get(queryid + totalExecTimeColumnName)
-	assert.True(t, execTimeExists)
-	assert.Equal(t, float64(11), execTime)
-	planTime, planTimeExists := scraper.cache.Get(queryid + totalPlanTimeColumnName)
-	assert.True(t, planTimeExists)
-	assert.Equal(t, float64(12), planTime)
+	// The latest cumulative values are kept together as the next baseline.
+	counters, exists := scraper.cache.Get(identity)
+	require.True(t, exists)
+	assert.Equal(t, int64(123), counters.integers[0])
+	assert.Equal(t, [2]float64{11, 12}, counters.durations)
 }
 
 // A database dropped while its stats linger in pg_stat_statements surfaces a row
@@ -1532,7 +1526,7 @@ func TestScrapeTopQueriesCollectsOnlyWhenIntervalHasElapsed(t *testing.T) {
 	cfg.Databases = []string{}
 	cfg.LogsBuilderConfig.Events.DbServerTopQuery.Enabled = true
 	cfg.TopQueryCollection.CollectionInterval = 600 * time.Second
-	db, _, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	assert.NoError(t, err)
 
 	defer db.Close()
@@ -1552,6 +1546,7 @@ func TestScrapeTopQueriesCollectsOnlyWhenIntervalHasElapsed(t *testing.T) {
 	require.NoError(t, scraperErr)
 
 	assert.True(t, scraper.lastExecutionTimestamp.IsZero(), "lastExecutionTimestamp should be zero before first collection")
+	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(topQueryColumns))
 	logs1, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33, time.Minute)
 	assert.NotNil(t, logs1)
 	assert.NoError(t, err)
