@@ -49,6 +49,12 @@ type QuerySampleCollection struct {
 	_ struct{}
 }
 
+type QueryMonitoringCollection struct {
+	Enabled         bool  `mapstructure:"enabled"`
+	MaxRows         int64 `mapstructure:"max_rows"`
+	MaxPayloadBytes int   `mapstructure:"max_payload_bytes"`
+}
+
 type Config struct {
 	ControllerConfig      scraperhelper.ControllerConfig `mapstructure:",squash"`
 	Username              string                         `mapstructure:"username"`
@@ -62,6 +68,7 @@ type Config struct {
 	LogsBuilderConfig     metadata.LogsBuilderConfig     `mapstructure:",squash"`
 	QuerySampleCollection QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection    TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
+	QueryMonitoring       QueryMonitoringCollection      `mapstructure:"query_monitoring,omitempty"`
 	// DBAuth optionally sources the connection credential from a db_auth provider
 	// extension (e.g. AWS IAM) instead of a static password. When set, the provider
 	// supplies the password at connection-open time. Mutually exclusive with the
@@ -78,6 +85,17 @@ type ConnectionPool struct {
 
 func (cfg *Config) Validate() error {
 	var err error
+	if cfg.QueryMonitoring.Enabled {
+		if cfg.ControllerConfig.CollectionInterval <= 0 {
+			err = multierr.Append(err, errors.New("query_monitoring requires a positive collection_interval"))
+		}
+		if cfg.QueryMonitoring.MaxRows <= 0 || cfg.QueryMonitoring.MaxRows > 100000 {
+			err = multierr.Append(err, errors.New("query_monitoring.max_rows must be between 1 and 100000"))
+		}
+		if cfg.QueryMonitoring.MaxPayloadBytes < 1024 || cfg.QueryMonitoring.MaxPayloadBytes > 4*1024*1024 {
+			err = multierr.Append(err, errors.New("query_monitoring.max_payload_bytes must be between 1024 and 4194304"))
+		}
+	}
 	if cfg.Username == "" {
 		err = multierr.Append(err, errors.New(ErrNoUsername))
 	}

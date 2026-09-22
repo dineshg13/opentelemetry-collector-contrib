@@ -1489,11 +1489,21 @@ var querySampleTemplate string
 var querySampleTmpl = template.Must(template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 
 func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, float64, error) {
+	return c.getQuerySampleRows(ctx, limit, newestQueryTimestamp, excludedDatabases, logger, false)
+}
+
+func (c *postgreSQLClient) getMonitoringActivity(ctx context.Context, limit int64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, error) {
+	rows, _, err := c.getQuerySampleRows(ctx, limit, 0, excludedDatabases, logger, true)
+	return rows, err
+}
+
+func (c *postgreSQLClient) getQuerySampleRows(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger, monitoring bool) ([]map[string]any, float64, error) {
 	buf := bytes.Buffer{}
 
 	if tmplErr := querySampleTmpl.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
+		"monitoring":           monitoring,
 		"excludedDatabases":    quoteDatabaseList(excludedDatabases),
 	}); tmplErr != nil {
 		logger.Error("failed to execute template", zap.Error(tmplErr))
@@ -1590,15 +1600,18 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		}
 
 		// TODO: check if the query is truncated.
-		obfuscated, err := obfuscateSQL(row[querySampleColumnQuery])
+		obfuscated, sqlMetadata, err := obfuscateSQLMetadata(row[querySampleColumnQuery])
 		if err != nil {
-			logger.Warn("failed to obfuscate query", zap.String("query", row[querySampleColumnQuery]))
+			logger.Warn("failed to obfuscate query", zap.Error(err))
 			obfuscated = ""
 		}
 		currentAttributes[dbAttributePrefix+querySampleColumnPID] = pid
 		currentAttributes[string(semconv.NetworkPeerPortKey)] = clientPort
 		currentAttributes[string(semconv.NetworkPeerAddressKey)] = row[querySampleColumnClientAddr]
 		currentAttributes[string(semconv.DBQueryTextKey)] = obfuscated
+		for key, value := range sqlMetadata {
+			currentAttributes[key] = value
+		}
 		currentAttributes[string(semconv.DBNamespaceKey)] = row[querySampleColumnDatname]
 		currentAttributes[string(semconv.UserNameKey)] = row[querySampleColumnUsename]
 		currentAttributes[postgresqlTotalExecTimeAttributeName] = duration
@@ -1707,9 +1720,13 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, exclude
 			case col == "query":
 				// Obfuscate query for display/logging (converts $1,$2 to ?)
 				// Raw query is already stored separately for EXPLAIN
-				val, err = obfuscateSQL(row[col])
+				var sqlMetadata map[string]any
+				val, sqlMetadata, err = obfuscateSQLMetadata(row[col])
+				for key, value := range sqlMetadata {
+					currentAttributes[key] = value
+				}
 				if err != nil {
-					logger.Error("failed to obfuscate query", zap.String("query", row[col]))
+					logger.Error("failed to obfuscate query", zap.Error(err))
 					val = ""
 				}
 			default:

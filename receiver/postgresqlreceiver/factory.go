@@ -66,6 +66,10 @@ func createDefaultConfig() component.Config {
 		},
 		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		LogsBuilderConfig:    metadata.DefaultLogsBuilderConfig(),
+		QueryMonitoring: QueryMonitoringCollection{
+			MaxRows:         10000,
+			MaxPayloadBytes: 1024 * 1024,
+		},
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
 		},
@@ -158,6 +162,26 @@ func createLogsReceiver(
 				}, component.StabilityLevelAlpha)), nil,
 		)
 		opts = append(opts, opt)
+	}
+
+	if cfg.QueryMonitoring.Enabled {
+		ns, err := newPostgreSQLScraper(params, cfg, clientFactory,
+			newCache(int(cfg.QueryMonitoring.MaxRows*2)), newTTLCache[string](1, time.Second))
+		if err != nil {
+			return nil, err
+		}
+		state := &queryMonitoringState{}
+		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
+			return ns.scrapeQueryMonitoring(ctx, state)
+		}, scraper.WithStart(ns.start), scraper.WithShutdown(ns.shutdown))
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, scraperhelper.AddFactoryWithConfig(
+			scraper.NewFactory(metadata.Type, nil,
+				scraper.WithLogs(func(context.Context, scraper.Settings, component.Config) (scraper.Logs, error) {
+					return s, nil
+				}, component.StabilityLevelDevelopment)), nil))
 	}
 
 	return scraperhelper.NewLogsController(

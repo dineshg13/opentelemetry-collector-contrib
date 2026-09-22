@@ -161,6 +161,67 @@ The following options are available:
 - `max_rows_per_query`: (optional, default=1000) The max number of rows would return from the query 
 against `pg_stat_activity`.
 
+### Experimental query monitoring snapshots
+
+`query_monitoring.enabled` adds two vendor-neutral OTLP log events, independently
+of the legacy per-query events. It is disabled by default and requires an explicit
+logs pipeline containing this receiver. Activity snapshots require PostgreSQL 14 or newer.
+Enable `pg_stat_statements` and grant the
+monitoring role `pg_monitor`.
+
+```yaml
+receivers:
+  postgresql:
+    endpoint: localhost:5432
+    username: monitor
+    password: ${env:POSTGRESQL_PASSWORD}
+    collection_interval: 10s
+    query_monitoring:
+      enabled: true
+      max_rows: 10000
+      max_payload_bytes: 1048576
+```
+
+`db.server.query_metrics` contains a `queries` array with all fetched statement
+interval deltas before top-N selection. Each row retains native PostgreSQL database,
+user and query IDs as strings, `toplevel` as a boolean, database/role names,
+obfuscated SQL, safe table/command metadata, and integer counters. Execution and
+planning times are seconds. The first observation, counter reset, missing
+observation, and restart establish baselines without emitting lifetime totals.
+This stream has separate state from legacy top-query collection and does not
+execute EXPLAIN.
+
+`db.server.activity` contains complete bounded `sessions` and `connections` arrays
+in one log record. Sessions include non-idle client activity, waits, blocker PIDs,
+obfuscated SQL, UTC query start timestamps and seconds of elapsed query duration.
+Connection summaries include idle clients, grouped separately by database, user,
+application and state; they are not inferred from sampled sessions. The receiver's
+current connection and background workers are excluded. Standard W3C trace context
+is carried on each session row as `trace_id`, `span_id`, and `trace_flags` when
+valid. Raw SQL, arbitrary SQL comments and internal context objects are omitted.
+
+These are experimental receiver conventions, not standard OpenTelemetry event
+schemas. Every record declares `db.collection.schema.version: "1"`, a source
+collection UUID, start/end nanosecond timestamps, completeness and observed/emitted
+row counts. Each collection is one bounded log record so OTLP batching cannot split
+its rows. Retries preserve its ID. A successful empty collection emits empty arrays;
+a failed or capped collection reports a scrape error instead of a false empty or
+complete snapshot. The other collection family can still succeed independently.
+
+`max_rows` (1–100000, default 10000) caps fetched statistics, active sessions and
+connection groups independently. A sentinel row detects truncation. `max_payload_bytes`
+(1024–4194304, default 1048576) caps each source record including its OTLP envelope;
+both protobuf and JSON encodings are checked. Downstream processors and exporters
+must enforce their own final request limits. No partial activity snapshot is emitted.
+The configured collection interval must be positive.
+
+The resource identifies the monitored database server through `service.instance.id`,
+`server.address`, `server.port` and `db.system.name`. `service.name` defaults to
+`unknown_service:postgresql`; `db.version` contains the observed server version.
+`exclude_databases` applies to all snapshot queries; `databases` still limits only
+ordinary metrics. These events carry source telemetry and do not implement any
+backend-specific product intake protocol.
+
 ### Top Query Collection
 We provide functionality to collect the most executed queries from PostgreSQL. It will get data from `pg_stat_statements` and report incremental value of `total_exec_time`, `total_plan_time`, `calls`, `rows`, `shared_blks_dirtied`, `shared_blks_hit`, `shared_blks_read`, `shared_blks_written`, `temp_blks_read`, `temp_blks_written`. To enable it, you will need the following configuration
 ```
