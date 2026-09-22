@@ -50,9 +50,19 @@ type QuerySampleCollection struct {
 }
 
 type QueryMonitoringCollection struct {
-	Enabled         bool  `mapstructure:"enabled"`
-	MaxRows         int64 `mapstructure:"max_rows"`
-	MaxPayloadBytes int   `mapstructure:"max_payload_bytes"`
+	Enabled         bool                 `mapstructure:"enabled"`
+	MaxRows         int64                `mapstructure:"max_rows"`
+	MaxPayloadBytes int                  `mapstructure:"max_payload_bytes"`
+	QueryPlans      QueryMonitoringPlans `mapstructure:"query_plans"`
+}
+
+type QueryMonitoringPlans struct {
+	Enabled          bool          `mapstructure:"enabled"`
+	MaxPerCollection int           `mapstructure:"max_per_collection"`
+	Timeout          time.Duration `mapstructure:"timeout"`
+	MaxPlanBytes     int           `mapstructure:"max_plan_bytes"`
+	CacheSize        int           `mapstructure:"cache_size"`
+	CacheTTL         time.Duration `mapstructure:"cache_ttl"`
 }
 
 type Config struct {
@@ -94,6 +104,21 @@ func (cfg *Config) Validate() error {
 		}
 		if cfg.QueryMonitoring.MaxPayloadBytes < 1024 || cfg.QueryMonitoring.MaxPayloadBytes > 4*1024*1024 {
 			err = multierr.Append(err, errors.New("query_monitoring.max_payload_bytes must be between 1024 and 4194304"))
+		}
+		plans := cfg.QueryMonitoring.QueryPlans
+		if plans.Enabled {
+			if plans.MaxPerCollection < 1 || plans.MaxPerCollection > 20 {
+				err = multierr.Append(err, errors.New("query_monitoring.query_plans.max_per_collection must be between 1 and 20"))
+			}
+			if plans.Timeout <= 0 || plans.Timeout > 5*time.Second {
+				err = multierr.Append(err, errors.New("query_monitoring.query_plans.timeout must be positive and no greater than 5s"))
+			}
+			if plans.MaxPlanBytes < 1024 || plans.MaxPlanBytes > cfg.QueryMonitoring.MaxPayloadBytes {
+				err = multierr.Append(err, errors.New("query_monitoring.query_plans.max_plan_bytes must be between 1024 and max_payload_bytes"))
+			}
+			if plans.CacheSize < 1 || plans.CacheSize > 10000 || plans.CacheTTL <= 0 {
+				err = multierr.Append(err, errors.New("query_monitoring.query_plans requires cache_size between 1 and 10000 and positive cache_ttl"))
+			}
 		}
 	}
 	if cfg.Username == "" {

@@ -55,7 +55,7 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 	})
 	setup, err := sql.Open("postgres", monitoringTestDSN(endpoint, database, "postgres", password, "ddot-m3-setup"))
 	require.NoError(t, err)
-	_, err = setup.ExecContext(ctx, "CREATE TABLE public.m3_probe (id integer PRIMARY KEY); INSERT INTO public.m3_probe SELECT generate_series(1,5); GRANT SELECT ON public.m3_probe TO dbm_app, dbm_monitor")
+	_, err = setup.ExecContext(ctx, "CREATE TABLE public.m3_probe (id integer PRIMARY KEY); INSERT INTO public.m3_probe SELECT generate_series(1,5); GRANT SELECT ON public.m3_probe TO dbm_app, dbm_monitor; GRANT UPDATE ON public.m3_probe TO dbm_monitor")
 	require.NoError(t, err)
 	require.NoError(t, setup.Close())
 
@@ -65,6 +65,7 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 	cfg.Password = configopaque.String(password)
 	cfg.ClientConfig.Insecure = true
 	cfg.QueryMonitoring.Enabled = true
+	cfg.QueryMonitoring.QueryPlans.Enabled = os.Getenv("POSTGRESQL_MONITORING_TEST_QUERY_PLANS") == "true"
 	// Collection is scoped to the disposable database. This keeps captured OTLP
 	// evidence limited to synthetic statements even on a shared PoC server.
 	dbs, err := admin.QueryContext(ctx, "SELECT datname FROM pg_database WHERE datname != $1", database)
@@ -78,7 +79,7 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 	require.NoError(t, dbs.Close())
 	makeScraper := func(config *Config) *postgreSQLScraper {
 		p, makeErr := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), config, newDefaultClientFactory(config),
-			newCache(int(config.QueryMonitoring.MaxRows*2)), newTTLCache[string](1, time.Second))
+			newCache(int(config.QueryMonitoring.MaxRows*2)), newTTLCache[string](config.QueryMonitoring.QueryPlans.CacheSize, config.QueryMonitoring.QueryPlans.CacheTTL))
 		require.NoError(t, makeErr)
 		t.Cleanup(func() { assert.NoError(t, p.shutdown(context.Background())) })
 		return p
@@ -148,6 +149,13 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 	assert.Equal(t, int64(3), matched["postgresql.calls"])
 	assert.Equal(t, int64(15), matched["postgresql.rows"])
 	assert.GreaterOrEqual(t, matched["postgresql.total_exec_time"].(float64), float64(0))
+	if cfg.QueryMonitoring.QueryPlans.Enabled {
+		plan, ok := matched["postgresql.query_plan"].(string)
+		require.True(t, ok, "optional plan must be collected for the controlled readable table")
+		require.True(t, json.Valid([]byte(plan)))
+		require.Contains(t, plan, "Plan")
+		require.NotContains(t, plan, "Actual Rows", "EXPLAIN must not execute the query with ANALYZE")
+	}
 	activityBody := monitoringIntegrationBody(t, captured, queryActivityEvent)
 	sessions := activityBody["sessions"].([]any)
 	require.Len(t, sessions, 1)
@@ -165,6 +173,28 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 	assert.Equal(t, int64(1), counts["active"])
 	assert.Equal(t, int64(2), counts["idle"])
 	require.NoError(t, <-activeResult)
+	if cfg.QueryMonitoring.QueryPlans.Enabled {
+		planClient, planErr := p.clientFactory.getClient(ctx, database)
+		require.NoError(t, planErr)
+		planner := planClient.(monitoringPlanClient)
+		for i, statement := range []string{
+			"SELECT * FROM public.m3_probe WHERE id = $1 OR id = $1",
+			"SELECT * FROM public.m3_probe WHERE id::text = '$123'",
+			"UPDATE public.m3_probe SET id = id + 1000 WHERE id > 0",
+		} {
+			planCtx, planCancel := context.WithTimeout(ctx, time.Second)
+			plan, explainErr := planner.explainMonitoringQuery(planCtx, statement, fmt.Sprint(i+1))
+			planCancel()
+			require.NoError(t, explainErr)
+			require.True(t, json.Valid([]byte(plan)))
+			require.Contains(t, plan, "m3_probe")
+			require.NotContains(t, plan, "Actual Rows")
+		}
+		require.NoError(t, planClient.Close())
+		var sum int
+		require.NoError(t, connections[0].QueryRowContext(ctx, "SELECT sum(id) FROM public.m3_probe").Scan(&sum))
+		require.Equal(t, 15, sum, "EXPLAIN of UPDATE must not modify the test table")
+	}
 
 	idle, err := p.scrapeQueryMonitoring(ctx, state)
 	require.NoError(t, err)
@@ -206,6 +236,8 @@ func TestQueryMonitoringLivePostgres(t *testing.T) {
 		"initial_baseline_empty": true, "restart_baseline_empty": true, "idle_activity_empty": true,
 		"truncation_reports_error": true, "connection_failure_emits_no_snapshot": true,
 		"captured_otlp_records": captured.LogRecordCount(), "capture_scope": "only the disposable synthetic database",
+		"optional_plan_verified": cfg.QueryMonitoring.QueryPlans.Enabled,
+		"plan_parameter_handling_and_no_update_side_effects_verified": cfg.QueryMonitoring.QueryPlans.Enabled,
 	}
 	if output := os.Getenv("POSTGRESQL_MONITORING_TEST_EVIDENCE"); output != "" {
 		data, encodeErr := json.MarshalIndent(evidence, "", "  ")

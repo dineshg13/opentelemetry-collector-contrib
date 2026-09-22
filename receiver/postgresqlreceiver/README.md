@@ -188,8 +188,38 @@ user and query IDs as strings, `toplevel` as a boolean, database/role names,
 obfuscated SQL, safe table/command metadata, and integer counters. Execution and
 planning times are seconds. The first observation, counter reset, missing
 observation, and restart establish baselines without emitting lifetime totals.
-This stream has separate state from legacy top-query collection and does not
-execute EXPLAIN.
+This stream has separate state from legacy top-query collection. EXPLAIN is
+disabled by default.
+
+Optional `query_monitoring.query_plans` attaches an obfuscated EXPLAIN JSON string
+as `postgresql.query_plan` on statistics rows. It requires the monitor to have
+permission to plan the statement in its database. The receiver prepares normalized
+SQL and requests a generic plan with null parameters; it never uses `ANALYZE`.
+This plan describes the monitor's planning context, which can differ from the
+application's role, search path and parameter values.
+
+```yaml
+query_monitoring:
+  enabled: true
+  query_plans:
+    enabled: true
+    max_per_collection: 2
+    timeout: 500ms
+    max_plan_bytes: 65536
+    cache_size: 1000
+    cache_ttl: 1h
+```
+
+The optional plan settings above show their defaults. `max_per_collection` permits
+1–20 uncached plan attempts; `timeout` must be positive and at most 5s. Prepared
+statement cleanup has a separate 250ms bound. `max_plan_bytes` must be between 1024
+and `max_payload_bytes`; `cache_size` permits 1–10000 entries and `cache_ttl` must
+be positive. Successful and failed attempts are cached by native database, role,
+query ID and `toplevel`. Plans are attempted only for executed delta rows.
+Permissions, unsupported SQL, timeouts and oversized plans omit the plan while
+retaining statistics. If optional plans collectively exceed the snapshot byte
+limit, the receiver retries serialization without plans. Raw SQL and raw EXPLAIN
+error details are not logged by this optional path.
 
 `db.server.activity` contains complete bounded `sessions` and `connections` arrays
 in one log record. Sessions include non-idle client activity, waits, blocker PIDs,

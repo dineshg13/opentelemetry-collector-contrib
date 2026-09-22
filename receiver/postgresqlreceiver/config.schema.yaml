@@ -26,6 +26,25 @@ $defs:
       max_rows:
         type: integer
         x-customType: int64
+      query_plans:
+        $ref: query_monitoring_plans
+  query_monitoring_plans:
+    type: object
+    properties:
+      cache_size:
+        type: integer
+      cache_ttl:
+        type: string
+        format: duration
+      enabled:
+        type: boolean
+      max_per_collection:
+        type: integer
+      max_plan_bytes:
+        type: integer
+      timeout:
+        type: string
+        format: duration
   query_sample_collection:
     type: object
     properties:

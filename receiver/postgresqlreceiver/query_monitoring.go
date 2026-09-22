@@ -94,6 +94,7 @@ func (p *postgreSQLScraper) collectMonitoringMetrics(ctx context.Context, c clie
 		end = time.Now()
 	}
 	queries := make([]any, 0, len(deltas))
+	planAttempts := 0
 	for _, row := range deltas {
 		if attrString(row, "db.query.text") == "" {
 			p.cache.Purge()
@@ -110,13 +111,77 @@ func (p *postgreSQLScraper) collectMonitoringMetrics(ctx context.Context, c clie
 			}
 			clean["postgresql.toplevel"] = topLevel
 		}
+		if plan := p.monitoringQueryPlan(ctx, row, &planAttempts); plan != "" {
+			clean["postgresql.query_plan"] = plan
+		}
 		queries = append(queries, clean)
 	}
 	output, err := p.monitoringRecord(queryMetricsEvent, map[string]any{"queries": queries}, len(rows), len(queries), version, start, end)
 	if err != nil {
+		// Plans are optional. Preserve a complete statistics snapshot if their
+		// combined size exceeds the configured record limit.
+		removedPlan := false
+		for _, value := range queries {
+			row := value.(map[string]any)
+			if _, ok := row["postgresql.query_plan"]; ok {
+				delete(row, "postgresql.query_plan")
+				removedPlan = true
+			}
+		}
+		if removedPlan {
+			output, err = p.monitoringRecord(queryMetricsEvent, map[string]any{"queries": queries}, len(rows), len(queries), version, start, end)
+		}
+	}
+	if err != nil {
 		p.cache.Purge()
 	}
 	return output, err
+}
+
+type monitoringPlanClient interface {
+	explainMonitoringQuery(context.Context, string, string) (string, error)
+}
+
+func (p *postgreSQLScraper) monitoringQueryPlan(ctx context.Context, row map[string]any, attempts *int) string {
+	cfg := p.config.QueryMonitoring.QueryPlans
+	if !cfg.Enabled {
+		return ""
+	}
+	key := topQueryIdentityFromRow(row).planCacheKey()
+	if plan, ok := p.queryPlanCache.Get(key); ok {
+		return plan
+	}
+	if *attempts >= cfg.MaxPerCollection {
+		return ""
+	}
+	query := attrString(row, "postgresql.raw_query")
+	queryID := attrString(row, "postgresql.queryid")
+	if _, err := strconv.ParseInt(queryID, 10, 64); err != nil || !isExplainableQuery(query) {
+		p.queryPlanCache.Add(key, "")
+		return ""
+	}
+	*attempts++
+	planCtx, cancel := context.WithTimeout(ctx, cfg.Timeout)
+	defer cancel()
+	c, err := p.clientFactory.getClient(planCtx, attrString(row, "db.namespace"))
+	if err != nil {
+		p.queryPlanCache.Add(key, "")
+		return ""
+	}
+	defer c.Close()
+	var plan string
+	if planner, ok := c.(monitoringPlanClient); ok {
+		plan, err = planner.explainMonitoringQuery(planCtx, query, queryID)
+	}
+	if err != nil || len(plan) > cfg.MaxPlanBytes {
+		// Error details and prepared SQL may contain sensitive query text.
+		p.logger.Debug("query monitoring plan unavailable", zap.String("queryID", queryID))
+		plan = ""
+	}
+	// Negative results share the TTL so denied/unsupported queries do not retry
+	// on every collection. Identity includes database, role, query and toplevel.
+	p.queryPlanCache.Add(key, plan)
+	return plan
 }
 
 func (p *postgreSQLScraper) collectMonitoringActivity(ctx context.Context, c client, version string, start, end time.Time) (plog.Logs, error) {

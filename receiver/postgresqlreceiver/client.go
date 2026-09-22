@@ -352,6 +352,16 @@ func isIdentifierByte(b byte) bool {
 // DEALLOCATE) has to run on the one connection that ran PREPARE, not just whatever the pool
 // hands out for each call.
 func (c *postgreSQLClient) explainQuery(ctx context.Context, query, queryID string, logger *zap.Logger) (string, error) {
+	return c.explainQueryWithCleanupTimeout(ctx, query, queryID, logger, detachedCleanupTimeout)
+}
+
+// Query monitoring suppresses raw SQL diagnostics and also bounds cleanup after
+// its per-plan deadline. The original caller retains its existing behavior.
+func (c *postgreSQLClient) explainMonitoringQuery(ctx context.Context, query, queryID string) (string, error) {
+	return c.explainQueryWithCleanupTimeout(ctx, query, queryID, zap.NewNop(), 250*time.Millisecond)
+}
+
+func (c *postgreSQLClient) explainQueryWithCleanupTimeout(ctx context.Context, query, queryID string, logger *zap.Logger, cleanupTimeout time.Duration) (string, error) {
 	// Check if the query is explainable before attempting EXPLAIN
 	if !isExplainableQuery(query) {
 		logger.Debug("skipping EXPLAIN for non-explainable query", zap.String("queryID", queryID))
@@ -380,7 +390,7 @@ func (c *postgreSQLClient) explainQuery(ctx context.Context, query, queryID stri
 	// same dedicated connection that ran PREPARE, since DEALLOCATE on any other
 	// connection wouldn't find it.
 	defer func() {
-		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), detachedCleanupTimeout)
+		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), cleanupTimeout)
 		defer cancel()
 		_, _ = conn.ExecContext(cleanupCtx, fmt.Sprintf("/* otel-collector-ignore */ DEALLOCATE PREPARE otel_%s", normalizedQueryID))
 	}()

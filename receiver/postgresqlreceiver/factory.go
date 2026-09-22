@@ -69,6 +69,13 @@ func createDefaultConfig() component.Config {
 		QueryMonitoring: QueryMonitoringCollection{
 			MaxRows:         10000,
 			MaxPayloadBytes: 1024 * 1024,
+			QueryPlans: QueryMonitoringPlans{
+				MaxPerCollection: 2,
+				Timeout:          500 * time.Millisecond,
+				MaxPlanBytes:     64 * 1024,
+				CacheSize:        1000,
+				CacheTTL:         time.Hour,
+			},
 		},
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
@@ -166,7 +173,7 @@ func createLogsReceiver(
 
 	if cfg.QueryMonitoring.Enabled {
 		ns, err := newPostgreSQLScraper(params, cfg, clientFactory,
-			newCache(int(cfg.QueryMonitoring.MaxRows*2)), newTTLCache[string](1, time.Second))
+			newCache(int(cfg.QueryMonitoring.MaxRows*2)), newTTLCache[string](cfg.QueryMonitoring.QueryPlans.CacheSize, cfg.QueryMonitoring.QueryPlans.CacheTTL))
 		if err != nil {
 			return nil, err
 		}

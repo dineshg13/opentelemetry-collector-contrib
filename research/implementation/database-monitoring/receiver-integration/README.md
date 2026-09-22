@@ -23,6 +23,13 @@ In another terminal, run from the repository root:
 python3 research/implementation/database-monitoring/receiver-integration/verify-kind.py
 ```
 
+Add `--query-plans --output-directory /tmp/dbm-live-plans` to additionally exercise
+the real prepared EXPLAIN path and assert that the emitted optional plan is valid
+JSON without `ANALYZE` execution fields. This also verifies repeated parameters,
+parameter-like text inside a literal, and an UPDATE plan leaving the table unchanged.
+`fixtures/otlp-collections-plans.json` and `fixtures/source-evidence-plans.json`
+preserve the successful run with plans enabled.
+
 The script reads `ddot-poc/dbm-postgres-password:password` using `kind-otel-dd`.
 Its arguments allow explicit endpoint, context, and Secret references. Go cache
 and proxy settings are inherited from the environment. Close the port-forward

@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--namespace", default="ddot-poc")
     parser.add_argument("--secret", default="dbm-postgres-password")
     parser.add_argument("--secret-key", default="password")
+    parser.add_argument("--query-plans", action="store_true")
     parser.add_argument("--output-directory", type=Path, default=Path("/tmp"))
     args = parser.parse_args()
     if not args.endpoint.startswith("127.0.0.1:"):
@@ -34,6 +35,7 @@ def main():
         "POSTGRESQL_MONITORING_TEST_PASSWORD": base64.b64decode(secret["data"][args.secret_key]).decode(),
         "POSTGRESQL_MONITORING_TEST_CAPTURE": str(capture),
         "POSTGRESQL_MONITORING_TEST_EVIDENCE": str(evidence),
+        "POSTGRESQL_MONITORING_TEST_QUERY_PLANS": str(args.query_plans).lower(),
     })
     repo = Path(__file__).resolve().parents[4]
     result = subprocess.run([
