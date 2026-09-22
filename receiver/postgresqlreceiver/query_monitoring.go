@@ -76,7 +76,7 @@ func (p *postgreSQLScraper) scrapeQueryMonitoring(ctx context.Context, state *qu
 
 func (p *postgreSQLScraper) collectMonitoringMetrics(ctx context.Context, c client, version string, start, end time.Time) (plog.Logs, error) {
 	limit := p.config.QueryMonitoring.MaxRows
-	rows, err := c.getTopQuery(ctx, limit+1, p.excludedDatabases, p.logger)
+	rows, err := p.monitoringQueryRows(ctx, c, version, limit+1)
 	if err != nil {
 		p.cache.Purge()
 		return plog.NewLogs(), fmt.Errorf("query monitoring statistics: %w", err)

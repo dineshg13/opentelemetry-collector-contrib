@@ -61,13 +61,13 @@ func TestMonitoringPlansBoundAttemptsAndCacheNativeIdentity(t *testing.T) {
 	a, b := queryObservation(10, 20, 30), queryObservation(10, 20, 30)
 	a.queryID, b.queryID = "42", "42"
 	b.userID = "3"
-	mock.ExpectQuery("LIMIT 10001").WillReturnRows(topQueryObservationRows(a, b))
+	expectMonitoringStatistics(mock, "LIMIT 10001").WillReturnRows(topQueryObservationRows(a, b))
 	_, err := p.collectMonitoringMetrics(t.Context(), c, "16.15", start, end)
 	require.NoError(t, err)
 	for collection := range 3 {
 		a.calls++
 		b.calls++
-		mock.ExpectQuery("LIMIT 10001").WillReturnRows(topQueryObservationRows(a, b))
+		expectMonitoringStatistics(mock, "LIMIT 10001").WillReturnRows(topQueryObservationRows(a, b))
 		if collection < 2 {
 			expectMonitoringPlan(mock, "42", "SELECT 42", `[{"Plan":{"Node Type":"Result","Filter":"(id = 42)"}}]`)
 		}
@@ -101,12 +101,12 @@ func TestMonitoringPlanFailuresKeepMetrics(t *testing.T) {
 			start, end := testMonitoringWindow()
 			observation := queryObservation(10, 20, 30)
 			observation.queryID = "42"
-			mock.ExpectQuery("LIMIT 10001").WillReturnRows(topQueryObservationRows(observation))
+			expectMonitoringStatistics(mock, "LIMIT 10001").WillReturnRows(topQueryObservationRows(observation))
 			_, err := p.collectMonitoringMetrics(t.Context(), c, "16.15", start, end)
 			require.NoError(t, err)
 			for collection := range 2 {
 				observation.calls++
-				mock.ExpectQuery("LIMIT 10001").WillReturnRows(topQueryObservationRows(observation))
+				expectMonitoringStatistics(mock, "LIMIT 10001").WillReturnRows(topQueryObservationRows(observation))
 				if collection == 0 {
 					switch failure {
 					case "oversized", "snapshot size":

@@ -44,12 +44,16 @@ var topQueryDurationColumns = [...]string{totalExecTimeColumnName, totalPlanTime
 
 // Keep an entire row atomically, preserving integer precision above 2^53.
 type topQueryCounters struct {
-	integers  [len(topQueryIntegerColumns)]int64
-	durations [len(topQueryDurationColumns)]float64
+	integers   [len(topQueryIntegerColumns)]int64
+	durations  [len(topQueryDurationColumns)]float64
+	statsReset string
+	statsSince string
 }
 
 func topQueryCountersFromRow(row map[string]any) (topQueryCounters, bool) {
 	var counters topQueryCounters
+	counters.statsReset = attrString(row, dbAttributePrefix+"stats_reset")
+	counters.statsSince = attrString(row, dbAttributePrefix+"stats_since")
 	for i, column := range topQueryIntegerColumns {
 		value, ok := row[dbAttributePrefix+column].(int64)
 		if !ok || value < 0 {
@@ -69,6 +73,9 @@ func topQueryCountersFromRow(row map[string]any) (topQueryCounters, bool) {
 
 func (c topQueryCounters) delta(previous topQueryCounters) (topQueryCounters, bool) {
 	var delta topQueryCounters
+	if c.statsReset != previous.statsReset || c.statsSince != previous.statsSince {
+		return topQueryCounters{}, false
+	}
 	for i, value := range c.integers {
 		if value < previous.integers[i] {
 			return topQueryCounters{}, false

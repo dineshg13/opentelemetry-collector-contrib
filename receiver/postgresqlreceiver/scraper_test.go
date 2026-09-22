@@ -749,6 +749,7 @@ var topQueryColumns = []string{
 	"dbid",
 	"userid",
 	"toplevel",
+	"stats_since",
 	"rolname",
 	rowsColumnName,
 	totalExecTimeColumnName,
@@ -1025,6 +1026,8 @@ func TestTopQueryTemplateRendering(t *testing.T) {
 
 			rendered := buf.String()
 			assert.Contains(t, rendered, "LIMIT 10;")
+			assert.Contains(t, rendered, "COALESCE(to_jsonb(pg_stat_statements)->>'stats_since', '') AS stats_since")
+			assert.NotContains(t, rendered, "pg_stat_statements.stats_since", "older extension APIs must not require the column")
 
 			if tc.expectedClause == "" {
 				assert.NotContains(t, rendered, "datname NOT IN (", "no database filter should be emitted without excludes")

@@ -111,7 +111,7 @@ func TestQueryMonitoringMetricsIgnoresTopN(t *testing.T) {
 		observations[i].queryID = []string{"1", "2", "3"}[i]
 	}
 	for scrape := range 2 {
-		mock.ExpectQuery("LIMIT 10001").WillReturnRows(topQueryObservationRows(observations...))
+		expectMonitoringStatistics(mock, "LIMIT 10001").WillReturnRows(topQueryObservationRows(observations...))
 		logs, err := p.collectMonitoringMetrics(t.Context(), c, "16.15", start, end)
 		require.NoError(t, err)
 		record := monitoringTestRecord(t, logs, queryMetricsEvent)
@@ -201,11 +201,13 @@ func TestQueryMonitoringEmptyAndFailedCollections(t *testing.T) {
 		t.Run(failure, func(t *testing.T) {
 			p, _, mock := monitoringTestClient(t)
 			mock.ExpectQuery("SHOW server_version").WillReturnRows(sqlmock.NewRows([]string{"server_version"}).AddRow("16.15"))
+			expectMonitoringEpoch(mock, "1")
 			q := mock.ExpectQuery("LIMIT 10001")
 			if failure == "metrics" {
 				q.WillReturnError(errors.New("statistics denied"))
 			} else {
 				q.WillReturnRows(topQueryObservationRows())
+				expectMonitoringEpoch(mock, "1")
 			}
 			q = mock.ExpectQuery("(?s)FROM pg_stat_activity sa.*LIMIT 10001")
 			if failure == "activity" {
@@ -237,8 +239,8 @@ func TestQueryMonitoringLimits(t *testing.T) {
 		p, c, mock := monitoringTestClient(t)
 		p.config.QueryMonitoring.MaxRows = 1
 		start, end := testMonitoringWindow()
-		mock.ExpectQuery("LIMIT 2").WillReturnRows(topQueryObservationRows(queryObservation(1, 2, 3), queryObservation(4, 5, 6)))
-		logs, err := p.collectMonitoringMetrics(t.Context(), c, "16", start, end)
+		expectMonitoringStatistics(mock, "LIMIT 2").WillReturnRows(topQueryObservationRows(queryObservation(1, 2, 3), queryObservation(4, 5, 6)))
+		logs, err := p.collectMonitoringMetrics(t.Context(), c, "16.15", start, end)
 		require.ErrorContains(t, err, "exceed max_rows")
 		require.Zero(t, logs.LogRecordCount())
 		require.Zero(t, p.cache.Len())

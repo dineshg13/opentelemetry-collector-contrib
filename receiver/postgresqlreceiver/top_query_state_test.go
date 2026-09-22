@@ -19,6 +19,7 @@ import (
 
 type topQueryObservation struct {
 	databaseID, userID, queryID, topLevel string
+	statsSince                            string
 	calls, rows                           int64
 	executionMS, planningMS               float64
 }
@@ -36,6 +37,7 @@ func topQueryObservationRows(observations ...topQueryObservation) *sqlmock.Rows 
 		values := map[string]driver.Value{
 			"dbid": observation.databaseID, "userid": observation.userID,
 			queryidColumnName: observation.queryID, "toplevel": observation.topLevel,
+			"stats_since": observation.statsSince,
 			// Names intentionally stay identical: native IDs must distinguish the rows.
 			"datname": "postgres", "rolname": "app", "query": "SELECT 42",
 			callsColumnName: fmt.Sprint(observation.calls), rowsColumnName: fmt.Sprint(observation.rows),

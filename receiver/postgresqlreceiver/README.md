@@ -166,6 +166,8 @@ against `pg_stat_activity`.
 `query_monitoring.enabled` adds two vendor-neutral OTLP log events, independently
 of the legacy per-query events. It is disabled by default and requires an explicit
 logs pipeline containing this receiver. Activity snapshots require PostgreSQL 14 or newer.
+For query-monitoring statistics on PostgreSQL 14+, update `pg_stat_statements`
+to extension version 1.9 or newer so `pg_stat_statements_info` is available.
 Enable `pg_stat_statements` and grant the
 monitoring role `pg_monitor`.
 
@@ -190,6 +192,22 @@ planning times are seconds. The first observation, counter reset, missing
 observation, and restart establish baselines without emitting lifetime totals.
 This stream has separate state from legacy top-query collection. EXPLAIN is
 disabled by default.
+
+On PostgreSQL 14+, query monitoring reads the global statistics reset epoch
+before and after each statistics fetch. An epoch change between observations
+establishes new baselines even if counters already exceeded their old values.
+A reset during the fetch, or an unavailable reset epoch (including an outdated
+extension), omits that statistics snapshot and clears its baselines; activity
+collection can still succeed. Per-entry `stats_since`, when provided by extension
+1.11 or newer (PostgreSQL 17+), also detects targeted resets and reallocated entries.
+Older extension APIs cannot reliably detect a targeted subset reset or eviction
+followed by reappearance between collections when all counters overtake their old
+values. PostgreSQL 13 legacy collection relies on decreases and missing rows;
+it has no global reset view. These limits concern database statistics resets;
+receiver restart baselines are independently handled.
+
+See PostgreSQL's [global reset documentation](https://www.postgresql.org/docs/14/pgstatstatements.html#PGSTATSTATEMENTS-PG-STAT-STATEMENTS-INFO)
+and [per-statement statistics fields](https://www.postgresql.org/docs/17/pgstatstatements.html#PGSTATSTATEMENTS-PG-STAT-STATEMENTS).
 
 Optional `query_monitoring.query_plans` attaches an obfuscated EXPLAIN JSON string
 as `postgresql.query_plan` on statistics rows. It requires the monitor to have
