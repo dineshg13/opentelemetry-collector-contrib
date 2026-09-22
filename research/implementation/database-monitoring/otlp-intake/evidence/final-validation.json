@@ -1,0 +1,23 @@
+{
+  "collector_code_commit": "8ee39df8ad0",
+  "intake_commit": "c725b73cb958",
+  "consumer_commit": "44e7a919106b",
+  "core_calls": 3,
+  "core_rows": 15,
+  "active_connections": 1,
+  "idle_connections": 2,
+  "consumer_race_suite": "PASS (1.481s), actual final core and optional-plan captures",
+  "intake_service_suite": "PASS, 11/11 Rapid service tests and applicable checks",
+  "receiver_suite": "PASS, complete module plus real PostgreSQL 16.15 integration",
+  "deployment": "deferred by user",
+  "files_sha256": {
+    "collector-build.json": "85d4e1dc3795de3f8958023d8e0d48e3b3cac86db1e42dbe42cf63f8a27f425e",
+    "collector-wire.json": "52239e26d77d3011a5322135edd09f65825d36d83b7cf89561cc2891739988cd",
+    "final-core-otlp.json": "4fab85d8256575d002616480a525dba8520b7f90c88d2194c293858b1483c327",
+    "final-core-native.json": "65c65c4239703cae77fde21dbf4ddd3ee4700571f2334a9d856fb2e61244d386",
+    "final-core-source-evidence.json": "3ea79ba6bab2ff28c8368eb3482ec5f907d18a87b113788598c109be33dcac0c",
+    "final-plan-otlp.json": "b13901bc461ed1fb9fa58158ea052e455643c7f85dc8426193192724c3457eb7",
+    "final-plan-native.json": "463608de9114ac3250e3c9542dc17a69df68aa82982ed91d8bc33c8d64f6b33a",
+    "final-plan-source-evidence.json": "52b232989d8726b43a4ac9fde6548687cc789fb75217fd2999119f232a27a0d4"
+  }
+}

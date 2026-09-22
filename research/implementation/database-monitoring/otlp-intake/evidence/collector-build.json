@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-09-22T17:32:00.813024+00:00",
-  "source_commit": "9245f5be74faff1e6d844d64d0950795f9f12d47",
+  "timestamp": "2026-09-22T17:56:26.504939+00:00",
+  "source_commit": "8ee39df8ad0626969261d21bfe7b64979000d269",
   "working_tree_dirty": true,
   "go": "go version go1.26.4 linux/arm64",
-  "binary_sha256": "7fcb116b1a8d5d228568a715d5571a6a0741ea7b33dddae44b6fa2087407fc62",
+  "binary_sha256": "12ef35b0d8b7d8944474dbcdc715049e4605dcce516d5c2b19d70c3bb8510ff4",
   "image": "ddot-products-collector:poc",
   "generic_only": true,
   "trace_agent_dependencies": []

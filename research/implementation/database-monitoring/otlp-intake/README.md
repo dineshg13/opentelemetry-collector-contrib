@@ -5,7 +5,9 @@ for commits and verification. Backend deployment and Datadog application testing
 are deferred by the user. The local implementation is exercised against real
 PostgreSQL, the standard Collector service/exporter, and the actual DBM decoders.
 
-The receiver emits neutral, versioned collection records. The shared backend
+The receiver emits neutral, versioned collection records. For the DBM intake,
+keep receiver limits at or below **10,000 rows and 1 MiB per collection**; the
+mapper rejects larger collections even though the receiver permits higher caps. The shared backend
 mapper translates them into `dbmmetrics`, `dbmactivity`, and `databasequery`
 payloads. OTLP logs intake owns product routing and authenticated private-intake
 publishing. Ordinary PostgreSQL metrics retain their existing metrics-intake path.
@@ -23,17 +25,18 @@ under `/tmp` are reproducible and are not committed.
 
 ## Reproduce real receiver collection
 
-The existing PostgreSQL 16 PoC has `pg_stat_statements`, `dbm_monitor`, and
+Monitoring requires PostgreSQL 14+ with `pg_stat_statements` extension API 1.9+
+for global reset detection. The existing PostgreSQL 16 PoC has the extension, `dbm_monitor`, and
 `dbm_app` provisioned. Open its port-forward in a separate terminal:
 
 ```sh
 kubectl --context kind-otel-dd -n ddot-poc port-forward service/dbm-postgres 25432:5432 --address 127.0.0.1
 ```
 
-From the Collector checkout:
+From the Collector checkout (the offline flags assume cached dependencies):
 
 ```sh
-GOCACHE=/tmp/dbm-go-cache GOTMPDIR=/tmp/dbm-go-tmp GOMAXPROCS=2 GOPROXY=off GOSUMDB=off \
+GOCACHE=/tmp/dbm-go-cache GOTMPDIR=/tmp GOMAXPROCS=2 GOPROXY=off GOSUMDB=off \
   python3 research/implementation/database-monitoring/receiver-integration/verify-kind.py
 ```
 
@@ -71,14 +74,16 @@ This exercises the real DBM metrics, activity and FQT decoders and PostgreSQL
 trace parser. It validates calls=3, rows=15, active=1, idle=2, duration units,
 collection intervals, database/role identity and query-signature correlation.
 Without environment overrides it tests the checked-in real capture and mapper
-output. Trace context is synthetic; no SDK or UI trace-link success is claimed.
+output. Final captured source/native payloads and hashes are also pinned in this
+folder under `evidence/final-*`. Use separate core and optional-plan fixtures;
+the core-only test expects four payloads and the plan capture contains five. Trace context is synthetic; no SDK or UI trace-link success is claimed.
 
 ## Build and exercise the Collector service
 
 From the Collector checkout:
 
 ```sh
-GOCACHE=/tmp/dbm-go-cache GOTMPDIR=/tmp/dbm-go-tmp GOPROXY=off GOSUMDB=off \
+GOCACHE=/tmp/dbm-go-cache GOTMPDIR=/tmp GOPROXY=off GOSUMDB=off \
   python3 research/implementation/scripts/build-collector.py \
   --output /tmp/dbm-local-collector --generic-only --skip-image
 python3 research/implementation/database-monitoring/otlp-intake/verify-collector-local.py \
@@ -93,6 +98,26 @@ stops its own loopback OTLP JSON capture, runs the Collector with
 run. Captured `wire/logs-*.json` files can be passed to `dbm-map` individually.
 The current generic distribution contains no Datadog exporter, receiver,
 connector, Datadog extension, or `pkg/trace` dependency.
+
+## Optional execution plans
+
+Plans are disabled by default. Add `query_plans: {enabled: true}` under the
+receiver's `query_monitoring` configuration to enable bounded prepared EXPLAIN.
+Defaults permit two attempts per collection, 500 ms per attempt, 64 KiB per plan,
+and a 1,000-entry cache with a one-hour TTL. Plans use the monitor's planning
+context and generic parameter plans. Failures omit the optional plan while
+preserving the statistics collection.
+
+Run the live receiver check with `--query-plans` and a separate output directory,
+then map that captured OTLP using the same `dbm-map` command. The separate dd-go
+`TestOTLPReceiverPlanConsumerCompatibility` test checks the real sample decoder
+and PostgreSQL plan parser.
+The recorded PostgreSQL test also covers repeated parameters, parameter-looking
+string literals, and EXPLAIN UPDATE without executing the update.
+
+The Collector wire harness above keeps plans disabled and verifies the core
+record families. Plan evidence comes from the separate live-source → mapper →
+actual-plan-parser test; no plan UI visibility is claimed.
 
 ## Intake regression suite
 

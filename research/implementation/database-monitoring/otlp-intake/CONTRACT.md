@@ -53,7 +53,19 @@ deltas, never cumulative snapshots or rates. Each query map contains:
 - Optional `postgresql.query_plan`: obfuscated EXPLAIN JSON string.
 - Optional `db.query.tables` and `db.query.commands`: arrays of strings.
 
-New/reset/evicted statements establish baselines before contributing deltas.
+New or reappearing statements and detectable resets establish baselines before
+contributing deltas. Monitoring statistics require `pg_stat_statements` extension
+API 1.9 or newer for the global reset timestamp. Reading that epoch before and
+after collection detects global resets even when counters have already exceeded
+the previous sample; a reset during collection invalidates that collection.
+When extension API 1.11 exposes per-row `stats_since`, a changed entry epoch also
+invalidates its previous baseline. Counter decreases remain an additional reset
+signal. On older extension APIs, a targeted reset of only some statements, or an eviction and re-creation
+between scrapes, can be undetectable if every counter overtakes its previous
+value before the next scrape.
+Server version alone does not establish the installed extension API. See the
+[global reset API upgrade](https://github.com/postgres/postgres/blob/REL_14_STABLE/contrib/pg_stat_statements/pg_stat_statements--1.8--1.9.sql)
+and [PostgreSQL 17 additions](https://www.postgresql.org/docs/17/release-17.html#RELEASE-17-CONTRIB).
 Initial collection can therefore be a successful empty query-metrics snapshot.
 Intake derives DBM signatures from the obfuscated query, groups compatible rows
 within this collection unit, and converts durations from seconds to milliseconds.
