@@ -1,7 +1,9 @@
 # Local PostgreSQL → OTLP intake → DBM implementation
 
 See [PLAN.md](PLAN.md) for the approved milestones and [PROGRESS.md](PROGRESS.md)
-for commits and verification. Backend deployment and Datadog application testing
+for commits and verification. The [DBM endpoint reference](PLAN.md#dbm-endpoint-and-route-reference)
+lists the five Agent HTTP paths, private gRPC route values, and PoC coverage.
+Backend deployment and Datadog application testing
 are deferred by the user. The local implementation is exercised against real
 PostgreSQL, the standard Collector service/exporter, and the actual DBM decoders.
 

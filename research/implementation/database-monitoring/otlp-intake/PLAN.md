@@ -45,15 +45,54 @@ The receiver currently emits query samples and top-query statistics as OTLP logs
 The backend entry point is `domains/otel/apps/apis/otlp-intake-logs`, using the
 product-routing pattern also present in `otlp-intake-metrics`.
 
-Reuse `domains/database-monitoring/shared/libs/intake` and its
-`PrivateIntakeService.SubmitPrivateIntakePayload` contract. It takes a JSON array,
-trusted org ID, and optional explicit track. Prefer explicit tracks:
+## DBM endpoint and route reference
 
-| Data | Track |
-| --- | --- |
-| Query interval statistics | `dbmmetrics` |
-| Complete activity snapshot | `dbmactivity` |
-| FQT and collected execution plans | `databasequery` |
+All five endpoints below already exist on the `dbm-metrics-intake` service.
+The Agent uses HTTP `POST` with `DD-API-KEY` and JSON payloads. For US5, their
+base URL is `https://dbm-metrics-intake.us5.datadoghq.com`; for other sites the
+pattern is `https://dbm-metrics-intake.<DD_SITE>` unless configuration overrides it.
+
+| Data | Agent public HTTP path | Private gRPC `track_type` | Current OTLP PoC coverage |
+| --- | --- | --- | --- |
+| Query metrics: interval query execution statistics | `/api/v2/dbmmetrics` | `dbmmetrics` | Implemented and tested locally |
+| Query activity / sessions: activity snapshots and connection summaries | `/api/v2/dbmactivity` | `dbmactivity` | Implemented and tested locally |
+| Query samples, full query text, explain plans | `/api/v2/databasequery` | `databasequery` | FQT and opt-in collected plans implemented and tested locally; not complete Agent sample parity |
+| Metadata: database instance and schema/object metadata | `/api/v2/dbmmetadata` | `dbmmetadata` | Existing backend route; collection and mapping not implemented in this PoC |
+| Health: DBM collection/check health events | `/api/v2/dbmhealth` | `dbmhealth` | Existing backend route; collection and mapping not implemented in this PoC |
+
+The OTLP exporter uses the existing authenticated **private gRPC API**, rather
+than the Agent's public HTTP paths. Its destination is
+`dbm-metrics-intake-grpc` and its method is
+`PrivateIntakeService.SubmitPrivateIntakePayload`. A request contains the trusted
+organization ID, a JSON array, and an explicit `track_type` selecting the route.
+The existing server recognizes all five values above. Our validated
+`SendDBMPayloads` helper and mapper currently support only `dbmmetrics`,
+`dbmactivity`, and `databasequery`; adding metadata or health requires collection,
+mapping, validation, and tests, not just another endpoint setting.
+
+These route identifiers are distinct from EVP tracks. DBM's processors convert
+query metrics to time series and process activity, query text, and plans before
+publishing event records to EVP `databasequery`. EVP `dbrawquery` is for sensitive
+raw query text/plan events (`rqt`/`rqp`), which this mapper does not emit. Preserve
+the existing DBM processing path, as confirmed by the user on 2026-09-22.
+`dbmhealth` carries product health events; it is not the intake service's
+liveness/readiness endpoint. All PoC coverage above is local; backend deployment
+and Datadog application verification remain deferred.
+
+Source references (verified 2026-09-22):
+
+- Agent: `comp/forwarder/eventplatform/impl/pipelines_dbm.go` selects the hostname
+  prefix and each track; `comp/logs-library/client/http/destination.go` builds the
+  `/api/v2/<track>` URL.
+- DBM server: `dd-go/database-monitoring/apps/dbm-metrics-intake/intakeservice/common.go`
+  defines the shared route table; `intakeservice/service.go` dispatches HTTP routes
+  and `grpcservice/grpc_service.go` uses the same table for private gRPC.
+- Backend exporter: `dd-source/domains/otel/apps/apis/otlp-intake-logs/exporter/dbm_exporter.go`;
+  its `DBM.md` documents the processing contract and rollout requirements.
+- [DBMonitoring databasequery](https://datadoghq.atlassian.net/wiki/spaces/EP/pages/981827988/DBMonitoring+databasequery)
+  describes the EVP query-event track.
+- [DBM Metrics intake authentication](https://datadoghq.atlassian.net/wiki/spaces/AAAAUTHN/pages/7186187888/DBM+Metrics+intake+authentication),
+  updated 2026-09-09, records migration of DBM intake to EVP as future work.
 
 ## Milestones and commits
 

@@ -162,3 +162,12 @@ authenticated service-to-service ingestion, Kafka/index processing, DBM product
 readback and UI trace linking remain deferred. Durable replay deduplication is
 not implemented and remains a rollout prerequisite. No success at those later
 stages is inferred from local test results.
+
+## DBM endpoint reference follow-up
+
+Added all five requested Agent HTTP routes to the plan's endpoint reference,
+including their matching private gRPC `track_type` values and current PoC coverage.
+Metadata and health are supported by the existing backend service but are not
+collected or mapped by this PoC. Kept the user-approved DBM processor path; the
+EVP `databasequery` track receives processed events. Documentation only; no
+runtime behavior changed or backend verification claimed.
