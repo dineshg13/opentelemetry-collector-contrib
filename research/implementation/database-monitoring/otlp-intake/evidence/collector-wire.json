@@ -1,0 +1,11 @@
+{
+  "binary_sha256": "7fcb116b1a8d5d228568a715d5571a6a0741ea7b33dddae44b6fa2087407fc62",
+  "requests": 6,
+  "events": {
+    "db.server.query_metrics": 6,
+    "db.server.activity": 6
+  },
+  "disabled_new_requests": 0,
+  "destination": "local OTLP capture, not Datadog",
+  "verified_at": "2026-09-22T17:37:16Z"
+}

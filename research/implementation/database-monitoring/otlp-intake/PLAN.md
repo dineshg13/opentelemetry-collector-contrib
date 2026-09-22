@@ -3,6 +3,15 @@
 Approved implementation direction: 2026-09-22. The user approved logs intake and
 shared DBM mapping, implementation with tests, and a separate commit per milestone.
 
+## Current execution scope
+
+2026-09-22 user clarification: deploy and test the backend later; finish the local
+working solution now. Local acceptance is real PostgreSQL collection, OTLP
+serialization, intake routing/publishing tests, and actual DBM decoder
+compatibility. M6 deployment, product readback and UI trace-link verification are
+deferred by the user, not prerequisites for this local handoff. Retain the
+reliability gate and rollout requirements for that later phase.
+
 ## Objective and boundaries
 
 Deliver PostgreSQL receiver -> standard OTLP -> OTLP logs intake -> shared DBM

@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-09-22T17:32:00.813024+00:00",
+  "source_commit": "9245f5be74faff1e6d844d64d0950795f9f12d47",
+  "working_tree_dirty": true,
+  "go": "go version go1.26.4 linux/arm64",
+  "binary_sha256": "7fcb116b1a8d5d228568a715d5571a6a0741ea7b33dddae44b6fa2087407fc62",
+  "image": "ddot-products-collector:poc",
+  "generic_only": true,
+  "trace_agent_dependencies": []
+}
