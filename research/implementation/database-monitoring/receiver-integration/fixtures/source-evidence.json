@@ -1,0 +1,20 @@
+{
+  "active_connections": 1,
+  "capture_scope": "only the disposable synthetic database",
+  "captured_otlp_records": 2,
+  "connection_failure_emits_no_snapshot": true,
+  "context_source": "synthetic standard W3C SQL comment; no SDK/backend claim",
+  "database": "ddot_m3_c2ad69030ec84343bf727df9def3b450",
+  "database_cleanup": "registered DROP DATABASE for this test database only",
+  "database_cleanup_verified": true,
+  "idle_activity_empty": true,
+  "idle_connections": 2,
+  "initial_baseline_empty": true,
+  "observed_calls_delta": 3,
+  "observed_rows_delta": 15,
+  "postgres_version": "16.15",
+  "restart_baseline_empty": true,
+  "sqlcommenter_context_verified": true,
+  "truncation_reports_error": true,
+  "verified_at": "2026-09-22T17:29:28Z"
+}
