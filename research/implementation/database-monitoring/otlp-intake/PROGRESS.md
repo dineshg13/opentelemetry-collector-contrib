@@ -201,3 +201,21 @@ Runnable assets, inspection/stop commands and sanitized evidence are in
 `dev-stack/README.md`. The stack is left running. The backend DBM service changes
 were not deployed; DBM feature routing, private intake and DBM UI verification
 remain deferred. Ordinary log/metric/span visibility is not DBM product proof.
+
+
+## DBM-only contrib branch — 2026-09-23
+
+Created `dinesh.gurumurthy/poc-dbm-only` from fork `main` (`16fa3257d56`).
+Commit `e085c70d180` carries the receiver, tests and changelogs; `c303942645b`
+adds the standalone DBM build and test stack. Receiver files exactly match the
+previously tested `f36c956fe80` source. The diff excludes other products and
+shared forwarding changes.
+
+[Branch validation](evidence/dbm-only-branch-validation.json) records a clean-source
+Collector build, receiver unit tests, changelog validation, real PostgreSQL 16.15
+integration with optional plans, and the local OTLP enabled/disabled check. The
+wire check captured six query-metrics and six activity records and no requests
+after disabling query monitoring. The development-stack configuration validates
+against the minimal Collector. Existing deployment and historical backend-readback
+evidence are preserved; this branch extraction did not redeploy the stack or
+verify DBM product processing.
