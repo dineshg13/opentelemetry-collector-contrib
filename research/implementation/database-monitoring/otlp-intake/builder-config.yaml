@@ -1,0 +1,25 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+dist:
+  module: github.com/open-telemetry/opentelemetry-collector-contrib/research/implementation/database-monitoring/otlp-intake/collector
+  name: dbm-otlp-collector
+  description: PostgreSQL query monitoring through OTLP intake
+  version: 0.161.0-poc
+  output_path: __BUILD_OUTPUT__
+
+extensions:
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.161.0
+receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.161.1-0.20260917142259-65d9c38b188c
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver v0.161.0
+processors:
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.161.1-0.20260917142259-65d9c38b188c
+  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.161.1-0.20260917142259-65d9c38b188c
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.161.0
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.161.1-0.20260917142259-65d9c38b188c
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.161.1-0.20260917142259-65d9c38b188c
+providers:
+  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.67.1-0.20260917142259-65d9c38b188c
+  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.67.1-0.20260917142259-65d9c38b188c
+  - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.67.1-0.20260917142259-65d9c38b188c

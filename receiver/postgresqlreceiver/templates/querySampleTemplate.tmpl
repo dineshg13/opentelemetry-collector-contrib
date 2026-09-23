@@ -4,7 +4,11 @@ SELECT
     COALESCE(sa.client_addr::TEXT, '') AS client_addr,
     COALESCE(sa.client_hostname, '') AS client_hostname,
     COALESCE(sa.client_port::TEXT, '') AS client_port,
+    {{- if .monitoring }}
+    COALESCE(to_char(sa.query_start AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'), '') AS query_start,
+    {{- else }}
     COALESCE(sa.query_start::TEXT, '') AS query_start,
+    {{- end }}
     COALESCE(sa.wait_event_type, '') AS wait_event_type,
     COALESCE(sa.wait_event, '') AS wait_event,
     COALESCE(sa.query_id::TEXT, '') AS query_id,
@@ -53,6 +57,12 @@ WHERE
     AND sa.pid != pg_backend_pid()
     {{/* Require query_start to be set -- rows without it have no meaningful timestamp */}}
     AND sa.query_start IS NOT NULL
+    {{- if .monitoring }}
+    AND sa.backend_type = 'client backend'
+    AND sa.datname IS NOT NULL
+    AND sa.usename IS NOT NULL
+    AND sa.state != 'idle'
+    {{- end }}
     {{- if .excludedDatabases }}
     {{/* COALESCE: datname is NULL for background workers, and a bare NOT IN would drop them */}}
     AND COALESCE(sa.datname, '') NOT IN ({{ .excludedDatabases }})

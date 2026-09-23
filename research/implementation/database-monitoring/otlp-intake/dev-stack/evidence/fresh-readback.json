@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-09-23T17:03:28.282461+00:00",
+  "context": "kind-otel-dd",
+  "namespace": "dbm-otlp-dev",
+  "collector_pod": "collector-687b59b749-rjppk",
+  "collector_pod_uid": "d9b346cf-bd5e-4d8f-8d7f-0f52e223e135",
+  "collector_container_started_at": "2026-09-23T17:00:15Z",
+  "collector_binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+  "query_window": {
+    "from": "2026-09-23T17:00:20Z",
+    "to": "2026-09-23T17:03:28.051802Z",
+    "starts_after_container_start_seconds": 5
+  },
+  "datadog_logs": {
+    "http_status": 429,
+    "fresh_events_verified": false,
+    "records_by_event": {},
+    "query_rows_with_plans": 0,
+    "sdk_context_matches_in_activity_logs": 0,
+    "source_sdk_contexts_in_window": 47,
+    "records_outside_window": 0,
+    "earliest_event": null,
+    "latest_event": null
+  },
+  "datadog_metrics": {
+    "http_status": 200,
+    "series": 1,
+    "fresh_points": 37,
+    "earliest_point_unix_ms": 1790182821000.0,
+    "latest_point_unix_ms": 1790183001000.0
+  },
+  "datadog_indexed_spans": {
+    "http_status": 500,
+    "records": 0,
+    "fresh_readback_verified": false,
+    "attempts_after_baseline": 1
+  },
+  "dbm_product_verified": false,
+  "backend_deployment_performed": false,
+  "scope": "Post-rollout ordinary telemetry readback; DBM processing/private intake/UI remain unverified.",
+  "checks": {
+    "both_log_event_families": false,
+    "plans_present": false,
+    "sdk_context_match": false,
+    "fresh_metric_points": true
+  }
+}

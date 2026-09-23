@@ -1,0 +1,66 @@
+{
+  "verified_at": "2026-09-23T16:41:00.157166+00:00",
+  "branch": "dinesh.gurumurthy/poc-dbm-only",
+  "base_repository": "https://github.com/dineshg13/opentelemetry-collector-contrib",
+  "base_branch": "main",
+  "base_commit": "16fa3257d56c299e115a558b1a668018a39990d5",
+  "tested_commit": "c303942645ba3b0ecf4bc179461d0f92bdfea61a",
+  "extracted_from": "f36c956fe807a76c58c40cdfc8fb58c035ff869a",
+  "receiver_tree": "3feefd3b21596b149a3d82b7528aa70d01eef89a",
+  "receiver_matches_previously_tested_source": true,
+  "dbm_only_scope_check_passed": true,
+  "checks": {
+    "receiver_go_test_all": "passed",
+    "chloggen_validate": "passed",
+    "collector_config_validate": "passed",
+    "python_syntax": "passed",
+    "shell_syntax": "passed",
+    "relative_markdown_links": "passed",
+    "git_diff_check": "passed"
+  },
+  "collector_build": {
+    "timestamp": "2026-09-23T16:39:29.604365+00:00",
+    "source_commit": "c303942645ba3b0ecf4bc179461d0f92bdfea61a",
+    "working_tree_dirty": false,
+    "go": "go version go1.26.4 linux/arm64",
+    "binary": "/tmp/dbm-only-collector/collector/dbm-otlp-collector",
+    "binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+    "trace_agent_dependencies": []
+  },
+  "live_postgresql": {
+    "active_connections": 1,
+    "capture_scope": "only the disposable synthetic database",
+    "captured_otlp_records": 2,
+    "connection_failure_emits_no_snapshot": true,
+    "context_source": "synthetic standard W3C SQL comment; no SDK/backend claim",
+    "database": "ddot_m3_332196ea23ce44c198ca4be72a28b399",
+    "database_cleanup": "registered DROP DATABASE for this test database only",
+    "database_cleanup_verified": true,
+    "idle_activity_empty": true,
+    "idle_connections": 2,
+    "initial_baseline_empty": true,
+    "observed_calls_delta": 3,
+    "observed_rows_delta": 15,
+    "optional_plan_verified": true,
+    "plan_parameter_handling_and_no_update_side_effects_verified": true,
+    "postgres_version": "16.15",
+    "restart_baseline_empty": true,
+    "sqlcommenter_context_verified": true,
+    "truncation_reports_error": true,
+    "verified_at": "2026-09-23T16:37:34Z"
+  },
+  "collector_wire": {
+    "binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+    "requests": 6,
+    "events": {
+      "db.server.query_metrics": 6,
+      "db.server.activity": 6
+    },
+    "disabled_new_requests": 0,
+    "destination": "local OTLP capture, not Datadog",
+    "verified_at": "2026-09-23T16:40:21Z"
+  },
+  "deployment_changed": false,
+  "backend_deployment_performed": false,
+  "dbm_product_verified": false
+}

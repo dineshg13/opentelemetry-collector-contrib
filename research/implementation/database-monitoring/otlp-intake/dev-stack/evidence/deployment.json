@@ -1,0 +1,13 @@
+{
+  "context": "kind-otel-dd",
+  "namespace": "dbm-otlp-dev",
+  "site": "datad0g.com",
+  "otlp_endpoint": "https://otlp.datad0g.com",
+  "collector_image": "dbm-otlp-dev-collector:453a95ef677b",
+  "collector_binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+  "workload_image": "dbm-otlp-dev-workload:afdd823c1ae9",
+  "postgres_image": "ddot-postgres:16.15",
+  "database_service": "dbm-otlp-dev-postgres",
+  "workload_service": "dbm-otlp-dev-workload",
+  "backend_deployment_performed": false
+}
