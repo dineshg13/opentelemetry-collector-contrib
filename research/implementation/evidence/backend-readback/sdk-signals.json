@@ -1,0 +1,221 @@
+{
+  "checked_at": "2026-09-20T11:58:18.278326+00:00",
+  "window_start": "2026-09-19T19:00:00Z",
+  "site": "us5.datadoghq.com",
+  "scope": "Authenticated readback of known synthetic cross-SDK signals only",
+  "checks": [
+    {
+      "signal": "spans",
+      "path": "/api/v2/spans/events/search",
+      "query": "service:ddot-signals-*",
+      "http_status": 200,
+      "result_count": 3,
+      "records": [
+        {
+          "service": "ddot-signals-python",
+          "trace_id": "6aaf0bdf00000000b70a3f91f01c03a4",
+          "span_id": "10815486856515410833",
+          "resource_name": "poc.sdk.operation",
+          "operation_name": "poc.sdk.operation",
+          "attribute_names": []
+        },
+        {
+          "service": "ddot-signals-javascript",
+          "trace_id": "6aaf0be300000000134b0b2e5bbfcb02",
+          "span_id": "1390217203709627138",
+          "resource_name": "poc.sdk.operation",
+          "operation_name": "poc.sdk.operation",
+          "attribute_names": []
+        },
+        {
+          "service": "ddot-signals-java",
+          "trace_id": "6aaf0bea0000000022a28f7e3fb8a7ba",
+          "span_id": "6193457916737219903",
+          "resource_name": "poc.sdk.operation",
+          "operation_name": "internal",
+          "attribute_names": []
+        }
+      ],
+      "error_titles": []
+    },
+    {
+      "signal": "logs",
+      "path": "/api/v2/logs/events/search",
+      "query": "service:ddot-signals-*",
+      "http_status": 200,
+      "result_count": 3,
+      "records": [
+        {
+          "service": "ddot-signals-python",
+          "timestamp": "2026-09-19T22:25:35.852Z",
+          "attribute_names": [
+            "deployment",
+            "host",
+            "hostname",
+            "otel",
+            "poc",
+            "service",
+            "status",
+            "telemetry",
+            "timestamp",
+            "user_agent",
+            "version"
+          ],
+          "matches_expected_message": true
+        },
+        {
+          "service": "ddot-signals-javascript",
+          "timestamp": "2026-09-19T22:25:39.185Z",
+          "attribute_names": [
+            "deployment",
+            "host",
+            "hostname",
+            "otel",
+            "poc",
+            "runtime-id",
+            "service",
+            "status",
+            "timestamp",
+            "user_agent",
+            "version"
+          ],
+          "matches_expected_message": true
+        },
+        {
+          "service": "ddot-signals-java",
+          "timestamp": "2026-09-19T22:25:46.125Z",
+          "attribute_names": [
+            "deployment",
+            "host",
+            "hostname",
+            "otel",
+            "poc",
+            "service",
+            "status",
+            "telemetry",
+            "timestamp",
+            "user_agent",
+            "version"
+          ],
+          "matches_expected_message": true
+        }
+      ],
+      "error_titles": []
+    },
+    {
+      "signal": "metrics",
+      "path": "/api/v1/query",
+      "query": "sum:poc.sdk.counter{*} by {service,poc.language}",
+      "http_status": 200,
+      "status": "ok",
+      "series": [
+        {
+          "metric": "poc.sdk.counter",
+          "scope": "poc.language:javascript,service:ddot-signals-javascript",
+          "tag_set": [
+            "poc.language:javascript",
+            "service:ddot-signals-javascript"
+          ],
+          "non_null_points": 1,
+          "first_points": [
+            [
+              1789856700000.0,
+              3.0
+            ]
+          ]
+        },
+        {
+          "metric": "poc.sdk.counter",
+          "scope": "poc.language:java,service:ddot-signals-java",
+          "tag_set": [
+            "poc.language:java",
+            "service:ddot-signals-java"
+          ],
+          "non_null_points": 1,
+          "first_points": [
+            [
+              1789856700000.0,
+              3.0
+            ]
+          ]
+        },
+        {
+          "metric": "poc.sdk.counter",
+          "scope": "poc.language:python,service:ddot-signals-python",
+          "tag_set": [
+            "poc.language:python",
+            "service:ddot-signals-python"
+          ],
+          "non_null_points": 1,
+          "first_points": [
+            [
+              1789856700000.0,
+              3.0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "log_correlation_readback": {
+    "http_status": 200,
+    "records": [
+      {
+        "service": "ddot-signals-java",
+        "id_attributes": {
+          "attributes.otel.trace_id": "6aaf0bea0000000022a28f7e3fb8a7ba",
+          "attributes.otel.span_id": "55f395293273ed3f"
+        },
+        "expected_trace_id": "6aaf0bea0000000022a28f7e3fb8a7ba",
+        "expected_span_id": "55f395293273ed3f",
+        "trace_matches": true,
+        "span_matches": true
+      },
+      {
+        "service": "ddot-signals-javascript",
+        "id_attributes": {
+          "attributes.otel.trace_id": "6aaf0be300000000134b0b2e5bbfcb02",
+          "attributes.otel.span_id": "134b0b2e5bbfcb02"
+        },
+        "expected_trace_id": "6aaf0be300000000134b0b2e5bbfcb02",
+        "expected_span_id": "134b0b2e5bbfcb02",
+        "trace_matches": true,
+        "span_matches": true
+      },
+      {
+        "service": "ddot-signals-python",
+        "id_attributes": {
+          "attributes.otel.trace_id": "6aaf0bdf00000000b70a3f91f01c03a4",
+          "attributes.otel.span_id": "961853fe3b81db91"
+        },
+        "expected_trace_id": "6aaf0bdf00000000b70a3f91f01c03a4",
+        "expected_span_id": "961853fe3b81db91",
+        "trace_matches": true,
+        "span_matches": true
+      }
+    ]
+  },
+  "span_identity_checks": [
+    {
+      "service": "ddot-signals-python",
+      "trace_matches": true,
+      "span_matches": true
+    },
+    {
+      "service": "ddot-signals-javascript",
+      "trace_matches": true,
+      "span_matches": true
+    },
+    {
+      "service": "ddot-signals-java",
+      "trace_matches": true,
+      "span_matches": true
+    }
+  ],
+  "semantic_outcome": {
+    "three_sdk_spans_match_emitted_ids": true,
+    "three_sdk_logs_match_emitted_ids": true,
+    "three_sdk_counter_values_equal_3": true,
+    "scope": "Three exact synthetic SDK runs, not all product behavior"
+  }
+}

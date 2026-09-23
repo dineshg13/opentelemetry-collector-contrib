@@ -1,0 +1,45 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+extensions:
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:8126
+      compression_algorithms: []
+    egress:
+      endpoint: https://data-obs-intake.${env:DD_SITE}
+    routes:
+      - path: /info
+        method: GET
+        response:
+          status: 200
+          headers:
+            Content-Type: application/json
+          body: '{"endpoints":["/openlineage/api/v1/lineage"],"long_running_spans":false}'
+      - path: /openlineage/api/v1/lineage
+        method: POST
+        endpoint: https://data-obs-intake.${env:DD_SITE}/api/v1/lineage?api-version=2
+        headers:
+          Authorization: Bearer ${env:DD_API_KEY}
+          X-Datadog-Hostname: ${env:DD_HOSTNAME}
+          X-Datadog-AgentDefaultEnv: ddot-poc
+          X-Datadog-Additional-Tags: host:${env:DD_HOSTNAME},default_env:ddot-poc
+        remove_headers: [DD-API-KEY, DD-APPLICATION-KEY, Cookie, X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Proto]
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+processors:
+  batch: {}
+exporters:
+  otlphttp:
+    endpoint: https://otlp.${env:DD_SITE}
+    headers:
+      dd-api-key: ${env:DD_API_KEY}
+service:
+  extensions: [http_forwarder]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]

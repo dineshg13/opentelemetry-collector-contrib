@@ -1,0 +1,6 @@
+change_type: enhancement
+component: receiver/postgresql
+note: Add optional bounded and cached query plans to query monitoring snapshots.
+issues: [17]
+subtext: Enable with `query_monitoring.query_plans.enabled`.
+change_logs: [user]

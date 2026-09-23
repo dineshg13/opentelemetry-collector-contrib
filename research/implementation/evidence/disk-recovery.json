@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-19",
+  "context": "kind-otel-dd",
+  "incident": "Root filesystem exhausted during duplicate node image imports and an initial Spark image export.",
+  "observed_effects": [
+    "Git object writes temporarily failed; source files stayed intact in isolated /tmp worktrees.",
+    "PostgreSQL entered automatic recovery and the receiver logged transient scrape errors.",
+    "Java JFR terminated when its temporary recording could not be written.",
+    "Some Collector forwarding log records were truncated; bounded capture counts malformed records explicitly."
+  ],
+  "recovery": [
+    "Archived completed PoC host images under /tmp/ddot-preserved-images before removing redundant host tags; running kind worker images remained available.",
+    "Pruned only explicitly selected unused cache records from this PoC and the retired fake-backend build.",
+    "Removed unused ddot image copies from the control-plane node after verifying all PoC pods were on the worker; future imports target only the worker.",
+    "Changed Java profiling temporary files to a bounded 256Mi memory-backed volume with explicit JVM heap and container memory limits.",
+    "Optimized Spark build to avoid recursive chmod copying its large layer, exported the image to a /tmp Docker archive, reclaimed its completed build cache, then imported only into the worker.",
+    "Preserved default Go and Bazel caches in /tmp with original-path symlinks; these initial preservation attempts did not recover root capacity."
+  ],
+  "preserved": "Unrelated workloads, images, persistent volumes, user source repositories and original checkout work were preserved.",
+  "verification": "Fresh CI and DSM Jobs and a new bounded Collector observation window supersede missing earlier route counts. Historical DBM correlation is retained; fresh full record readback is not claimed."
+}

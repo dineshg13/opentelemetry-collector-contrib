@@ -1,0 +1,908 @@
+{
+  "timestamp": "2026-09-19T22:34:09.221492+00:00",
+  "context": "kind-otel-dd",
+  "backend_product_readback": "blocked: no authenticated account or read-scoped application key available",
+  "collectors": {
+    "collector": {
+      "upstream_outcomes": [
+        {
+          "route": "/debugger/v2/input",
+          "upstream_host": "debugger-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 301
+        },
+        {
+          "route": "/evp_proxy/v2/api/intake/llm-obs/v2/eval-metric",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 20
+        },
+        {
+          "route": "/evp_proxy/v2/api/v2/llmobs",
+          "upstream_host": "llmobs-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 20
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/ci/libraries/tests",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/citestcycle",
+          "upstream_host": "citestcycle-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/git/repository/search_commits",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/libraries/tests/services/setting",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/test/libraries/test-management/tests",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/openlineage/api/v1/lineage",
+          "upstream_host": "data-obs-intake.us5.datadoghq.com",
+          "upstream_status": 201,
+          "sdk_status": 201,
+          "requests": 4
+        },
+        {
+          "route": "/profiling/v1/input",
+          "upstream_host": "intake.profile.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 200,
+          "requests": 180
+        },
+        {
+          "route": "/v0.1/pipeline_stats",
+          "upstream_host": "trace.agent.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 4
+        }
+      ],
+      "telemetry_metrics": [
+        "otelcol_exporter_sent_log_records{exporter=\"debug\"} 1584",
+        "otelcol_exporter_sent_log_records{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/logs\"} 1584",
+        "otelcol_exporter_sent_metric_points{exporter=\"debug\"} 4081",
+        "otelcol_exporter_sent_metric_points{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/metrics\"} 4081",
+        "otelcol_exporter_sent_spans{exporter=\"debug\"} 26298",
+        "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"} 26298",
+        "otelcol_receiver_accepted_log_records{receiver=\"otlp\",transport=\"http\"} 3",
+        "otelcol_receiver_accepted_log_records{receiver=\"postgresql/dbm\",transport=\"\"} 1585",
+        "otelcol_receiver_accepted_metric_points{receiver=\"otlp\",transport=\"http\"} 5",
+        "otelcol_receiver_accepted_metric_points{receiver=\"postgresql/dbm\",transport=\"\"} 4093",
+        "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"} 26342",
+        "otelcol_receiver_refused_log_records{receiver=\"otlp\",transport=\"http\"} 0",
+        "otelcol_receiver_refused_log_records{receiver=\"postgresql/dbm\",transport=\"\"} 0",
+        "otelcol_receiver_refused_metric_points{receiver=\"otlp\",transport=\"http\"} 0",
+        "otelcol_receiver_refused_metric_points{receiver=\"postgresql/dbm\",transport=\"\"} 0",
+        "otelcol_receiver_refused_spans{receiver=\"otlp\",transport=\"http\"} 0"
+      ],
+      "warning_error_messages": {
+        "Feature gate receiver.postgresql.separateSchemaAttr is not enabled. Please see the README for more information: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.88.0/receiver/postgresqlreceiver/README.md": 3,
+        "Errors encountered while fetching commits and rollbacks": 1,
+        "Errors encountered while fetching database size": 1,
+        "Error scraping metrics": 1
+      },
+      "malformed_forwarding_log_records": 0,
+      "interpretation": "Intake responses and Collector counters are transport evidence, not product UI or backend correlation proof."
+    },
+    "collector-http-forwarder": {
+      "upstream_outcomes": [
+        {
+          "route": "/debugger/v2/input",
+          "upstream_host": "debugger-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 295
+        },
+        {
+          "route": "/evp_proxy/v2/api/intake/llm-obs/v2/eval-metric",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 19
+        },
+        {
+          "route": "/evp_proxy/v2/api/v2/llmobs",
+          "upstream_host": "llmobs-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 19
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/ci/libraries/tests",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/citestcycle",
+          "upstream_host": "citestcycle-intake.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/git/repository/search_commits",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/libraries/tests/services/setting",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/evp_proxy/v4/api/v2/test/libraries/test-management/tests",
+          "upstream_host": "api.us5.datadoghq.com",
+          "upstream_status": 200,
+          "sdk_status": 200,
+          "requests": 1
+        },
+        {
+          "route": "/openlineage/api/v1/lineage",
+          "upstream_host": "data-obs-intake.us5.datadoghq.com",
+          "upstream_status": 201,
+          "sdk_status": 201,
+          "requests": 2
+        },
+        {
+          "route": "/profiling/v1/input",
+          "upstream_host": "intake.profile.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 200,
+          "requests": 178
+        },
+        {
+          "route": "/v0.1/pipeline_stats",
+          "upstream_host": "trace.agent.us5.datadoghq.com",
+          "upstream_status": 202,
+          "sdk_status": 202,
+          "requests": 4
+        }
+      ],
+      "telemetry_metrics": [
+        "otelcol_exporter_sent_spans{exporter=\"debug\"} 24543",
+        "otelcol_exporter_sent_spans{exporter=\"otlp_http/datadog\",server_address=\"otlp.us5.datadoghq.com\",url_path=\"/v1/traces\"} 24543",
+        "otelcol_receiver_accepted_spans{receiver=\"otlp\",transport=\"http\"} 24625",
+        "otelcol_receiver_refused_spans{receiver=\"otlp\",transport=\"http\"} 0"
+      ],
+      "warning_error_messages": {},
+      "malformed_forwarding_log_records": 0,
+      "interpretation": "Intake responses and Collector counters are transport evidence, not product UI or backend correlation proof."
+    }
+  },
+  "pods": [
+    {
+      "name": "appsec-node-otlp-disabled-9rjfl",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-appsec-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:2968191fc00e08e26fdfb40f0fe0139af70b4e24192c7157f057e677a41296ae"
+        }
+      ]
+    },
+    {
+      "name": "appsec-node-otlp-rg5g2",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-appsec-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:2968191fc00e08e26fdfb40f0fe0139af70b4e24192c7157f057e677a41296ae"
+        }
+      ]
+    },
+    {
+      "name": "appsec-python-otlp-5dd4bd5ff9-q6sx4",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-appsec-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:f4602904d2a38588459c63b3d6f8574e85db97fcaa63129e1935c500167aa7cd"
+        }
+      ]
+    },
+    {
+      "name": "ci-python-datadog-extension-final-blx5m",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-ci-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:46220dc2fa9183a4c5a98354f2ef47a1c07a216cf90f6c47e161d741cd1ac2d9"
+        }
+      ]
+    },
+    {
+      "name": "ci-python-datadog-extension-fwg5w",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-ci-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:46220dc2fa9183a4c5a98354f2ef47a1c07a216cf90f6c47e161d741cd1ac2d9"
+        }
+      ]
+    },
+    {
+      "name": "ci-python-http-forwarder-final-dp57h",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-ci-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:46220dc2fa9183a4c5a98354f2ef47a1c07a216cf90f6c47e161d741cd1ac2d9"
+        }
+      ]
+    },
+    {
+      "name": "ci-python-http-forwarder-s9nll",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-ci-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:46220dc2fa9183a4c5a98354f2ef47a1c07a216cf90f6c47e161d741cd1ac2d9"
+        }
+      ]
+    },
+    {
+      "name": "collector-658d8545ff-tx62z",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "collector",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-products-collector:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d83eea4b7820e26f7569f120f00168f141a2133cdea41932ae9a3e95640a4dc2"
+        }
+      ]
+    },
+    {
+      "name": "collector-http-forwarder-8b6fd76b9-dpp9f",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "collector",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-products-collector-generic:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:926091031db240b73d56855c51abef2fd80a31b52e00fd38ec3025cc584d5b95"
+        }
+      ]
+    },
+    {
+      "name": "dbm-disabled-42ccf-ncqxz",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dbm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:9c349407f4e2e943b5827171e42b4380b3d442db3b119c58deec9721d3eb0378"
+        }
+      ]
+    },
+    {
+      "name": "dbm-disabled-vls57-kz5l4",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dbm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:9c349407f4e2e943b5827171e42b4380b3d442db3b119c58deec9721d3eb0378"
+        }
+      ]
+    },
+    {
+      "name": "dbm-postgres-86f478cf84-b2nkj",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "postgres",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-postgres:16.15",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:3f6d0aa0f490fea629ecb18f392b6eec25d87193ec33f3010840c3dae4ecfc69"
+        }
+      ]
+    },
+    {
+      "name": "dbm-python-6d975c579c-rzxld",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 1,
+          "image": "docker.io/library/ddot-dbm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:9c349407f4e2e943b5827171e42b4380b3d442db3b119c58deec9721d3eb0378"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-java-7bb8d655fb-hsjqj",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "java",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:bc32e8038803d15cd9edf5798334368f662be6cfe3143cff968067010bc9cba3"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-java-forwarder-db6465c99-v666d",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "java",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:bc32e8038803d15cd9edf5798334368f662be6cfe3143cff968067010bc9cba3"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-node-5bf476f77-rpttl",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "node",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:913085cd3fc28f721dfa49ea19a67e1fbea7476fa3957afda52698908665927c"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-node-forwarder-6b9c56888-7gssg",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "node",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:913085cd3fc28f721dfa49ea19a67e1fbea7476fa3957afda52698908665927c"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-python-c8d858c79-s22fh",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "python",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:24a582382b2a8d65fbc735ad525de36a39841cbed2e8523322b7e88481e24b21"
+        }
+      ]
+    },
+    {
+      "name": "ddot-profile-python-forwarder-fc55dd558-kzzg6",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "python",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-profile-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:24a582382b2a8d65fbc735ad525de36a39841cbed2e8523322b7e88481e24b21"
+        }
+      ]
+    },
+    {
+      "name": "debugger-disabled-phbzh-qvjml",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-debugger-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:f666961856c297afb2bf1f8c9d2a38acf74f99ad83bfea8f369125657c616622"
+        }
+      ]
+    },
+    {
+      "name": "debugger-disabled-rlhmm-99nh4",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-debugger-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:f666961856c297afb2bf1f8c9d2a38acf74f99ad83bfea8f369125657c616622"
+        }
+      ]
+    },
+    {
+      "name": "debugger-python-59d5fbcf47-ntf9l",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-debugger-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:f666961856c297afb2bf1f8c9d2a38acf74f99ad83bfea8f369125657c616622"
+        }
+      ]
+    },
+    {
+      "name": "debugger-python-http-forwarder-597d98c4dd-b7bhx",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-debugger-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:f666961856c297afb2bf1f8c9d2a38acf74f99ad83bfea8f369125657c616622"
+        }
+      ]
+    },
+    {
+      "name": "djm-python-7dbfc",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:0a1e308e6efba943d66c4d677d80e18068f431427b3925eaf790308a9e8cb480"
+        }
+      ]
+    },
+    {
+      "name": "djm-python-alternative-bp86l",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:0a1e308e6efba943d66c4d677d80e18068f431427b3925eaf790308a9e8cb480"
+        }
+      ]
+    },
+    {
+      "name": "djm-python-alternative-disabled-69lvp",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:0a1e308e6efba943d66c4d677d80e18068f431427b3925eaf790308a9e8cb480"
+        }
+      ]
+    },
+    {
+      "name": "djm-python-disabled-2pvpz",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:0a1e308e6efba943d66c4d677d80e18068f431427b3925eaf790308a9e8cb480"
+        }
+      ]
+    },
+    {
+      "name": "djm-spark-alternative-disabled-xbb2f",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "spark",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-spark:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be"
+        }
+      ]
+    },
+    {
+      "name": "djm-spark-alternative-nmnjn",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "spark",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-spark:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be"
+        }
+      ]
+    },
+    {
+      "name": "djm-spark-b79q9",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "spark",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-spark:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be"
+        }
+      ]
+    },
+    {
+      "name": "djm-spark-disabled-vpqhq",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "spark",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-djm-spark:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:7b9a1c03e589047b77b723bd39d166aca78714369098a77835f26d18890a15be"
+        }
+      ]
+    },
+    {
+      "name": "dsm-java-alternative-final-zxp2t",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d50ba3a5df0d271dfd22c6a6ef8f6747119b3852413b67920e6c631bcbb53a4c"
+        }
+      ]
+    },
+    {
+      "name": "dsm-java-alternative-jvwrm",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d50ba3a5df0d271dfd22c6a6ef8f6747119b3852413b67920e6c631bcbb53a4c"
+        }
+      ]
+    },
+    {
+      "name": "dsm-java-disabled-gjxw9",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d50ba3a5df0d271dfd22c6a6ef8f6747119b3852413b67920e6c631bcbb53a4c"
+        }
+      ]
+    },
+    {
+      "name": "dsm-java-final-7c5dj",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d50ba3a5df0d271dfd22c6a6ef8f6747119b3852413b67920e6c631bcbb53a4c"
+        }
+      ]
+    },
+    {
+      "name": "dsm-java-x4276",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d50ba3a5df0d271dfd22c6a6ef8f6747119b3852413b67920e6c631bcbb53a4c"
+        }
+      ]
+    },
+    {
+      "name": "dsm-node-alternative-5whsj",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:cd82247599184f138f672e2a37b0f68c0ea3a22e2e32e0234068c61a3f224105"
+        }
+      ]
+    },
+    {
+      "name": "dsm-node-alternative-final-9r4rp",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:cd82247599184f138f672e2a37b0f68c0ea3a22e2e32e0234068c61a3f224105"
+        }
+      ]
+    },
+    {
+      "name": "dsm-node-disabled-q9mgs",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:cd82247599184f138f672e2a37b0f68c0ea3a22e2e32e0234068c61a3f224105"
+        }
+      ]
+    },
+    {
+      "name": "dsm-node-final-4dnmr",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:cd82247599184f138f672e2a37b0f68c0ea3a22e2e32e0234068c61a3f224105"
+        }
+      ]
+    },
+    {
+      "name": "dsm-node-h8797",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:cd82247599184f138f672e2a37b0f68c0ea3a22e2e32e0234068c61a3f224105"
+        }
+      ]
+    },
+    {
+      "name": "dsm-python-alternative-8b66v",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:26c0b4cbb7951a01e352fd1b547edf60e03f9b82dec1982d09e16fa42f86d8d2"
+        }
+      ]
+    },
+    {
+      "name": "dsm-python-alternative-final-ttdlf",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:26c0b4cbb7951a01e352fd1b547edf60e03f9b82dec1982d09e16fa42f86d8d2"
+        }
+      ]
+    },
+    {
+      "name": "dsm-python-disabled-slknq",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:26c0b4cbb7951a01e352fd1b547edf60e03f9b82dec1982d09e16fa42f86d8d2"
+        }
+      ]
+    },
+    {
+      "name": "dsm-python-final-bsblq",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:26c0b4cbb7951a01e352fd1b547edf60e03f9b82dec1982d09e16fa42f86d8d2"
+        }
+      ]
+    },
+    {
+      "name": "dsm-python-ljlg5",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-dsm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:26c0b4cbb7951a01e352fd1b547edf60e03f9b82dec1982d09e16fa42f86d8d2"
+        }
+      ]
+    },
+    {
+      "name": "llm-java-otlp-forwarder-tz2cg",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:e7b7b46a503c318386a1a7cfc2e051e5dd595e187055df551cab10af2e4c8b8d"
+        }
+      ]
+    },
+    {
+      "name": "llm-java-otlp-jcd4g",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-java:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:e7b7b46a503c318386a1a7cfc2e051e5dd595e187055df551cab10af2e4c8b8d"
+        }
+      ]
+    },
+    {
+      "name": "llm-node-otlp-9wzd5",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:c0638337b00407342983c93516a4fd958fdb95aeb7af379af6d1c9875410e9ff"
+        }
+      ]
+    },
+    {
+      "name": "llm-node-otlp-forwarder-ltbcz",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": false,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-node:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:c0638337b00407342983c93516a4fd958fdb95aeb7af379af6d1c9875410e9ff"
+        }
+      ]
+    },
+    {
+      "name": "llm-python-native-84c779987-4vndc",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d16ec2351b603141bba895a818df14c9c16c09b1886b318f22b63d434bb3938d"
+        }
+      ]
+    },
+    {
+      "name": "llm-python-native-forwarder-5d5f4d9fd4-2lmvz",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d16ec2351b603141bba895a818df14c9c16c09b1886b318f22b63d434bb3938d"
+        }
+      ]
+    },
+    {
+      "name": "llm-python-otlp-8594d5998-bhskm",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d16ec2351b603141bba895a818df14c9c16c09b1886b318f22b63d434bb3938d"
+        }
+      ]
+    },
+    {
+      "name": "llm-python-otlp-forwarder-686cd77bbf-tv2gz",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "workload",
+          "ready": true,
+          "restarts": 0,
+          "image": "docker.io/library/ddot-llm-python:poc",
+          "image_id": "docker.io/library/import-2026-09-19@sha256:d16ec2351b603141bba895a818df14c9c16c09b1886b318f22b63d434bb3938d"
+        }
+      ]
+    }
+  ]
+}

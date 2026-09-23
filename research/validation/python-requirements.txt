@@ -1,0 +1,7 @@
+# Python 3.12, Linux arm64 wheels; additional release validation, not source HEAD.
+ddtrace==4.13.0rc1 --hash=sha256:8898aede97a229163903771ca68018c829605a704cc5ba26d3c087afae1064ac
+bytecode==0.19.0 --hash=sha256:7b32811d4a574f5ebcdc84ae8d37af928d980f31d6aa5aea2cab9f6d364489d1
+envier==0.6.1 --hash=sha256:73609040a76be48bbcb97074d9969666484aa0de706183a6e9ef773156a8a6a9
+opentelemetry-api==1.44.0 --hash=sha256:94b98c893a91b88657eaac1e3ba89618cdb85be6918196705354f34728b2cdef
+wrapt==2.4.1 --hash=sha256:9356dbb59199a0e4709de35fa4a1ac1a88ef6da99711a397f5b009233faff326
+typing_extensions==4.16.0 --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8

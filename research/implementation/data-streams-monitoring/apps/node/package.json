@@ -1,0 +1,9 @@
+{
+  "name": "ddot-dsm-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Datadog SDK DSM manual checkpoints and OTLP traces",
+  "dependencies": {
+    "dd-trace": "6.16.0"
+  }
+}

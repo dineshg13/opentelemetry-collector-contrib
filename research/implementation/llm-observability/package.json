@@ -1,0 +1,9 @@
+{
+  "name": "ddot-llm-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Datadog SDK GenAI workload using its OTLP trace exporter",
+  "dependencies": {
+    "dd-trace": "6.16.0"
+  }
+}

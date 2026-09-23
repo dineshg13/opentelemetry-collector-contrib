@@ -1,0 +1,12 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# kubectl --context kind-otel-dd -n ddot-poc patch deployment appsec-python-otlp \
+#   --type strategic --patch-file deployment-disabled.patch.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: workload
+          env:
+            - name: DD_APPSEC_ENABLED
+              value: "false"

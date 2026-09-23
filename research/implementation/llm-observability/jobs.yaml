@@ -1,0 +1,49 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-java-otlp
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: llm-java-otlp
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: workload
+          image: ddot-llm-java:poc
+          imagePullPolicy: Never
+          env:
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-node-otlp
+  namespace: ddot-poc
+  labels:
+    app.kubernetes.io/part-of: ddot-products-poc
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: llm-node-otlp
+        app.kubernetes.io/part-of: ddot-products-poc
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: workload
+          image: ddot-llm-node:poc
+          imagePullPolicy: Never
+          env:
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://collector.ddot-poc.svc.cluster.local:4318/v1/traces

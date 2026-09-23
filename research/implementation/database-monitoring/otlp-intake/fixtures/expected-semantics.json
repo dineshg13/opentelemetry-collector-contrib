@@ -1,0 +1,17 @@
+{
+  "source": "synthetic contract fixture, not backend evidence",
+  "query_signature": "ca85e8d659051b3a",
+  "database_instance": "postgres.example:5432",
+  "database": "orders",
+  "role": "app",
+  "calls": 10,
+  "rows": 20,
+  "total_exec_time_ms": 1200,
+  "total_plan_time_ms": 50,
+  "collection_interval_seconds": 10,
+  "activity_rows": 1,
+  "connections": 1,
+  "source_query_id": "9223372036854775807",
+  "trace_id": "0123456789abcdef0123456789abcdef",
+  "span_id": "0123456789abcdef"
+}

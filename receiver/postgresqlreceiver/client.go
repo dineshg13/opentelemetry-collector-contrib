@@ -21,9 +21,7 @@ import (
 	"github.com/lib/pq"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
-	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.40.0"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
@@ -354,6 +352,16 @@ func isIdentifierByte(b byte) bool {
 // DEALLOCATE) has to run on the one connection that ran PREPARE, not just whatever the pool
 // hands out for each call.
 func (c *postgreSQLClient) explainQuery(ctx context.Context, query, queryID string, logger *zap.Logger) (string, error) {
+	return c.explainQueryWithCleanupTimeout(ctx, query, queryID, logger, detachedCleanupTimeout)
+}
+
+// Query monitoring suppresses raw SQL diagnostics and also bounds cleanup after
+// its per-plan deadline. The original caller retains its existing behavior.
+func (c *postgreSQLClient) explainMonitoringQuery(ctx context.Context, query, queryID string) (string, error) {
+	return c.explainQueryWithCleanupTimeout(ctx, query, queryID, zap.NewNop(), 250*time.Millisecond)
+}
+
+func (c *postgreSQLClient) explainQueryWithCleanupTimeout(ctx context.Context, query, queryID string, logger *zap.Logger, cleanupTimeout time.Duration) (string, error) {
 	// Check if the query is explainable before attempting EXPLAIN
 	if !isExplainableQuery(query) {
 		logger.Debug("skipping EXPLAIN for non-explainable query", zap.String("queryID", queryID))
@@ -382,7 +390,7 @@ func (c *postgreSQLClient) explainQuery(ctx context.Context, query, queryID stri
 	// same dedicated connection that ran PREPARE, since DEALLOCATE on any other
 	// connection wouldn't find it.
 	defer func() {
-		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), detachedCleanupTimeout)
+		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), cleanupTimeout)
 		defer cancel()
 		_, _ = conn.ExecContext(cleanupCtx, fmt.Sprintf("/* otel-collector-ignore */ DEALLOCATE PREPARE otel_%s", normalizedQueryID))
 	}()
@@ -1491,11 +1499,21 @@ var querySampleTemplate string
 var querySampleTmpl = template.Must(template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 
 func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, float64, error) {
+	return c.getQuerySampleRows(ctx, limit, newestQueryTimestamp, excludedDatabases, logger, false)
+}
+
+func (c *postgreSQLClient) getMonitoringActivity(ctx context.Context, limit int64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, error) {
+	rows, _, err := c.getQuerySampleRows(ctx, limit, 0, excludedDatabases, logger, true)
+	return rows, err
+}
+
+func (c *postgreSQLClient) getQuerySampleRows(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger, monitoring bool) ([]map[string]any, float64, error) {
 	buf := bytes.Buffer{}
 
 	if tmplErr := querySampleTmpl.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
+		"monitoring":           monitoring,
 		"excludedDatabases":    quoteDatabaseList(excludedDatabases),
 	}); tmplErr != nil {
 		logger.Error("failed to execute template", zap.Error(tmplErr))
@@ -1516,7 +1534,6 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 
 	errs := make([]error, 0)
 	finalAttributes := make([]map[string]any, 0)
-	propagator := propagation.TraceContext{}
 	for _, row := range rows {
 		if row[querySampleColumnQuery] == insufficientPrivilegeQuerySampleText {
 			logger.Warn("skipping query sample due to insufficient privileges")
@@ -1524,7 +1541,6 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 			continue
 		}
 		currentAttributes := make(map[string]any)
-		var traceCtx context.Context
 		querySampleSimpleColumns := []string{
 			querySampleColumnClientHostname,
 			querySampleColumnQueryStart,
@@ -1543,20 +1559,9 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 
 		for _, col := range querySampleSimpleColumns {
 			currentAttributes[dbAttributePrefix+col] = row[col]
-			if col == querySampleColumnApplicationName && row[col] != "" {
-				// Use a background context so we don't accidentally inherit cancellation or span context
-				// from the scrape context; the only trace linkage should come from the extracted traceparent.
-				ctxFromQuery := propagator.Extract(context.Background(), propagation.MapCarrier{
-					traceparentCarrierKey: row[col],
-				})
-
-				if trace.SpanContextFromContext(ctxFromQuery).IsValid() {
-					traceCtx = ctxFromQuery
-				}
-			}
 		}
 
-		if traceCtx != nil {
+		if traceCtx := querySampleTraceContext(row[querySampleColumnApplicationName], row[querySampleColumnQuery]); traceCtx != nil {
 			currentAttributes[querySampleTraceContextKey] = traceCtx
 		}
 
@@ -1605,15 +1610,18 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		}
 
 		// TODO: check if the query is truncated.
-		obfuscated, err := obfuscateSQL(row[querySampleColumnQuery])
+		obfuscated, sqlMetadata, err := obfuscateSQLMetadata(row[querySampleColumnQuery])
 		if err != nil {
-			logger.Warn("failed to obfuscate query", zap.String("query", row[querySampleColumnQuery]))
+			logger.Warn("failed to obfuscate query", zap.Error(err))
 			obfuscated = ""
 		}
 		currentAttributes[dbAttributePrefix+querySampleColumnPID] = pid
 		currentAttributes[string(semconv.NetworkPeerPortKey)] = clientPort
 		currentAttributes[string(semconv.NetworkPeerAddressKey)] = row[querySampleColumnClientAddr]
 		currentAttributes[string(semconv.DBQueryTextKey)] = obfuscated
+		for key, value := range sqlMetadata {
+			currentAttributes[key] = value
+		}
 		currentAttributes[string(semconv.DBNamespaceKey)] = row[querySampleColumnDatname]
 		currentAttributes[string(semconv.UserNameKey)] = row[querySampleColumnUsename]
 		currentAttributes[postgresqlTotalExecTimeAttributeName] = duration
@@ -1722,9 +1730,13 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, exclude
 			case col == "query":
 				// Obfuscate query for display/logging (converts $1,$2 to ?)
 				// Raw query is already stored separately for EXPLAIN
-				val, err = obfuscateSQL(row[col])
+				var sqlMetadata map[string]any
+				val, sqlMetadata, err = obfuscateSQLMetadata(row[col])
+				for key, value := range sqlMetadata {
+					currentAttributes[key] = value
+				}
 				if err != nil {
-					logger.Error("failed to obfuscate query", zap.String("query", row[col]))
+					logger.Error("failed to obfuscate query", zap.Error(err))
 					val = ""
 				}
 			default:

@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-20T11:57:22.031676+00:00",
+  "endpoint": "https://api.us5.datadoghq.com/api/v2/validate_keys",
+  "http_status": 200,
+  "status": "ok",
+  "credential_references": [
+    "ddot-poc/datadog-api-key:api-key",
+    "ddot-poc/datadog-application-key:application-key"
+  ],
+  "file_api_key_matches_existing_secret_namespaces": [
+    "ddot-poc",
+    "observability"
+  ],
+  "application_key_secret_verified_against_supplied_file": true
+}

@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-09-19T22:15:12.756237+00:00",
+  "sdk": "ddtrace 4.13.0rc1",
+  "probe_configuration": "supported local probe file, not signed backend RC",
+  "http_observation": "original SDK HTTP transport called unchanged; original response status retained",
+  "checks": [
+    {
+      "application": "debugger-python",
+      "collector": "collector",
+      "observed_snapshot_requests": 191,
+      "captured_snapshots": 191,
+      "trace_correlated_snapshots": 191,
+      "installed_diagnostic_requests": 1,
+      "upload_response_statuses": [
+        202
+      ],
+      "accepted_upload_requests": 192,
+      "collector_transport": {
+        "aggregate_trace_counters": {
+          "otelcol_receiver_accepted_spans": 17573.0,
+          "otelcol_exporter_sent_spans": 17488.0,
+          "otelcol_exporter_send_failed_spans": 0
+        },
+        "discovery_endpoints": [
+          "/profiling/v1/input",
+          "/v0.1/pipeline_stats",
+          "/openlineage/api/v1/lineage",
+          "/evp_proxy/v2/",
+          "/evp_proxy/v4/",
+          "/debugger/v1/input",
+          "/debugger/v1/diagnostics",
+          "/debugger/v2/input",
+          "/symdb/v1/input"
+        ],
+        "remote_config_status": 404
+      },
+      "sdk_otlp_writer_assertion": "passed at workload startup",
+      "exact_kind_otlp_span_readback": "not performed",
+      "backend_transport_accepted": true,
+      "signed_remote_configuration_verified": false,
+      "backend_product_verified": false
+    },
+    {
+      "application": "debugger-python-http-forwarder",
+      "collector": "collector-http-forwarder",
+      "observed_snapshot_requests": 190,
+      "captured_snapshots": 190,
+      "trace_correlated_snapshots": 190,
+      "installed_diagnostic_requests": 1,
+      "upload_response_statuses": [
+        202
+      ],
+      "accepted_upload_requests": 191,
+      "collector_transport": {
+        "aggregate_trace_counters": {
+          "otelcol_receiver_accepted_spans": 21360.0,
+          "otelcol_exporter_sent_spans": 21345.0,
+          "otelcol_exporter_send_failed_spans": 0
+        },
+        "discovery_endpoints": [
+          "/profiling/v1/input",
+          "/v0.1/pipeline_stats",
+          "/openlineage/api/v1/lineage",
+          "/evp_proxy/v2/",
+          "/evp_proxy/v4/",
+          "/debugger/v1/input",
+          "/debugger/v1/diagnostics",
+          "/debugger/v2/input",
+          "/symdb/v1/input"
+        ],
+        "remote_config_status": 404
+      },
+      "sdk_otlp_writer_assertion": "passed at workload startup",
+      "exact_kind_otlp_span_readback": "not performed",
+      "backend_transport_accepted": true,
+      "signed_remote_configuration_verified": false,
+      "backend_product_verified": false
+    }
+  ],
+  "blockers": [
+    "Standalone Collector has no signed RC client/configuration service.",
+    "No authenticated Datadog UI/API probe registration or snapshot readback was available.",
+    "Detailed Collector payload logging was rejected by automatic approval review; aggregate counts do not identify this product's individual traces."
+  ]
+}

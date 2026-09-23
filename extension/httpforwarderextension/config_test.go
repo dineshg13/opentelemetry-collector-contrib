@@ -20,6 +20,19 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarderextension/internal/metadata"
 )
 
+func TestRouteStatusMappingUnmarshal(t *testing.T) {
+	cfg := NewFactory().CreateDefaultConfig().(*Config)
+	err := confmap.NewFromStringMap(map[string]any{
+		"routes": []any{map[string]any{
+			"path": "/profile", "endpoint": "https://example.com/profile",
+			"response_status": map[string]any{"202": 200},
+		}},
+	}).Unmarshal(cfg)
+	require.NoError(t, err)
+	require.NoError(t, confmap.Validate(cfg))
+	require.Equal(t, 200, cfg.Routes[0].ResponseStatus["202"])
+}
+
 func TestLoadConfig(t *testing.T) {
 	t.Parallel()
 	maxIdleConns := 42
@@ -71,7 +84,11 @@ func TestLoadConfig(t *testing.T) {
 			sub, err := cm.Sub(tt.id.String())
 			require.NoError(t, err)
 			require.NoError(t, sub.Unmarshal(cfg))
-			assert.NoError(t, confmap.Validate(cfg))
+			if tt.id.Name() == "" {
+				assert.ErrorContains(t, confmap.Validate(cfg), "cannot be empty")
+			} else {
+				assert.NoError(t, confmap.Validate(cfg))
+			}
 			assert.Equal(t, tt.expected, cfg)
 		})
 	}

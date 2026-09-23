@@ -1,0 +1,6 @@
+change_type: bug_fix
+component: receiver/postgresql
+note: Correct top-query counter identity, baselines, resets, and execution filtering.
+issues: [17]
+subtext: Initial observations and observations after collection gaps establish a baseline without emitting lifetime totals.
+change_logs: [user]

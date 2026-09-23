@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-09-19T22:07:57.539594+00:00",
+  "scope": "actual SDK workloads through actual Collector, local fixture only",
+  "backend_verified": false,
+  "checks": [
+    {
+      "case": "openlineage-enabled",
+      "lineage_requests": 2,
+      "otlp_spans": 1,
+      "spark_spans": [],
+      "lineage_event_types": [
+        "START",
+        "COMPLETE"
+      ],
+      "stdout": [
+        "{\"run_id\": \"942dc444-1ffc-4123-b989-7f4427e10688\", \"trace_id\": \"6aaf07bb00000000053547ae13f622aa\", \"summary\": {\"count\": 3, \"total\": 60}, \"lineage_enabled\": true, \"lineage_statuses\": [202, 202], \"lineage_errors\": [], \"ddtrace_version\": \"4.13.0rc1\", \"openlineage_version\": \"1.45.0\", \"scope\": \"manual OpenLineage job plus ordinary SDK trace; not native Spark DJM\"}"
+      ],
+      "sdk_enabled": true,
+      "proxy_enabled": true,
+      "native_spark_runtime": false
+    },
+    {
+      "case": "openlineage-sdk-disabled",
+      "lineage_requests": 0,
+      "otlp_spans": 1,
+      "spark_spans": [],
+      "lineage_event_types": [],
+      "stdout": [
+        "{\"run_id\": \"2cebce8b-40eb-44c4-9959-3e3186097f65\", \"trace_id\": \"6aaf07bc000000008168d50207fe5553\", \"summary\": {\"count\": 3, \"total\": 60}, \"lineage_enabled\": false, \"lineage_statuses\": [], \"lineage_errors\": [], \"ddtrace_version\": \"4.13.0rc1\", \"openlineage_version\": \"1.45.0\", \"scope\": \"manual OpenLineage job plus ordinary SDK trace; not native Spark DJM\"}"
+      ],
+      "sdk_enabled": false,
+      "proxy_enabled": true,
+      "native_spark_runtime": false
+    },
+    {
+      "case": "openlineage-proxy-disabled",
+      "lineage_requests": 0,
+      "otlp_spans": 1,
+      "spark_spans": [],
+      "lineage_event_types": [],
+      "stdout": [
+        "{\"run_id\": \"71686601-7803-4c85-b515-3e9c6578cb43\", \"trace_id\": \"6aaf07bc000000007a11e21e08cbb02a\", \"summary\": {\"count\": 3, \"total\": 60}, \"lineage_enabled\": true, \"lineage_statuses\": [404, 404], \"lineage_errors\": [{\"type\": \"HTTPError\", \"status\": 404}, {\"type\": \"HTTPError\", \"status\": 404}], \"ddtrace_version\": \"4.13.0rc1\", \"openlineage_version\": \"1.45.0\", \"scope\": \"manual OpenLineage job plus ordinary SDK trace; not native Spark DJM\"}"
+      ],
+      "sdk_enabled": true,
+      "proxy_enabled": false,
+      "native_spark_runtime": false
+    }
+  ]
+}

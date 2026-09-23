@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-09-19T22:03:38.075293+00:00",
+  "source_commit": "62589f6bbda21c10cf86f3a139867ff00270404c",
+  "working_tree_dirty": true,
+  "go": "go version go1.26.4 linux/arm64",
+  "binary_sha256": "c20ba3e8a82bb35477fd3e78a9f2c5ddd3da076085884841cbe76aea4affc72a",
+  "image": "ddot-products-collector-generic:poc",
+  "generic_only": true,
+  "trace_agent_dependencies": [],
+  "image_id": "sha256:2aa861951e4024115c3beed5672406679610f080029a24488af80545dddbfbf0",
+  "record_type": "original build executed in kind; retained before clean-source rebuild"
+}

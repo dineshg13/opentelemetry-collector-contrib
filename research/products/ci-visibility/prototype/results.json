@@ -1,0 +1,75 @@
+{
+  "executed_utc_date": "2026-09-19",
+  "sdk": "ddtrace 4.13.0rc1",
+  "python_source_release_commit": "c280552330bb906df23b2963d6457a8d23fb81de",
+  "pytest": "8.3.5",
+  "direct_forwarder_observed_paths": [
+    "/info",
+    "/v0.5/traces"
+  ],
+  "direct_evp_status": 404,
+  "direct_default_plugin_paths": [
+    "/info"
+  ],
+  "direct_default_plugin_pytest_exit": 0,
+  "adapter_default_plugin_backend_paths": [
+    "/api/v2/ci/libraries/tests",
+    "/api/v2/ci/tests/skippable",
+    "/api/v2/citestcov",
+    "/api/v2/citestcycle",
+    "/api/v2/git/repository/packfile",
+    "/api/v2/git/repository/search_commits",
+    "/api/v2/libraries/tests/services/setting",
+    "/api/v2/test/libraries/test-management/tests"
+  ],
+  "java_released_sdk": {
+    "executed": true,
+    "version": "1.66.0",
+    "source_release_commit": "a099fffb31657bb6e8b4d04ee741491f3480829d",
+    "artifact_sha256": "5f0eb51160fade367d97404624561b6666f7475fb1453a7a73237eb643e398d8",
+    "api": "manual CIVisibility session/module/suite/test",
+    "event_types": [
+      "test",
+      "test_module_end",
+      "test_session_end",
+      "test_suite_end"
+    ],
+    "backend_paths": [
+      "/api/v2/ci/libraries/tests",
+      "/api/v2/ci/tests/skippable",
+      "/api/v2/citestcycle",
+      "/api/v2/git/repository/packfile",
+      "/api/v2/git/repository/search_commits",
+      "/api/v2/libraries/tests/services/setting",
+      "/api/v2/test/libraries/test-management/tests"
+    ],
+    "jdk_runtime": "Not recorded in original CI execution; do not infer from other experiments"
+  },
+  "adapter_backend_paths": [
+    "/api/v2/ci/libraries/tests",
+    "/api/v2/ci/tests/skippable",
+    "/api/v2/citestcov",
+    "/api/v2/citestcycle",
+    "/api/v2/git/repository/packfile",
+    "/api/v2/git/repository/search_commits",
+    "/api/v2/libraries/tests/services/setting",
+    "/api/v2/test/libraries/test-management/tests"
+  ],
+  "event_types": [
+    "test",
+    "test_module_end",
+    "test_session_end",
+    "test_suite_end"
+  ],
+  "decoded_test_coverage_records": 1,
+  "python_legacy_backend_request_count": 9,
+  "response_429_body_retry_after_preserved": true,
+  "unrelated_product_and_disabled_ci_rejected_without_egress": true,
+  "javascript_component_checks": {
+    "discovery_cases": 4,
+    "source_writer_cases": 2,
+    "network_and_encoders_stubbed": true,
+    "full_sdk_runtime": false
+  },
+  "authenticated_datadog_backend": false
+}

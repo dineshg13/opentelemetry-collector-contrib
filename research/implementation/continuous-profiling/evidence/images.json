@@ -1,0 +1,14 @@
+{
+  "platform": "linux/arm64",
+  "images": {
+    "ddot-profile-python:poc": "sha256:2abd3a0c91f0364169aa5dd467d3a3480c6cfc0071d377cb267feed338cf5029",
+    "ddot-profile-java:poc": "sha256:cb8b37f9cde61586fa52bcb0ca336f4d4c7c262dc82e21e55b531f6d41eaa2ff",
+    "ddot-profile-node:poc": "sha256:20465db4a4072dc12f871ccf7220ffdef3d2a024687f97e6fde43f9309198bf3"
+  },
+  "sdk_versions": {
+    "python": "4.13.0rc1",
+    "java": "1.66.0",
+    "node": "6.16.0"
+  },
+  "backend_verified": false
+}

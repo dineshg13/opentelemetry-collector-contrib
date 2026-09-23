@@ -1,0 +1,19 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+FROM python:3.12.13-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    DD_SERVICE=dbm-otlp-dev-workload \
+    DD_ENV=dbm-otlp-dev \
+    DD_DBM_PROPAGATION_MODE=full \
+    OTEL_TRACES_EXPORTER=otlp \
+    OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/json \
+    DD_INSTRUMENTATION_TELEMETRY_ENABLED=false \
+    DD_REMOTE_CONFIGURATION_ENABLED=false \
+    DD_TRACE_SAMPLE_RATE=1
+USER 65532:65532
+EXPOSE 8080
+ENTRYPOINT ["python", "-u", "app.py"]

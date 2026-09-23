@@ -1,0 +1,11 @@
+# Actual http_forwarder extension subtree. Start an Agent or capture server on 18127.
+# /api in the egress URL does NOT rewrite incoming SDK paths.
+ingress:
+  endpoint: 127.0.0.1:18126
+  compression_algorithms: []
+egress:
+  endpoint: http://127.0.0.1:18127
+  timeout: 5s
+  headers:
+    DD-API-KEY: synthetic-dsm-key
+    X-Datadog-Additional-Tags: host:research,default_env:test,agent_version:prototype
