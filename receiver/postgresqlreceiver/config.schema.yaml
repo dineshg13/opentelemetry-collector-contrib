@@ -16,6 +16,35 @@ $defs:
       max_open:
         x-pointer: true
         type: integer
+  query_monitoring_collection:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+      max_payload_bytes:
+        type: integer
+      max_rows:
+        type: integer
+        x-customType: int64
+      query_plans:
+        $ref: query_monitoring_plans
+  query_monitoring_plans:
+    type: object
+    properties:
+      cache_size:
+        type: integer
+      cache_ttl:
+        type: string
+        format: duration
+      enabled:
+        type: boolean
+      max_per_collection:
+        type: integer
+      max_plan_bytes:
+        type: integer
+      timeout:
+        type: string
+        format: duration
   query_sample_collection:
     type: object
     properties:
@@ -59,6 +88,8 @@ properties:
       type: string
   password:
     $ref: go.opentelemetry.io/collector/config/configopaque.string
+  query_monitoring:
+    $ref: query_monitoring_collection
   query_sample_collection:
     $ref: query_sample_collection
   tls:

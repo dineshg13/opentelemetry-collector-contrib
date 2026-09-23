@@ -11,6 +11,7 @@
 package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/DataDog/datadog-agent/pkg/obfuscate"
@@ -177,10 +178,12 @@ func lazyInitObfuscator() *obfuscate.Obfuscator {
 	obfuscatorLoader.Do(func() {
 		obfuscator = obfuscate.NewObfuscator(obfuscate.Config{
 			SQL: obfuscate.SQLConfig{
-				DBMS:         "postgresql",
-				KeepSQLAlias: true,
-				KeepBoolean:  true,
-				KeepNull:     true,
+				DBMS:            "postgresql",
+				TableNames:      true,
+				CollectCommands: true,
+				KeepSQLAlias:    true,
+				KeepBoolean:     true,
+				KeepNull:        true,
 			},
 			SQLExecPlan:          defaultSQLPlanObfuscateSettings,
 			SQLExecPlanNormalize: defaultSQLPlanNormalizeSettings,
@@ -191,12 +194,33 @@ func lazyInitObfuscator() *obfuscate.Obfuscator {
 
 // obfuscateSQL obfuscates & normalizes the provided SQL query, writing the error into errResult if the operation fails.
 func obfuscateSQL(rawQuery string) (string, error) {
-	obfuscatedQuery, err := lazyInitObfuscator().ObfuscateSQLString(rawQuery)
-	if err != nil {
-		return "", err
-	}
+	query, _, err := obfuscateSQLMetadata(rawQuery)
+	return query, err
+}
 
-	return obfuscatedQuery.Query, nil
+// Return only structured SQL metadata. Raw comments and literals never leave the obfuscator.
+func obfuscateSQLMetadata(rawQuery string) (string, map[string]any, error) {
+	query, err := lazyInitObfuscator().ObfuscateSQLString(rawQuery)
+	if err != nil {
+		return "", nil, err
+	}
+	metadata := make(map[string]any, 2)
+	if query.Metadata.TablesCSV != "" {
+		tables := strings.Split(query.Metadata.TablesCSV, ",")
+		values := make([]any, len(tables))
+		for i, table := range tables {
+			values[i] = table
+		}
+		metadata["db.query.tables"] = values
+	}
+	if len(query.Metadata.Commands) > 0 {
+		commands := make([]any, len(query.Metadata.Commands))
+		for i, command := range query.Metadata.Commands {
+			commands[i] = command
+		}
+		metadata["db.query.commands"] = commands
+	}
+	return query.Query, metadata, nil
 }
 
 // obfuscateSQLExecPlan obfuscates the provided json query execution plan, writing the error into errResult if the
