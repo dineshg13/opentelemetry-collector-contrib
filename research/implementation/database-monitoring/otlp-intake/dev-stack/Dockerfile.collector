@@ -1,0 +1,8 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+FROM scratch
+COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY ddot-products-collector /collector
+USER 65532:65532
+ENTRYPOINT ["/collector"]
+CMD ["--config=/conf/collector.yaml"]

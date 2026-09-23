@@ -171,3 +171,30 @@ Metadata and health are supported by the existing backend service but are not
 collected or mapped by this PoC. Kept the user-approved DBM processor path; the
 EVP `databasequery` track receives processed events. Documentation only; no
 runtime behavior changed or backend verification claimed.
+
+## Development OTLP stack (2026-09-23)
+
+The user authorized a running PostgreSQL/workload/Collector stack using the
+workspace `.envrc_dev`. Created isolated namespace `dbm-otlp-dev` on
+`kind-otel-dd`, targeting real development OTLP intake `otlp.datad0g.com`.
+The supplied API key is valid and matches the Kubernetes Secret; the application
+key remains local for readback. PostgreSQL 16.15 uses persistent storage. The
+workload uses ddtrace 4.13.0rc1 / psycopg2 2.9.11 and actual SQL trace propagation.
+The previously verified generic Collector binary includes receiver commit
+`8ee39df8ad0` and has matching SHA-256 recorded in `dev-stack/evidence/`.
+
+All three deployments are ready. Datadog readback at 2026-09-23T14:35:30Z returned
+50 query-metrics records, 50 activity records, 96 PostgreSQL metric points and
+5 indexed workload spans (queries are bounded, not total counts). Matched
+38 SDK SQL trace contexts to stored activity rows; optional EXPLAIN data was
+present. Collector queues were empty and no export-failure counters were found.
+Seven initial workload database-connection retries occurred during PostgreSQL
+startup; subsequent iterations succeeded without additional connection errors.
+
+Independent deployment review found missing fresh-machine image acquisition,
+credential rotation not restarting the Collector, and null traceparent handling
+in verification. Fixed all three, redeployed and reran verification successfully.
+Runnable assets, inspection/stop commands and sanitized evidence are in
+`dev-stack/README.md`. The stack is left running. The backend DBM service changes
+were not deployed; DBM feature routing, private intake and DBM UI verification
+remain deferred. Ordinary log/metric/span visibility is not DBM product proof.

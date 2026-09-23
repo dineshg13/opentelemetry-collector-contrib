@@ -1,9 +1,13 @@
 # Local PostgreSQL → OTLP intake → DBM implementation
 
+A live development stack now runs in `kind-otel-dd/dbm-otlp-dev`, exporting to
+`otlp.datad0g.com`. See [setup and verified readback](dev-stack/README.md). Backend
+DBM routing deployment and DBM UI verification remain deferred.
+
 See [PLAN.md](PLAN.md) for the approved milestones and [PROGRESS.md](PROGRESS.md)
 for commits and verification. The [DBM endpoint reference](PLAN.md#dbm-endpoint-and-route-reference)
 lists the five Agent HTTP paths, private gRPC route values, and PoC coverage.
-Backend deployment and Datadog application testing
+Backend DBM deployment and DBM application testing
 are deferred by the user. The local implementation is exercised against real
 PostgreSQL, the standard Collector service/exporter, and the actual DBM decoders.
 
@@ -19,11 +23,12 @@ publishing. Ordinary PostgreSQL metrics retain their existing metrics-intake pat
 | Repository | Execution branch | Local checkout |
 | --- | --- | --- |
 | Collector contrib | `dinesh.gurumurthy/poc-dbm-otlp-intake` | `/tmp/ddot-dbm-otlp` |
-| dd-source | `dinesh.gurumurthy/dbm-otlp-intake` | `/tmp/dd-source-dbm-otlp` |
+| dd-source | `dinesh.gurumurthy/dbm-poc` | `/home/bits/dd/dd-source` |
 | dd-go | `dinesh.gurumurthy/dbm-otlp-intake` | `/tmp/dd-go-dbm` |
 
-These are isolated worktrees; original checkouts are preserved. Build artifacts
-under `/tmp` are reproducible and are not committed.
+Collector and dd-go use isolated worktrees. The backend uses the user's requested
+`~/dd/dd-source` checkout. Build artifacts under `/tmp` are reproducible and are
+not committed.
 
 ## Reproduce real receiver collection
 
