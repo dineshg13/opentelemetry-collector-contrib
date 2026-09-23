@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-23T14:35:30.942070+00:00",
+  "timestamp": "2026-09-23T17:01:09.332011+00:00",
   "context": "kind-otel-dd",
   "namespace": "dbm-otlp-dev",
   "ready": {
@@ -12,19 +12,19 @@
   "workload": {
     "service": "dbm-otlp-dev-workload",
     "ready": true,
-    "iterations": 122,
-    "rows_returned": 610,
-    "trace_contexts": 122,
+    "iterations": 2304,
+    "rows_returned": 11520,
+    "trace_contexts": 2304,
     "connection_attempts": 8,
     "errors": 7,
-    "last_query_unix_seconds": 1790174128,
+    "last_query_unix_seconds": 1790182866,
     "last_error_type": null
   },
   "collector_export_counters": {
     "otelcol_exporter_queue_size": 0.0,
-    "otelcol_exporter_sent_log_records": 48.0,
-    "otelcol_exporter_sent_metric_points": 408.0,
-    "otelcol_exporter_sent_spans": 87.0
+    "otelcol_exporter_sent_log_records": 22.0,
+    "otelcol_exporter_sent_metric_points": 187.0,
+    "otelcol_exporter_sent_spans": 39.0
   },
   "datadog_logs": {
     "http_status": 200,
@@ -32,17 +32,17 @@
       "db.server.activity": 50,
       "db.server.query_metrics": 50
     },
-    "query_rows_with_plans": 582,
-    "sdk_context_matches_in_activity_logs": 38
+    "query_rows_with_plans": 578,
+    "sdk_context_matches_in_activity_logs": 37
   },
   "datadog_metrics": {
     "http_status": 200,
     "series": 1,
-    "points": 96
+    "points": 178
   },
   "datadog_indexed_spans": {
-    "http_status": 200,
-    "records": 5
+    "http_status": 500,
+    "records": 0
   },
   "dbm_product_verified": false,
   "backend_deployment_performed": false,

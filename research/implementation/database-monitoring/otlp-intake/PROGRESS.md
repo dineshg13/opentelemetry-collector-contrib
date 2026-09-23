@@ -219,3 +219,20 @@ after disabling query monitoring. The development-stack configuration validates
 against the minimal Collector. Existing deployment and historical backend-readback
 evidence are preserved; this branch extraction did not redeploy the stack or
 verify DBM product processing.
+
+
+## DBM-only Collector deployed locally — 2026-09-23
+
+Built from clean source `659a40eb55b8ed6321d5f6cbfa381eb6e38dd196` and rolled out
+`dbm-otlp-dev-collector:453a95ef677b` on `kind-otel-dd`, namespace `dbm-otlp-dev`.
+The binary running inside the new container matches the local SHA-256 exactly.
+PostgreSQL's pod and persistent volume were preserved; all three workloads are
+ready. The new Collector exports query-metrics/activity logs, PostgreSQL metrics
+and workload traces through the standard OTLP HTTP exporter.
+
+[Deployment and validation details](dev-stack/README.md#verified-behavior-and-limits)
+include successful fresh metrics readback and local event/export evidence.
+Post-rollout logs API verification was rate limited (429); indexed-span search
+returned 500 twice. These readback limitations do not establish an export failure,
+and no fresh log/indexed-span API success is claimed. Backend services and DBM
+product/UI validation remain deferred.

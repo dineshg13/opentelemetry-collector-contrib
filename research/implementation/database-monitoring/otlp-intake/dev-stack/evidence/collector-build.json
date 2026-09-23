@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-09-23T16:59:20.178919+00:00",
+  "source_commit": "659a40eb55b8ed6321d5f6cbfa381eb6e38dd196",
+  "working_tree_dirty": false,
+  "go": "go version go1.26.4 linux/arm64",
+  "binary": "/tmp/dbm-only-deploy-build/collector/dbm-otlp-collector",
+  "binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+  "trace_agent_dependencies": []
+}

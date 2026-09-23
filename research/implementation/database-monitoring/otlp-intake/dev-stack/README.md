@@ -1,6 +1,7 @@
 # PostgreSQL DBM development stack
 
-Deployed on 2026-09-23 using the workspace `.envrc_dev` (`DD_SITE=datad0g.com`).
+Rebuilt and deployed from `dinesh.gurumurthy/poc-dbm-only` on 2026-09-23
+using the workspace `.envrc_dev` (`DD_SITE=datad0g.com`).
 The stack remains running on context `kind-otel-dd`, namespace `dbm-otlp-dev`.
 It exports real OTLP to `https://otlp.datad0g.com`.
 
@@ -28,18 +29,26 @@ inspection. Normal PostgreSQL metrics and workload traces have separate pipeline
 
 ## Verified behavior and limits
 
-`evidence/deployment.json` records the deployed images and binary hash;
-`evidence/verification.json` records live readiness, Collector export counters,
-and Datadog API readback. Verification established:
+[Deployment evidence](evidence/deployment.json) records the deployed images and
+binary hash. [Stack verification](evidence/verification.json) records readiness,
+Collector counters and an initial 15-minute Datadog API readback. The separate
+[fresh readback](evidence/fresh-readback.json) uses `17:00:20Z–17:03:28Z`, starting
+five seconds after the new Collector container started. Results:
 
-- All three deployments are ready.
-- The Kubernetes API key and site match the workspace `.envrc_dev`.
-- Successful OTLP exports for logs, metrics, and traces, with no exporter failure
-  counters and an empty queue at the captured check.
-- Both `db.server.query_metrics` and `db.server.activity` are readable as ordinary
-  Datadog logs, including optional plans and activity context matching the actual
-  SDK's SQL traceparent values.
-- PostgreSQL metrics and indexed workload spans are readable through Datadog APIs.
+- All three deployments are ready; the API key and site match `.envrc_dev`.
+- The running Collector binary matches the clean DBM-only build.
+- The new Collector exported 22 log records, 187 metric points and 39 spans at
+  the first check, with no exporter failure counters and an empty queue.
+- New-pod debug output contains 24 `db.server.query_metrics` and 24
+  `db.server.activity` events at the provenance check.
+- The initial 15-minute logs query returned both event families, optional plans
+  and 37 matches to SDK SQL context. That query window includes the prior Collector.
+- The strict post-rollout metrics query returned 37 non-null points, all after
+  the new Collector started.
+- The strict post-rollout logs query returned HTTP 429 (rate limited). Indexed
+  span search returned HTTP 500 on the initial check and one follow-up. Fresh
+  log/plan/context and indexed-span API readback could not be established during
+  this rollout; successful exports and local events are recorded separately.
 
 The workload's initial connection retries occurred while PostgreSQL initialized.
 Its status retains that cumulative startup error count; `last_error_type: null`
@@ -59,16 +68,18 @@ a Collector binary built from this receiver branch. The deployment script pulls
 the pinned PostgreSQL image and builds the workload image. It loads only the
 selected architecture into kind.
 
-The captured deployment used the previously built and tested generic Collector:
+The current deployment uses the standalone DBM-only Collector:
 
-- Receiver source commit: `8ee39df8ad0626969261d21bfe7b64979000d269`.
-- SHA-256: `12ef35b0d8b7d8944474dbcdc715049e4605dcce516d5c2b19d70c3bb8510ff4`.
-- Receiver source is unchanged between that commit and this deployment.
-- No Datadog receiver, exporter, connector, extension, or embedded Trace Agent.
+- Clean build source commit: `659a40eb55b8ed6321d5f6cbfa381eb6e38dd196`.
+- Binary SHA-256: `453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74`.
+- Image: `dbm-otlp-dev-collector:453a95ef677b`.
+- The running container's `/collector` hash matches the built binary.
+- PostgreSQL's pod and persistent volume were preserved during rollout.
 
-The DBM-only branch preserves that receiver source and uses a smaller Collector
-manifest containing only the components needed by this stack. The evidence above
-describes the earlier binary; a fresh build has its own hash and provenance.
+[Build provenance](evidence/collector-build.json) and
+[rollout verification](evidence/rollout-provenance.json) record the exact source,
+image and running binary. Historical branch-validation evidence in the parent
+folder describes earlier local tests.
 Use the [Collector build instructions](../README.md#build-and-exercise-the-collector-service),
 then deploy, passing the resulting binary:
 

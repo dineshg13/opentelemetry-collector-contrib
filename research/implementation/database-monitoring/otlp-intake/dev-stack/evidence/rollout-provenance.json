@@ -1,0 +1,33 @@
+{
+  "pod": "collector-687b59b749-rjppk",
+  "uid": "d9b346cf-bd5e-4d8f-8d7f-0f52e223e135",
+  "node": "otel-dd-worker",
+  "pod_started_at": "2026-09-23T17:00:15Z",
+  "container_started_at": "2026-09-23T17:00:15Z",
+  "image": "dbm-otlp-dev-collector:453a95ef677b",
+  "image_id": "docker.io/library/import-2026-09-23@sha256:67ecf5091ab81a4481a6b15b2a23872d6acbb1634f6c3334cb2691eca1fb540a",
+  "ready": true,
+  "restart_count": 0,
+  "local_image_id": "sha256:aa4ebac30f8525aa335485f5692b513773112a4a1c231d8b1603a1882fe3ec07",
+  "local_image_repo_digests": [
+    "dbm-otlp-dev-collector@sha256:aa4ebac30f8525aa335485f5692b513773112a4a1c231d8b1603a1882fe3ec07"
+  ],
+  "build": {
+    "timestamp": "2026-09-23T16:59:20.178919+00:00",
+    "source_commit": "659a40eb55b8ed6321d5f6cbfa381eb6e38dd196",
+    "working_tree_dirty": false,
+    "go": "go version go1.26.4 linux/arm64",
+    "binary": "/tmp/dbm-only-deploy-build/collector/dbm-otlp-collector",
+    "binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+    "trace_agent_dependencies": []
+  },
+  "database_volume_preserved": true,
+  "postgres_pod_preserved": true,
+  "running_binary_sha256": "453a95ef677baeae2fa8ec5319c2ec39c9dc914ca139dae0b4625f3efa5eab74",
+  "running_binary_matches_build": true,
+  "pod_digest_matches_loaded_image": true,
+  "fresh_collector_debug_events": {
+    "db.server.query_metrics": 24,
+    "db.server.activity": 24
+  }
+}
