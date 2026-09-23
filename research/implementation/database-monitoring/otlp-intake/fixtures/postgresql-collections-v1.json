@@ -1,0 +1,507 @@
+{
+  "resourceLogs": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.instance.id",
+            "value": {
+              "stringValue": "postgres.example:5432"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "orders-db"
+            }
+          },
+          {
+            "key": "server.address",
+            "value": {
+              "stringValue": "postgres.example"
+            }
+          },
+          {
+            "key": "server.port",
+            "value": {
+              "intValue": "5432"
+            }
+          },
+          {
+            "key": "db.system.name",
+            "value": {
+              "stringValue": "postgresql"
+            }
+          },
+          {
+            "key": "db.version",
+            "value": {
+              "stringValue": "16.15"
+            }
+          },
+          {
+            "key": "deployment.environment.name",
+            "value": {
+              "stringValue": "dbm-poc"
+            }
+          }
+        ]
+      },
+      "scopeLogs": [
+        {
+          "scope": {
+            "name": "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver",
+            "version": "contract-v1"
+          },
+          "logRecords": [
+            {
+              "timeUnixNano": "1790071200000000000",
+              "observedTimeUnixNano": "1790071200000000000",
+              "eventName": "db.server.query_metrics",
+              "attributes": [
+                {
+                  "key": "db.collection.schema.version",
+                  "value": {
+                    "stringValue": "1"
+                  }
+                },
+                {
+                  "key": "db.collection.id",
+                  "value": {
+                    "stringValue": "10000000-0000-4000-8000-000000000001"
+                  }
+                },
+                {
+                  "key": "db.collection.start_time_unix_nano",
+                  "value": {
+                    "intValue": "1790071190000000000"
+                  }
+                },
+                {
+                  "key": "db.collection.end_time_unix_nano",
+                  "value": {
+                    "intValue": "1790071200000000000"
+                  }
+                },
+                {
+                  "key": "db.collection.complete",
+                  "value": {
+                    "boolValue": true
+                  }
+                },
+                {
+                  "key": "db.collection.rows_observed",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "db.collection.rows_emitted",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "body": {
+                "kvlistValue": {
+                  "values": [
+                    {
+                      "key": "queries",
+                      "value": {
+                        "arrayValue": {
+                          "values": [
+                            {
+                              "kvlistValue": {
+                                "values": [
+                                  {
+                                    "key": "db.namespace",
+                                    "value": {
+                                      "stringValue": "orders"
+                                    }
+                                  },
+                                  {
+                                    "key": "user.name",
+                                    "value": {
+                                      "stringValue": "app"
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.text",
+                                    "value": {
+                                      "stringValue": "SELECT city FROM persons WHERE city = ?"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.queryid",
+                                    "value": {
+                                      "stringValue": "9223372036854775807"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.dbid",
+                                    "value": {
+                                      "stringValue": "16384"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.userid",
+                                    "value": {
+                                      "stringValue": "16385"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.toplevel",
+                                    "value": {
+                                      "boolValue": true
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.calls",
+                                    "value": {
+                                      "intValue": "10"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.rows",
+                                    "value": {
+                                      "intValue": "20"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.total_exec_time",
+                                    "value": {
+                                      "doubleValue": 1.2
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.total_plan_time",
+                                    "value": {
+                                      "doubleValue": 0.05
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.shared_blks_dirtied",
+                                    "value": {
+                                      "intValue": "0"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.shared_blks_hit",
+                                    "value": {
+                                      "intValue": "30"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.shared_blks_read",
+                                    "value": {
+                                      "intValue": "2"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.shared_blks_written",
+                                    "value": {
+                                      "intValue": "0"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.temp_blks_read",
+                                    "value": {
+                                      "intValue": "0"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.temp_blks_written",
+                                    "value": {
+                                      "intValue": "0"
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.tables",
+                                    "value": {
+                                      "arrayValue": {
+                                        "values": [
+                                          {
+                                            "stringValue": "persons"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.commands",
+                                    "value": {
+                                      "arrayValue": {
+                                        "values": [
+                                          {
+                                            "stringValue": "SELECT"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "timeUnixNano": "1790071200000000000",
+              "observedTimeUnixNano": "1790071200000000000",
+              "eventName": "db.server.activity",
+              "attributes": [
+                {
+                  "key": "db.collection.schema.version",
+                  "value": {
+                    "stringValue": "1"
+                  }
+                },
+                {
+                  "key": "db.collection.id",
+                  "value": {
+                    "stringValue": "10000000-0000-4000-8000-000000000002"
+                  }
+                },
+                {
+                  "key": "db.collection.start_time_unix_nano",
+                  "value": {
+                    "intValue": "1790071190000000000"
+                  }
+                },
+                {
+                  "key": "db.collection.end_time_unix_nano",
+                  "value": {
+                    "intValue": "1790071200000000000"
+                  }
+                },
+                {
+                  "key": "db.collection.complete",
+                  "value": {
+                    "boolValue": true
+                  }
+                },
+                {
+                  "key": "db.collection.rows_observed",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "db.collection.rows_emitted",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "body": {
+                "kvlistValue": {
+                  "values": [
+                    {
+                      "key": "sessions",
+                      "value": {
+                        "arrayValue": {
+                          "values": [
+                            {
+                              "kvlistValue": {
+                                "values": [
+                                  {
+                                    "key": "db.namespace",
+                                    "value": {
+                                      "stringValue": "orders"
+                                    }
+                                  },
+                                  {
+                                    "key": "user.name",
+                                    "value": {
+                                      "stringValue": "app"
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.text",
+                                    "value": {
+                                      "stringValue": "SELECT city FROM persons WHERE city = ?"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.pid",
+                                    "value": {
+                                      "intValue": "42"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.state",
+                                    "value": {
+                                      "stringValue": "active"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.application_name",
+                                    "value": {
+                                      "stringValue": "orders-app"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.query_start",
+                                    "value": {
+                                      "stringValue": "2026-09-22T09:59:59Z"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.query_id",
+                                    "value": {
+                                      "stringValue": "9223372036854775807"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.wait_event",
+                                    "value": {
+                                      "stringValue": ""
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.wait_event_type",
+                                    "value": {
+                                      "stringValue": ""
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.blocking.pids",
+                                    "value": {
+                                      "arrayValue": {
+                                        "values": []
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "key": "network.peer.address",
+                                    "value": {
+                                      "stringValue": "10.0.0.10"
+                                    }
+                                  },
+                                  {
+                                    "key": "network.peer.port",
+                                    "value": {
+                                      "intValue": "54000"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.client_hostname",
+                                    "value": {
+                                      "stringValue": ""
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.total_exec_time",
+                                    "value": {
+                                      "doubleValue": 1.0
+                                    }
+                                  },
+                                  {
+                                    "key": "trace_id",
+                                    "value": {
+                                      "stringValue": "0123456789abcdef0123456789abcdef"
+                                    }
+                                  },
+                                  {
+                                    "key": "span_id",
+                                    "value": {
+                                      "stringValue": "0123456789abcdef"
+                                    }
+                                  },
+                                  {
+                                    "key": "trace_flags",
+                                    "value": {
+                                      "intValue": "1"
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.tables",
+                                    "value": {
+                                      "arrayValue": {
+                                        "values": [
+                                          {
+                                            "stringValue": "persons"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "key": "db.query.commands",
+                                    "value": {
+                                      "arrayValue": {
+                                        "values": [
+                                          {
+                                            "stringValue": "SELECT"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "key": "connections",
+                      "value": {
+                        "arrayValue": {
+                          "values": [
+                            {
+                              "kvlistValue": {
+                                "values": [
+                                  {
+                                    "key": "db.namespace",
+                                    "value": {
+                                      "stringValue": "orders"
+                                    }
+                                  },
+                                  {
+                                    "key": "user.name",
+                                    "value": {
+                                      "stringValue": "app"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.application_name",
+                                    "value": {
+                                      "stringValue": "orders-app"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.state",
+                                    "value": {
+                                      "stringValue": "active"
+                                    }
+                                  },
+                                  {
+                                    "key": "postgresql.connections",
+                                    "value": {
+                                      "intValue": "1"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

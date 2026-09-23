@@ -1,0 +1,42 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# Local wire-path validation. The destination is a capture server, not DBM.
+receivers:
+  postgresql/dbm:
+    endpoint: ${env:DBM_POSTGRES_ENDPOINT}
+    username: ${env:DBM_POSTGRES_USERNAME}
+    password: ${env:DBM_POSTGRES_PASSWORD}
+    collection_interval: 2s
+    tls:
+      insecure: true
+    query_monitoring:
+      enabled: true
+      max_rows: 10000
+      max_payload_bytes: 1048576
+processors:
+  resource/database:
+    attributes:
+      - key: service.instance.id
+        value: ${env:DBM_DATABASE_INSTANCE}
+        action: upsert
+      - key: service.name
+        value: dbm-local-postgres
+        action: upsert
+  batch:
+    timeout: 1s
+exporters:
+  otlp_http/capture:
+    endpoint: http://127.0.0.1:4319
+    encoding: json
+    compression: none
+    retry_on_failure:
+      enabled: false
+service:
+  telemetry:
+    metrics:
+      level: none
+  pipelines:
+    logs/dbm:
+      receivers: [postgresql/dbm]
+      processors: [resource/database, batch]
+      exporters: [otlp_http/capture]

@@ -1,0 +1,176 @@
+[
+  {
+    "track": "databasequery",
+    "key": "16a5fd8e061933846d5fe82bd4a6d302947784f5296f598655d9a7a682eb0972",
+    "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+    "payload": {
+      "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+      "db": {
+        "instance": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+        "metadata": {
+          "tables": [
+            "public.m3_probe"
+          ],
+          "commands": [
+            "SELECT"
+          ],
+          "comments": []
+        },
+        "query_signature": "160a48311ee1fc38",
+        "statement": "SELECT pg_sleep ( ? ) id FROM public.m3_probe WHERE id = ?"
+      },
+      "dbm_type": "fqt",
+      "ddsource": "postgres",
+      "ddtags": "database_instance:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432,db:ddot_m3_e36b1d406cbc4b25986092da96eae98d,dbms:postgres,rolname:dbm_app,service:unknown_service:postgresql",
+      "host": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756",
+      "postgres": {
+        "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+        "rolname": "dbm_app"
+      },
+      "service": "unknown_service:postgresql",
+      "timestamp": 1790099866837.6292
+    }
+  },
+  {
+    "track": "databasequery",
+    "key": "80ebea205791e5f2af3d2948c4f2d35ade1235aa01ca8132c3cd97e28f45f49c",
+    "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+    "payload": {
+      "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+      "db": {
+        "instance": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+        "metadata": {
+          "tables": [
+            "public.m3_probe"
+          ],
+          "commands": [
+            "SELECT"
+          ],
+          "comments": []
+        },
+        "query_signature": "631c27b87365daff",
+        "statement": "SELECT id FROM public.m3_probe ORDER BY id"
+      },
+      "dbm_type": "fqt",
+      "ddsource": "postgres",
+      "ddtags": "database_instance:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432,db:ddot_m3_e36b1d406cbc4b25986092da96eae98d,dbms:postgres,rolname:dbm_app,service:unknown_service:postgresql",
+      "host": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756",
+      "postgres": {
+        "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+        "rolname": "dbm_app"
+      },
+      "service": "unknown_service:postgresql",
+      "timestamp": 1790099866829.6519
+    }
+  },
+  {
+    "track": "dbmactivity",
+    "key": "4c388ea5201cda5c04fa03198aa5a1bed985fddb78c832b96269330d34ca3c02",
+    "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+    "payload": {
+      "cloud_metadata": {},
+      "collection_interval": 0.02658187,
+      "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+      "dbm_type": "activity",
+      "ddsource": "postgres",
+      "ddtags": [
+        "database_instance:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+        "dbms:postgres",
+        "service:unknown_service:postgresql"
+      ],
+      "host": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756",
+      "postgres_activity": [
+        {
+          "application_name": "ddot-m3-e36b1d40",
+          "blocking_pids": [],
+          "client_addr": "127.0.0.1/32",
+          "client_port": 49040,
+          "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+          "dd_commands": [
+            "SELECT"
+          ],
+          "dd_comments": [
+            "/*traceparent='00-0123456789abcdef0123456789abcdef-0123456789abcdef-01'*/"
+          ],
+          "dd_tables": [
+            "public.m3_probe"
+          ],
+          "now": "2026-09-22T17:57:46.837629269Z",
+          "pid": 15063,
+          "query_id": 3305100449950889880,
+          "query_signature": "160a48311ee1fc38",
+          "query_start": "2026-09-22T17:57:46.813563Z",
+          "state": "active",
+          "statement": "SELECT pg_sleep ( ? ) id FROM public.m3_probe WHERE id = ?",
+          "total_exec_time": 21.152,
+          "usename": "dbm_app",
+          "wait_event": "PgSleep",
+          "wait_event_type": "Timeout"
+        }
+      ],
+      "postgres_connections": [
+        {
+          "application_name": "ddot-m3-e36b1d40",
+          "connections": 1,
+          "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+          "state": "active",
+          "usename": "dbm_app"
+        },
+        {
+          "application_name": "ddot-m3-e36b1d40",
+          "connections": 2,
+          "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+          "state": "idle",
+          "usename": "dbm_app"
+        }
+      ],
+      "service": "unknown_service:postgresql",
+      "timestamp": 1790099866837.6292
+    }
+  },
+  {
+    "track": "dbmmetrics",
+    "key": "cb5cbfd1af2c41ae5276e79aabf96fe2aaf1ce85294f5bfc29b63221056ff3e1",
+    "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+    "payload": {
+      "cloud_metadata": {},
+      "database_instance": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+      "host": "dinesh-gurumurthy-m8gd-8xlarge-20260702-1756",
+      "min_collection_interval": 0.026194962,
+      "postgres_rows": [
+        {
+          "query_signature": "631c27b87365daff",
+          "query": "SELECT id FROM public.m3_probe ORDER BY id",
+          "datname": "ddot_m3_e36b1d406cbc4b25986092da96eae98d",
+          "rolname": "dbm_app",
+          "calls": 3,
+          "rows": 15,
+          "total_exec_time": 0.107563,
+          "total_time": 0.107563,
+          "total_plan_time": 0,
+          "shared_blks_dirtied": 0,
+          "shared_blks_hit": 6,
+          "shared_blks_read": 0,
+          "shared_blks_written": 0,
+          "temp_blks_read": 0,
+          "temp_blks_written": 0,
+          "dd_tables": [
+            "public.m3_probe"
+          ],
+          "dd_commands": [
+            "SELECT"
+          ],
+          "dd_comments": []
+        }
+      ],
+      "postgres_version": "16.15",
+      "service": "unknown_service:postgresql",
+      "tags": [
+        "database_instance:dinesh-gurumurthy-m8gd-8xlarge-20260702-1756:25432",
+        "dbms:postgres",
+        "service:unknown_service:postgresql"
+      ],
+      "timestamp": 1790099866829.6519
+    }
+  }
+]
