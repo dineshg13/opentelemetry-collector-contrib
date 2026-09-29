@@ -195,7 +195,8 @@ not take those statistics with it when a batcher splits by size.
 itself is reported on `db.server.query_plan`, joined back to its query via `postgresql.queryid`,
 `db.namespace` and `postgresql.rolname` — `queryid` alone can repeat across databases and across
 roles in the same database. A query with no plan available yet (not yet explained, or the `EXPLAIN`
-failed) produces no `db.server.query_plan` record. Leaving `db.server.query_plan` disabled preserves
+failed) produces no `db.server.query_plan` record. The record also carries the query's obfuscated
+`db.query.text`, so a consumer can relate the plan to its statement without joining records. Leaving `db.server.query_plan` disabled preserves
 the previous behavior exactly.
 
 Known limitations of the join key:

@@ -138,7 +138,7 @@ func TestLogsBuilder(t *testing.T) {
 			allEventsCount := 0
 
 			allEventsCount++
-			lb.RecordDbServerQueryPlanEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "postgresql.queryid-val", "db.namespace-val", "postgresql.rolname-val", "postgresql.query_plan-val")
+			lb.RecordDbServerQueryPlanEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "postgresql.queryid-val", "db.namespace-val", "postgresql.rolname-val", "postgresql.query_plan-val", "db.query.text-val")
 
 			allEventsCount++
 			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "db.query.text-val", "user.name-val", "postgresql.state-val", 14, "postgresql.backend.connection.start-val", "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.query_start-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", "postgresql.query_id-val", 26.100000, "postgresql.blocking.pids-val", "postgresql.blocking.start_time-val", 33, "postgresql.blocking.lock.mode-val", "postgresql.blocking.lock.type-val", "postgresql.blocking.lock.relation-val", "postgresql.blocking.transaction.start_time-val")
@@ -201,6 +201,9 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.query_plan")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.query_plan-val", attrVal.Str())
+					attrVal, ok = lr.Attributes().Get("db.query.text")
+					assert.True(t, ok)
+					assert.Equal(t, "db.query.text-val", attrVal.Str())
 				case "db.server.query_sample":
 					assert.False(t, validatedEvents["db.server.query_sample"], "Found a duplicate in the events slice: db.server.query_sample")
 					validatedEvents["db.server.query_sample"] = true
