@@ -1498,11 +1498,23 @@ var querySampleTemplate string
 var querySampleTmpl = template.Must(template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 
 func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, float64, error) {
+	return c.getQuerySampleRows(ctx, limit, newestQueryTimestamp, excludedDatabases, logger, false)
+}
+
+// getMonitoringActivity returns non-idle client sessions for an activity
+// snapshot, with query_start in UTC.
+func (c *postgreSQLClient) getMonitoringActivity(ctx context.Context, limit int64, excludedDatabases []string, logger *zap.Logger) ([]map[string]any, error) {
+	rows, _, err := c.getQuerySampleRows(ctx, limit, 0, excludedDatabases, logger, true)
+	return rows, err
+}
+
+func (c *postgreSQLClient) getQuerySampleRows(ctx context.Context, limit int64, newestQueryTimestamp float64, excludedDatabases []string, logger *zap.Logger, monitoring bool) ([]map[string]any, float64, error) {
 	buf := bytes.Buffer{}
 
 	if tmplErr := querySampleTmpl.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
+		"monitoring":           monitoring,
 		"excludedDatabases":    quoteDatabaseList(excludedDatabases),
 	}); tmplErr != nil {
 		logger.Error("failed to execute template", zap.Error(tmplErr))

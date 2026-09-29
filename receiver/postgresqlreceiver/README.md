@@ -276,6 +276,32 @@ processors:
     max_staleness: 1h
 ```
 
+### Activity Snapshots
+
+`query_monitoring.enabled` adds the experimental `db.server.activity` log event. It
+is disabled by default, requires PostgreSQL 14 or newer and a logs pipeline
+containing this receiver. Each event is one bounded snapshot taken at collection
+time, containing:
+
+- `sessions`: every non-idle client session, with the same fields as
+  `db.server.query_sample` and its W3C trace context when the session's
+  `application_name` or SQL comment carries a `traceparent`.
+- `connections`: connection counts by database, user, application and state,
+  taken from all visible client connections.
+
+The record carries `postgresql.activity.*` attributes identifying the snapshot and
+its interval. A snapshot that would exceed `max_rows` or `max_payload_bytes` is not
+emitted and the scrape reports an error, so an emitted snapshot is always complete.
+
+```yaml
+receivers:
+  postgresql:
+    query_monitoring:
+      enabled: true
+      max_rows: 10000
+      max_payload_bytes: 1048576
+```
+
 ### Vector Metrics
 
 The receiver can report [pgvector](https://github.com/pgvector/pgvector) similarity-search and insert activity
