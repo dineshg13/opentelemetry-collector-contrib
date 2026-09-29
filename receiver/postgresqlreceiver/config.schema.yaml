@@ -22,6 +22,12 @@ $defs:
       max_rows_per_query:
         type: integer
         x-customType: int64
+  statement_metrics:
+    type: object
+    properties:
+      max_statements:
+        type: integer
+        x-customType: int64
   top_query_collection:
     type: object
     properties:
@@ -63,6 +69,8 @@ properties:
     $ref: query_sample_collection
   tls:
     $ref: go.opentelemetry.io/collector/config/configtls.client_config
+  statement_metrics:
+    $ref: statement_metrics
   top_query_collection:
     $ref: top_query_collection
   username:
