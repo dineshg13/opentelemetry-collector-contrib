@@ -52,6 +52,13 @@ type QuerySampleCollection struct {
 	_ struct{}
 }
 
+// QueryMonitoringCollection configures db.server.activity snapshots.
+type QueryMonitoringCollection struct {
+	Enabled         bool  `mapstructure:"enabled"`
+	MaxRows         int64 `mapstructure:"max_rows"`
+	MaxPayloadBytes int   `mapstructure:"max_payload_bytes"`
+}
+
 // StatementMetricsConfig bounds the postgresql.statement.* metrics.
 type StatementMetricsConfig struct {
 	// MaxStatements is the maximum number of pg_stat_statements entries, by
@@ -73,6 +80,7 @@ type Config struct {
 	QuerySampleCollection QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection    TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
 	StatementMetrics      StatementMetricsConfig         `mapstructure:"statement_metrics,omitempty"`
+	QueryMonitoring       QueryMonitoringCollection      `mapstructure:"query_monitoring,omitempty"`
 	// DBAuth optionally sources the connection credential from a db_auth provider
 	// extension (e.g. AWS IAM) instead of a static password. When set, the provider
 	// supplies the password at connection-open time. Mutually exclusive with the
@@ -89,6 +97,14 @@ type ConnectionPool struct {
 
 func (cfg *Config) Validate() error {
 	var err error
+	if cfg.QueryMonitoring.Enabled {
+		if cfg.QueryMonitoring.MaxRows <= 0 || cfg.QueryMonitoring.MaxRows > 100000 {
+			err = multierr.Append(err, errors.New("query_monitoring.max_rows must be between 1 and 100000"))
+		}
+		if cfg.QueryMonitoring.MaxPayloadBytes < 1024 || cfg.QueryMonitoring.MaxPayloadBytes > 4*1024*1024 {
+			err = multierr.Append(err, errors.New("query_monitoring.max_payload_bytes must be between 1024 and 4194304"))
+		}
+	}
 	if cfg.StatementMetrics.MaxStatements <= 0 || cfg.StatementMetrics.MaxStatements > 100000 {
 		err = multierr.Append(err, errors.New("statement_metrics.max_statements must be between 1 and 100000"))
 	}

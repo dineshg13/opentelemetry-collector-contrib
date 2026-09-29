@@ -69,6 +69,8 @@ type postgreSQLScraper struct {
 	serverEndpoint         serverEndpoint
 	lastExecutionTimestamp time.Time
 	dbVersion              string
+	// buildVersion is the scope version of hand-built activity records.
+	buildVersion string
 }
 
 type errsMux struct {
@@ -130,6 +132,7 @@ func newPostgreSQLScraper(
 	mbConfig := metricsBuilderConfigForFeatureGate(config.MetricsBuilderConfig, useOTelSemconv)
 	return &postgreSQLScraper{
 		logger:             settings.Logger,
+		buildVersion:       settings.BuildInfo.Version,
 		config:             config,
 		clientFactory:      clientFactory,
 		mb:                 metadata.NewMetricsBuilder(mbConfig, settings),
