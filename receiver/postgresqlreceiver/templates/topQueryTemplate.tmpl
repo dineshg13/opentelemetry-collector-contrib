@@ -9,6 +9,12 @@ SELECT
   temp_blks_written,
   query,
   queryid::TEXT,
+  pg_stat_statements.dbid::TEXT AS dbid,
+  pg_stat_statements.userid::TEXT AS userid,
+  -- PG13 has no toplevel column; JSON lookup preserves compatibility.
+  COALESCE(to_jsonb(pg_stat_statements)->>'toplevel', 'true') AS toplevel,
+  -- stats_since is available with the PG17 extension API; older APIs return empty.
+  COALESCE(to_jsonb(pg_stat_statements)->>'stats_since', '') AS stats_since,
   COALESCE(rolname, '') AS rolname,
   rows::TEXT,
   total_exec_time,

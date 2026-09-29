@@ -1,0 +1,6 @@
+change_type: bug_fix
+component: receiver/postgresql
+note: Rebaseline query monitoring counters when PostgreSQL statistics reset epochs change.
+issues: [17]
+subtext: PostgreSQL 14+ query monitoring statistics require pg_stat_statements extension 1.9 or newer.
+change_logs: [user]
