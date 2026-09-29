@@ -611,6 +611,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 				database,
 				item.Value[dbAttributePrefix+"rolname"].(string),
 				plan,
+				query,
 			)
 		}
 		count++
