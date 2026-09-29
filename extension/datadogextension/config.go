@@ -22,6 +22,10 @@ var _ component.Config = (*Config)(nil)
 
 // Config contains the information necessary for enabling the Datadog Extension.
 type Config struct {
+	// ProductProxy enables a separate listener for explicitly enabled product HTTP protocols.
+	ProductProxy *ProductProxyConfig `mapstructure:"product_proxy"`
+	// Products contains independent opt-in switches; it never creates telemetry pipelines.
+	Products     ProductsConfig          `mapstructure:"products"`
 	ClientConfig confighttp.ClientConfig `mapstructure:",squash"`
 	// Define the site and API key (and whether to fail on invalid API key) in API.
 	API datadogconfig.APIConfig `mapstructure:"api"`
@@ -70,5 +74,5 @@ func (c *Config) Validate() error {
 	if !slices.Contains(validInstallationMethods, c.InstallationMethod) {
 		return fmt.Errorf("installation_method must be one of: %s", strings.Join(validInstallationMethods[1:], ", "))
 	}
-	return nil
+	return c.validateProducts()
 }
