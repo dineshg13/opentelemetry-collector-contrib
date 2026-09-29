@@ -58,7 +58,7 @@ type postgreSQLScraper struct {
 	// the map answers membership checks. Read these, not config.ExcludeDatabases.
 	excludedDatabases []string
 	excludes          map[string]struct{}
-	cache             *lru.Cache[string, float64]
+	cache             *lru.Cache[topQueryIdentity, topQueryCounters]
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr     bool
 	useOTelSemconv         bool
@@ -96,7 +96,7 @@ func newPostgreSQLScraper(
 	settings receiver.Settings,
 	config *Config,
 	clientFactory postgreSQLClientFactory,
-	cache *lru.Cache[string, float64],
+	cache *lru.Cache[topQueryIdentity, topQueryCounters],
 	queryPlanCache *expirable.LRU[string, string],
 ) (*postgreSQLScraper, error) {
 	excludedDatabases := config.ExcludeDatabases
@@ -309,7 +309,7 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 	}
 
 	rb := p.setupLogsResourceBuilder(p.lb.NewResourceBuilder())
-	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
+	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), errs.combine()
 }
 
 func (p *postgreSQLScraper) isCollectionDue(collectionTime time.Time, interval time.Duration) bool {
@@ -407,6 +407,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	defaultDbClient, err := clientFactory.getClient(ctx, defaultPostgreSQLDatabase)
 	if err != nil {
 		logger.Error("failed to create db client for default postgresql database")
+		p.cache.Purge()
 		mux.addPartial(err)
 		return
 	}
@@ -416,90 +417,23 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	rows, err := defaultDbClient.getTopQuery(ctx, limit, p.excludedDatabases, logger)
 	if err != nil {
 		logger.Error("failed to get top query", zap.Error(err))
+		// A failed collection breaks the observation window. Rebaseline on recovery.
+		p.cache.Purge()
 		mux.addPartial(err)
 		return
 	}
 
-	type updatedOnlyInfo struct {
-		finalConverter func(float64) any
+	deltas, _, deltaErr := p.topQueryDeltas(rows)
+	if deltaErr != nil {
+		mux.addPartial(deltaErr)
 	}
-
-	convertToInt := func(f float64) any {
-		return int64(f)
-	}
-
-	updatedOnly := map[string]updatedOnlyInfo{
-		totalExecTimeColumnName:     {},
-		totalPlanTimeColumnName:     {},
-		rowsColumnName:              {finalConverter: convertToInt},
-		callsColumnName:             {finalConverter: convertToInt},
-		sharedBlksDirtiedColumnName: {finalConverter: convertToInt},
-		sharedBlksHitColumnName:     {finalConverter: convertToInt},
-		sharedBlksReadColumnName:    {finalConverter: convertToInt},
-		sharedBlksWrittenColumnName: {finalConverter: convertToInt},
-		tempBlksReadColumnName:      {finalConverter: convertToInt},
-		tempBlksWrittenColumnName:   {finalConverter: convertToInt},
-	}
-
-	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0)
-
-	for i, row := range rows {
-		// The template filters excluded databases server side; this guards the EXPLAIN
-		// connection below in case a row slips through, before the row touches the cache.
-		if database, _ := row[string(semconv.DBNamespaceKey)].(string); p.isExcluded(database) {
-			continue
-		}
-
-		queryID := row[dbAttributePrefix+queryidColumnName]
-
-		if queryID == nil {
-			// this should not happen, but in case
-			logger.Error("queryid is nil", zap.Any("atts", row))
-			mux.addPartial(errors.New("queryid is nil"))
-			continue
-		}
-
-		// A dropped database can leave stats in pg_stat_statements with a NULL
-		// db.namespace; the template's WHERE/INNER JOIN filters these, but skip
-		// defensively so a regression cannot re-trigger the type-assertion panic.
-		if row[string(semconv.DBNamespaceKey)] == nil {
-			logger.Debug("skipping top query row with nil db.namespace (database may have been dropped)")
-			continue
-		}
-
-		for columnName, info := range updatedOnly {
-			var valInAtts float64
-			_val := row[dbAttributePrefix+columnName]
-			if i, ok := _val.(int64); ok {
-				valInAtts = float64(i)
-			} else {
-				valInAtts = _val.(float64)
-			}
-			valInCache, exist := p.cache.Get(queryID.(string) + columnName)
-			valDelta := valInAtts
-			if exist {
-				valDelta = valInAtts - valInCache
-			}
-			finalValue := float64(0)
-			if valDelta > 0 {
-				p.cache.Add(queryID.(string)+columnName, valInAtts)
-				finalValue = valDelta
-			}
-			if info.finalConverter != nil {
-				row[dbAttributePrefix+columnName] = info.finalConverter(finalValue)
-			} else {
-				row[dbAttributePrefix+columnName] = finalValue
-			}
-		}
-		if row[dbAttributePrefix+totalExecTimeColumnName] == 0.0 {
-			continue
-		}
-		item := priorityqueue.QueueItem[map[string]any, float64]{
+	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0, len(deltas))
+	for i, row := range deltas {
+		pq.Push(&priorityqueue.QueueItem[map[string]any, float64]{
 			Value:    row,
 			Priority: row[dbAttributePrefix+totalExecTimeColumnName].(float64),
 			Index:    i,
-		}
-		pq.Push(&item)
+		})
 	}
 
 	heap.Init(&pq)
@@ -512,7 +446,8 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		database := item.Value[string(semconv.DBNamespaceKey)].(string)
 		// Use raw query (with $1, $2 placeholders) for EXPLAIN, not the obfuscated one (with ?)
 		rawQuery, _ := item.Value[dbAttributePrefix+"raw_query"].(string)
-		plan, ok := p.queryPlanCache.Get(queryID + "-plan")
+		planKey := topQueryIdentityFromRow(item.Value).planCacheKey()
+		plan, ok := p.queryPlanCache.Get(planKey)
 		if !ok && explained < maxExplainEachInterval {
 			dbClient, err := clientFactory.getClient(ctx, database)
 			if err == nil {
@@ -522,7 +457,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 				}
 				// to avoid flood the error message. there are some internal queries meant to not be
 				// explained. we wait for the cache to expire and report the error again.
-				p.queryPlanCache.Add(queryID+"-plan", plan)
+				p.queryPlanCache.Add(planKey, plan)
 				err = dbClient.Close()
 				if err != nil {
 					logger.Error("failed to close", zap.Error(err))

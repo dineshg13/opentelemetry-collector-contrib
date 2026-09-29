@@ -24,12 +24,12 @@ import (
 // newCache creates a new cache with the given size.
 // If the size is less or equal to 0, it will be set to 1.
 // It will never return an error.
-func newCache(size int) *lru.Cache[string, float64] {
+func newCache(size int) *lru.Cache[topQueryIdentity, topQueryCounters] {
 	if size <= 0 {
 		size = 1
 	}
 	// lru will only return error when the size is less than 0
-	cache, _ := lru.New[string, float64](size)
+	cache, _ := lru.New[topQueryIdentity, topQueryCounters](size)
 	return cache
 }
 
@@ -66,6 +66,17 @@ func createDefaultConfig() component.Config {
 		},
 		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		LogsBuilderConfig:    metadata.DefaultLogsBuilderConfig(),
+		QueryMonitoring: QueryMonitoringCollection{
+			MaxRows:         10000,
+			MaxPayloadBytes: 1024 * 1024,
+			QueryPlans: QueryMonitoringPlans{
+				MaxPerCollection: 2,
+				Timeout:          500 * time.Millisecond,
+				MaxPlanBytes:     64 * 1024,
+				CacheSize:        1000,
+				CacheTTL:         time.Hour,
+			},
+		},
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
 		},
@@ -160,6 +171,26 @@ func createLogsReceiver(
 		opts = append(opts, opt)
 	}
 
+	if cfg.QueryMonitoring.Enabled {
+		ns, err := newPostgreSQLScraper(params, cfg, clientFactory,
+			newCache(int(cfg.QueryMonitoring.MaxRows*2)), newTTLCache[string](cfg.QueryMonitoring.QueryPlans.CacheSize, cfg.QueryMonitoring.QueryPlans.CacheTTL))
+		if err != nil {
+			return nil, err
+		}
+		state := &queryMonitoringState{}
+		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
+			return ns.scrapeQueryMonitoring(ctx, state)
+		}, scraper.WithStart(ns.start), scraper.WithShutdown(ns.shutdown))
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, scraperhelper.AddFactoryWithConfig(
+			scraper.NewFactory(metadata.Type, nil,
+				scraper.WithLogs(func(context.Context, scraper.Settings, component.Config) (scraper.Logs, error) {
+					return s, nil
+				}, component.StabilityLevelDevelopment)), nil))
+	}
+
 	return scraperhelper.NewLogsController(
 		&cfg.ControllerConfig, params, logsConsumer, opts...,
 	)
@@ -168,6 +199,6 @@ func createLogsReceiver(
 func newTopQueryScraper(params receiver.Settings, cfg *Config, clientFactory postgreSQLClientFactory) (*postgreSQLScraper, error) {
 	// Deltas are calculated for every fetched statement before selecting the top queries.
 	return newPostgreSQLScraper(params, cfg, clientFactory,
-		newCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*10*2)),
+		newCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*2)),
 		newTTLCache[string](cfg.TopQueryCollection.QueryPlanCacheSize, cfg.TopQueryCollection.QueryPlanCacheTTL))
 }
