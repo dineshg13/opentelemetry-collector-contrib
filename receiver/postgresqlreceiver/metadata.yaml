@@ -307,6 +307,7 @@ events:
       - db.namespace
       - postgresql.rolname
       - postgresql.query_plan
+      - db.query.text
 
   db.server.query_sample:
     enabled: false
