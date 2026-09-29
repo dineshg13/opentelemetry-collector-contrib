@@ -1,0 +1,33 @@
+SELECT
+  datname,
+  COALESCE(rolname, '') AS rolname,
+  queryid::TEXT AS queryid,
+  -- PG13 has no toplevel column; JSON lookup preserves compatibility.
+  COALESCE(to_jsonb(pg_stat_statements)->>'toplevel', 'true') AS toplevel,
+  -- stats_since (microseconds since the epoch) exists with extension API 1.11.
+  COALESCE((EXTRACT(EPOCH FROM (to_jsonb(pg_stat_statements)->>'stats_since')::timestamptz) * 1000000)::bigint::text, '') AS stats_since,
+  query,
+  calls::TEXT AS calls,
+  rows::TEXT AS rows,
+  total_exec_time::TEXT AS total_exec_time,
+  total_plan_time::TEXT AS total_plan_time,
+  shared_blks_dirtied::TEXT AS shared_blks_dirtied,
+  shared_blks_hit::TEXT AS shared_blks_hit,
+  shared_blks_read::TEXT AS shared_blks_read,
+  shared_blks_written::TEXT AS shared_blks_written,
+  temp_blks_read::TEXT AS temp_blks_read,
+  temp_blks_written::TEXT AS temp_blks_written
+FROM
+  pg_stat_statements AS pg_stat_statements
+  LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid
+  INNER JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid
+WHERE
+  datname IS NOT NULL
+  AND queryid IS NOT NULL
+  AND query != '<insufficient privilege>'
+  AND query NOT LIKE '/* otel-collector-ignore */%'
+  {{- if .excludedDatabases }}
+  AND datname NOT IN ({{ .excludedDatabases }})
+  {{- end }}
+ORDER BY calls DESC
+LIMIT {{ .limit }};

@@ -162,6 +162,40 @@ var MapAttributeOperation = map[string]AttributeOperation{
 	"hot_upd": AttributeOperationHotUpd,
 }
 
+// AttributePostgresqlBlockOperation specifies the value postgresql.block.operation attribute.
+type AttributePostgresqlBlockOperation int
+
+const (
+	_ AttributePostgresqlBlockOperation = iota
+	AttributePostgresqlBlockOperationHit
+	AttributePostgresqlBlockOperationRead
+	AttributePostgresqlBlockOperationDirtied
+	AttributePostgresqlBlockOperationWritten
+)
+
+// String returns the string representation of the AttributePostgresqlBlockOperation.
+func (av AttributePostgresqlBlockOperation) String() string {
+	switch av {
+	case AttributePostgresqlBlockOperationHit:
+		return "hit"
+	case AttributePostgresqlBlockOperationRead:
+		return "read"
+	case AttributePostgresqlBlockOperationDirtied:
+		return "dirtied"
+	case AttributePostgresqlBlockOperationWritten:
+		return "written"
+	}
+	return ""
+}
+
+// MapAttributePostgresqlBlockOperation is a helper map of string to AttributePostgresqlBlockOperation attribute value.
+var MapAttributePostgresqlBlockOperation = map[string]AttributePostgresqlBlockOperation{
+	"hit":     AttributePostgresqlBlockOperationHit,
+	"read":    AttributePostgresqlBlockOperationRead,
+	"dirtied": AttributePostgresqlBlockOperationDirtied,
+	"written": AttributePostgresqlBlockOperationWritten,
+}
+
 // AttributePostgresqlConflictType specifies the value postgresql.conflict.type attribute.
 type AttributePostgresqlConflictType int
 
@@ -445,6 +479,30 @@ var MetricsInfo = metricsInfo{
 		Name:       "postgresql.sequential_scans",
 		Attributes: []string{"db.namespace", "db.collection.name"},
 	},
+	PostgresqlStatementCalls: metricInfo{
+		Name:       "postgresql.statement.calls",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text"},
+	},
+	PostgresqlStatementExecutionTime: metricInfo{
+		Name:       "postgresql.statement.execution.time",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text"},
+	},
+	PostgresqlStatementPlanningTime: metricInfo{
+		Name:       "postgresql.statement.planning.time",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text"},
+	},
+	PostgresqlStatementRows: metricInfo{
+		Name:       "postgresql.statement.rows",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text"},
+	},
+	PostgresqlStatementSharedBlocks: metricInfo{
+		Name:       "postgresql.statement.shared_blocks",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text", "postgresql.block.operation"},
+	},
+	PostgresqlStatementTempBlocks: metricInfo{
+		Name:       "postgresql.statement.temp_blocks",
+		Attributes: []string{"db.namespace", "postgresql.rolname", "postgresql.queryid", "postgresql.toplevel", "db.query.text", "postgresql.block.operation"},
+	},
 	PostgresqlTableCount: metricInfo{
 		Name:       "postgresql.table.count",
 		Attributes: []string{"db.namespace"},
@@ -544,6 +602,12 @@ type metricsInfo struct {
 	PostgresqlRollbacks                metricInfo
 	PostgresqlRows                     metricInfo
 	PostgresqlSequentialScans          metricInfo
+	PostgresqlStatementCalls           metricInfo
+	PostgresqlStatementExecutionTime   metricInfo
+	PostgresqlStatementPlanningTime    metricInfo
+	PostgresqlStatementRows            metricInfo
+	PostgresqlStatementSharedBlocks    metricInfo
+	PostgresqlStatementTempBlocks      metricInfo
 	PostgresqlTableCount               metricInfo
 	PostgresqlTableSize                metricInfo
 	PostgresqlTableVacuumCount         metricInfo
@@ -2728,6 +2792,630 @@ func newMetricPostgresqlSequentialScans(cfg PostgresqlSequentialScansMetricConfi
 	return m
 }
 
+type metricPostgresqlStatementCalls struct {
+	data          pmetric.Metric                       // data buffer for generated metric.
+	config        PostgresqlStatementCallsMetricConfig // metric config provided by user.
+	capacity      int                                  // max observed number of data points added to the metric.
+	aggDataPoints []int64                              // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.calls metric with initial data.
+func (m *metricPostgresqlStatementCalls) init() {
+	m.data.SetName("postgresql.statement.calls")
+	m.data.SetDescription("The number of times the statement was executed.")
+	m.data.SetUnit("{call}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementCallsMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementCallsMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementCallsMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementCallsMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementCallsMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetIntValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementCalls) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementCalls) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementCalls(cfg PostgresqlStatementCallsMetricConfig) metricPostgresqlStatementCalls {
+	m := metricPostgresqlStatementCalls{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlStatementExecutionTime struct {
+	data          pmetric.Metric                               // data buffer for generated metric.
+	config        PostgresqlStatementExecutionTimeMetricConfig // metric config provided by user.
+	capacity      int                                          // max observed number of data points added to the metric.
+	aggDataPoints []float64                                    // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.execution.time metric with initial data.
+func (m *metricPostgresqlStatementExecutionTime) init() {
+	m.data.SetName("postgresql.statement.execution.time")
+	m.data.SetDescription("The total time spent executing the statement.")
+	m.data.SetUnit("s")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementExecutionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementExecutionTimeMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementExecutionTimeMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetDoubleValue(dpi.DoubleValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.DoubleValue() > val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.DoubleValue() < val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetDoubleValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementExecutionTime) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementExecutionTime) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetDoubleValue(m.data.Sum().DataPoints().At(i).DoubleValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementExecutionTime(cfg PostgresqlStatementExecutionTimeMetricConfig) metricPostgresqlStatementExecutionTime {
+	m := metricPostgresqlStatementExecutionTime{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlStatementPlanningTime struct {
+	data          pmetric.Metric                              // data buffer for generated metric.
+	config        PostgresqlStatementPlanningTimeMetricConfig // metric config provided by user.
+	capacity      int                                         // max observed number of data points added to the metric.
+	aggDataPoints []float64                                   // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.planning.time metric with initial data.
+func (m *metricPostgresqlStatementPlanningTime) init() {
+	m.data.SetName("postgresql.statement.planning.time")
+	m.data.SetDescription("The total time spent planning the statement. Zero unless pg_stat_statements.track_planning is on.")
+	m.data.SetUnit("s")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementPlanningTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementPlanningTimeMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementPlanningTimeMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetDoubleValue(dpi.DoubleValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.DoubleValue() > val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.DoubleValue() < val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetDoubleValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementPlanningTime) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementPlanningTime) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetDoubleValue(m.data.Sum().DataPoints().At(i).DoubleValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementPlanningTime(cfg PostgresqlStatementPlanningTimeMetricConfig) metricPostgresqlStatementPlanningTime {
+	m := metricPostgresqlStatementPlanningTime{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlStatementRows struct {
+	data          pmetric.Metric                      // data buffer for generated metric.
+	config        PostgresqlStatementRowsMetricConfig // metric config provided by user.
+	capacity      int                                 // max observed number of data points added to the metric.
+	aggDataPoints []int64                             // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.rows metric with initial data.
+func (m *metricPostgresqlStatementRows) init() {
+	m.data.SetName("postgresql.statement.rows")
+	m.data.SetDescription("The total number of rows retrieved or affected by the statement.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementRowsMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementRowsMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementRowsMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementRowsMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementRowsMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetIntValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementRows) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementRows) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementRows(cfg PostgresqlStatementRowsMetricConfig) metricPostgresqlStatementRows {
+	m := metricPostgresqlStatementRows{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlStatementSharedBlocks struct {
+	data          pmetric.Metric                              // data buffer for generated metric.
+	config        PostgresqlStatementSharedBlocksMetricConfig // metric config provided by user.
+	capacity      int                                         // max observed number of data points added to the metric.
+	aggDataPoints []int64                                     // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.shared_blocks metric with initial data.
+func (m *metricPostgresqlStatementSharedBlocks) init() {
+	m.data.SetName("postgresql.statement.shared_blocks")
+	m.data.SetDescription("The number of shared blocks accessed by the statement, by operation.")
+	m.data.SetUnit("{block}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementSharedBlocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string, postgresqlBlockOperationAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlBlockOperation) {
+		dp.Attributes().PutStr("postgresql.block.operation", postgresqlBlockOperationAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetIntValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementSharedBlocks) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementSharedBlocks) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementSharedBlocks(cfg PostgresqlStatementSharedBlocksMetricConfig) metricPostgresqlStatementSharedBlocks {
+	m := metricPostgresqlStatementSharedBlocks{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlStatementTempBlocks struct {
+	data          pmetric.Metric                            // data buffer for generated metric.
+	config        PostgresqlStatementTempBlocksMetricConfig // metric config provided by user.
+	capacity      int                                       // max observed number of data points added to the metric.
+	aggDataPoints []int64                                   // slice containing number of aggregated datapoints at each index
+}
+
+// init fills postgresql.statement.temp_blocks metric with initial data.
+func (m *metricPostgresqlStatementTempBlocks) init() {
+	m.data.SetName("postgresql.statement.temp_blocks")
+	m.data.SetDescription("The number of temporary blocks read or written by the statement.")
+	m.data.SetUnit("{block}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+	m.aggDataPoints = m.aggDataPoints[:0]
+}
+
+func (m *metricPostgresqlStatementTempBlocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string, postgresqlBlockOperationAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+
+	dp := pmetric.NewNumberDataPoint()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyDbNamespace) {
+		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlRolname) {
+		dp.Attributes().PutStr("postgresql.rolname", postgresqlRolnameAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlQueryid) {
+		dp.Attributes().PutStr("postgresql.queryid", postgresqlQueryidAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlToplevel) {
+		dp.Attributes().PutBool("postgresql.toplevel", postgresqlToplevelAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyDbQueryText) {
+		dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	}
+	if slices.Contains(m.config.EnabledAttributes, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlBlockOperation) {
+		dp.Attributes().PutStr("postgresql.block.operation", postgresqlBlockOperationAttributeValue)
+	}
+
+	var s string
+	dps := m.data.Sum().DataPoints()
+	for i := 0; i < dps.Len(); i++ {
+		dpi := dps.At(i)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
+			}
+		}
+	}
+
+	dp.SetIntValue(val)
+	m.aggDataPoints = append(m.aggDataPoints, 1)
+	dp.MoveTo(dps.AppendEmpty())
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlStatementTempBlocks) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlStatementTempBlocks) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		if m.config.AggregationStrategy == AggregationStrategyAvg {
+			for i, aggCount := range m.aggDataPoints {
+				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
+			}
+		}
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlStatementTempBlocks(cfg PostgresqlStatementTempBlocksMetricConfig) metricPostgresqlStatementTempBlocks {
+	m := metricPostgresqlStatementTempBlocks{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlTableCount struct {
 	data          pmetric.Metric                   // data buffer for generated metric.
 	config        PostgresqlTableCountMetricConfig // metric config provided by user.
@@ -4377,6 +5065,12 @@ type MetricsBuilder struct {
 	metricPostgresqlRollbacks                metricPostgresqlRollbacks
 	metricPostgresqlRows                     metricPostgresqlRows
 	metricPostgresqlSequentialScans          metricPostgresqlSequentialScans
+	metricPostgresqlStatementCalls           metricPostgresqlStatementCalls
+	metricPostgresqlStatementExecutionTime   metricPostgresqlStatementExecutionTime
+	metricPostgresqlStatementPlanningTime    metricPostgresqlStatementPlanningTime
+	metricPostgresqlStatementRows            metricPostgresqlStatementRows
+	metricPostgresqlStatementSharedBlocks    metricPostgresqlStatementSharedBlocks
+	metricPostgresqlStatementTempBlocks      metricPostgresqlStatementTempBlocks
 	metricPostgresqlTableCount               metricPostgresqlTableCount
 	metricPostgresqlTableSize                metricPostgresqlTableSize
 	metricPostgresqlTableVacuumCount         metricPostgresqlTableVacuumCount
@@ -4445,6 +5139,12 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricPostgresqlRollbacks:                newMetricPostgresqlRollbacks(mbc.Metrics.PostgresqlRollbacks),
 		metricPostgresqlRows:                     newMetricPostgresqlRows(mbc.Metrics.PostgresqlRows),
 		metricPostgresqlSequentialScans:          newMetricPostgresqlSequentialScans(mbc.Metrics.PostgresqlSequentialScans),
+		metricPostgresqlStatementCalls:           newMetricPostgresqlStatementCalls(mbc.Metrics.PostgresqlStatementCalls),
+		metricPostgresqlStatementExecutionTime:   newMetricPostgresqlStatementExecutionTime(mbc.Metrics.PostgresqlStatementExecutionTime),
+		metricPostgresqlStatementPlanningTime:    newMetricPostgresqlStatementPlanningTime(mbc.Metrics.PostgresqlStatementPlanningTime),
+		metricPostgresqlStatementRows:            newMetricPostgresqlStatementRows(mbc.Metrics.PostgresqlStatementRows),
+		metricPostgresqlStatementSharedBlocks:    newMetricPostgresqlStatementSharedBlocks(mbc.Metrics.PostgresqlStatementSharedBlocks),
+		metricPostgresqlStatementTempBlocks:      newMetricPostgresqlStatementTempBlocks(mbc.Metrics.PostgresqlStatementTempBlocks),
 		metricPostgresqlTableCount:               newMetricPostgresqlTableCount(mbc.Metrics.PostgresqlTableCount),
 		metricPostgresqlTableSize:                newMetricPostgresqlTableSize(mbc.Metrics.PostgresqlTableSize),
 		metricPostgresqlTableVacuumCount:         newMetricPostgresqlTableVacuumCount(mbc.Metrics.PostgresqlTableVacuumCount),
@@ -4620,6 +5320,12 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricPostgresqlRollbacks.emit(ils.Metrics())
 	mb.metricPostgresqlRows.emit(ils.Metrics())
 	mb.metricPostgresqlSequentialScans.emit(ils.Metrics())
+	mb.metricPostgresqlStatementCalls.emit(ils.Metrics())
+	mb.metricPostgresqlStatementExecutionTime.emit(ils.Metrics())
+	mb.metricPostgresqlStatementPlanningTime.emit(ils.Metrics())
+	mb.metricPostgresqlStatementRows.emit(ils.Metrics())
+	mb.metricPostgresqlStatementSharedBlocks.emit(ils.Metrics())
+	mb.metricPostgresqlStatementTempBlocks.emit(ils.Metrics())
 	mb.metricPostgresqlTableCount.emit(ils.Metrics())
 	mb.metricPostgresqlTableSize.emit(ils.Metrics())
 	mb.metricPostgresqlTableVacuumCount.emit(ils.Metrics())
@@ -4792,6 +5498,36 @@ func (mb *MetricsBuilder) RecordPostgresqlRowsDataPoint(ts pcommon.Timestamp, va
 // RecordPostgresqlSequentialScansDataPoint adds a data point to postgresql.sequential_scans metric.
 func (mb *MetricsBuilder) RecordPostgresqlSequentialScansDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
 	mb.metricPostgresqlSequentialScans.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+}
+
+// RecordPostgresqlStatementCallsDataPoint adds a data point to postgresql.statement.calls metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementCallsDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	mb.metricPostgresqlStatementCalls.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue)
+}
+
+// RecordPostgresqlStatementExecutionTimeDataPoint adds a data point to postgresql.statement.execution.time metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementExecutionTimeDataPoint(ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	mb.metricPostgresqlStatementExecutionTime.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue)
+}
+
+// RecordPostgresqlStatementPlanningTimeDataPoint adds a data point to postgresql.statement.planning.time metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementPlanningTimeDataPoint(ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	mb.metricPostgresqlStatementPlanningTime.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue)
+}
+
+// RecordPostgresqlStatementRowsDataPoint adds a data point to postgresql.statement.rows metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementRowsDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string) {
+	mb.metricPostgresqlStatementRows.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue)
+}
+
+// RecordPostgresqlStatementSharedBlocksDataPoint adds a data point to postgresql.statement.shared_blocks metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementSharedBlocksDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string, postgresqlBlockOperationAttributeValue AttributePostgresqlBlockOperation) {
+	mb.metricPostgresqlStatementSharedBlocks.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue, postgresqlBlockOperationAttributeValue.String())
+}
+
+// RecordPostgresqlStatementTempBlocksDataPoint adds a data point to postgresql.statement.temp_blocks metric.
+func (mb *MetricsBuilder) RecordPostgresqlStatementTempBlocksDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlQueryidAttributeValue string, postgresqlToplevelAttributeValue bool, dbQueryTextAttributeValue string, postgresqlBlockOperationAttributeValue AttributePostgresqlBlockOperation) {
+	mb.metricPostgresqlStatementTempBlocks.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, postgresqlRolnameAttributeValue, postgresqlQueryidAttributeValue, postgresqlToplevelAttributeValue, dbQueryTextAttributeValue, postgresqlBlockOperationAttributeValue.String())
 }
 
 // RecordPostgresqlTableCountDataPoint adds a data point to postgresql.table.count metric.

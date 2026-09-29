@@ -218,6 +218,32 @@ receivers:
         enabled: true
 ```
 
+### Statement Metrics
+
+The `postgresql.statement.*` metrics (disabled by default) report `pg_stat_statements`
+counters per statement as cumulative Sums. Each data point carries `db.namespace`,
+`postgresql.rolname`, `postgresql.queryid`, `postgresql.toplevel` and the obfuscated
+`db.query.text`, so there is one series per reported statement. At most
+`statement_metrics.max_statements` (default 5000) of the most frequently called
+statements are reported per scrape.
+
+Each data point's start time is when its counters last started from zero: the
+entry's `stats_since` (extension API 1.11), otherwise the global `stats_reset`
+(API 1.9, PostgreSQL 14+). A statistics reset therefore begins a new series, and
+counters read across a reset are not reported. On PostgreSQL 13, data points use
+the receiver's start time. Pipelines that need delta temporality can use the
+[cumulative-to-delta processor](../../processor/cumulativetodeltaprocessor/README.md).
+
+```yaml
+receivers:
+  postgresql:
+    statement_metrics:
+      max_statements: 5000
+    metrics:
+      postgresql.statement.calls:
+        enabled: true
+```
+
 ### Vector Metrics
 
 The receiver can report [pgvector](https://github.com/pgvector/pgvector) similarity-search and insert activity

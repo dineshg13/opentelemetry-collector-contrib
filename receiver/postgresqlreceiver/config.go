@@ -52,6 +52,13 @@ type QuerySampleCollection struct {
 	_ struct{}
 }
 
+// StatementMetricsConfig bounds the postgresql.statement.* metrics.
+type StatementMetricsConfig struct {
+	// MaxStatements is the maximum number of pg_stat_statements entries, by
+	// descending calls, reported per scrape. Each entry is one series per metric.
+	MaxStatements int64 `mapstructure:"max_statements"`
+}
+
 type Config struct {
 	ControllerConfig      scraperhelper.ControllerConfig `mapstructure:",squash"`
 	Username              string                         `mapstructure:"username"`
@@ -65,6 +72,7 @@ type Config struct {
 	LogsBuilderConfig     metadata.LogsBuilderConfig     `mapstructure:",squash"`
 	QuerySampleCollection QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection    TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
+	StatementMetrics      StatementMetricsConfig         `mapstructure:"statement_metrics,omitempty"`
 	// DBAuth optionally sources the connection credential from a db_auth provider
 	// extension (e.g. AWS IAM) instead of a static password. When set, the provider
 	// supplies the password at connection-open time. Mutually exclusive with the
@@ -81,6 +89,9 @@ type ConnectionPool struct {
 
 func (cfg *Config) Validate() error {
 	var err error
+	if cfg.StatementMetrics.MaxStatements <= 0 || cfg.StatementMetrics.MaxStatements > 100000 {
+		err = multierr.Append(err, errors.New("statement_metrics.max_statements must be between 1 and 100000"))
+	}
 	if cfg.Username == "" {
 		err = multierr.Append(err, errors.New(ErrNoUsername))
 	}
