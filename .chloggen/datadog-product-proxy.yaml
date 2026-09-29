@@ -1,0 +1,5 @@
+change_type: enhancement
+component: datadogextension
+note: Add opt-in forwarding for SDK product HTTP protocols using the HTTP forwarder extension.
+issues: []
+subtext: ''

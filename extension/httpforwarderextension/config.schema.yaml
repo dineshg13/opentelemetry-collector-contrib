@@ -1,3 +1,56 @@
+$defs:
+  route:
+    description: Route maps an exact incoming path and optional method/headers to a complete destination URL, or serves a static response. First match wins.
+    type: object
+    properties:
+      append_query:
+        description: AppendQuery appends comma-separated metadata to existing query values.
+        type: object
+        additionalProperties:
+          type: string
+      disabled:
+        description: Disabled retains allowlist mode while denying this route.
+        type: boolean
+      endpoint:
+        type: string
+      headers:
+        type: object
+        additionalProperties:
+          $ref: go.opentelemetry.io/collector/config/configopaque.string
+      match_headers:
+        type: object
+        additionalProperties:
+          type: string
+      method:
+        type: string
+      path:
+        type: string
+      remove_headers:
+        type: array
+        items:
+          type: string
+      request_id_header:
+        description: RequestIDHeader replaces this header with a fresh UUID on each request.
+        type: string
+      response:
+        x-pointer: true
+        $ref: static_response
+      response_status:
+        type: object
+        additionalProperties:
+          type: integer
+  static_response:
+    description: StaticResponse serves local discovery without forwarding to an upstream.
+    type: object
+    properties:
+      body:
+        type: string
+      headers:
+        type: object
+        additionalProperties:
+          type: string
+      status:
+        type: integer
 description: Config defines configuration for http forwarder extension.
 type: object
 properties:
@@ -7,3 +60,8 @@ properties:
   ingress:
     description: Ingress holds config settings for HTTP server listening for requests.
     $ref: go.opentelemetry.io/collector/config/confighttp.server_config
+  routes:
+    description: Routes enables an exact-path allowlist. Unmatched requests receive 404. Without routes, the existing single-origin forwarding behavior is retained.
+    type: array
+    items:
+      $ref: route
