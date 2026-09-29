@@ -149,6 +149,14 @@ SET application_name = '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'
 When query sample collection observes a valid `traceparent` in `application_name`, the receiver sets the trace ID and span ID on the emitted
 `db.server.query_sample` log record. This enables correlation between the query sample and the originating trace.
 
+If `application_name` does not contain a valid traceparent, query sample collection also
+recognizes the standard `traceparent='...'` field in a [sqlcommenter](https://google.github.io/sqlcommenter/spec/)
+block comment, before query obfuscation removes comments and literal values. Both leading
+and trailing comments are supported. Only trace and span IDs are extracted; other comment
+fields are not exported. Invalid or duplicate traceparent fields, nested comments, and
+comment-like text inside SQL strings or identifiers do not establish correlation. A valid
+`application_name` retains precedence over SQL comments.
+
 The following options are available:
 - `max_rows_per_query`: (optional, default=1000) The max number of rows would return from the query 
 against `pg_stat_activity`.
