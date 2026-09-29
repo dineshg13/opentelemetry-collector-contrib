@@ -928,6 +928,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(50),
 				"newestQueryTimestamp": 999999.555,
+				"monitoring":           false,
 				"excludedDatabases":    "",
 			},
 		},
@@ -936,6 +937,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(10),
 				"newestQueryTimestamp": float64(0),
+				"monitoring":           false,
 				"excludedDatabases":    "",
 			},
 		},
@@ -944,6 +946,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(10),
 				"newestQueryTimestamp": float64(0),
+				"monitoring":           false,
 				"excludedDatabases":    quoteDatabaseList([]string{"rdsadmin", "template0"}),
 			},
 			// COALESCE keeps NULL datname rows (background workers) that a bare NOT IN would drop.
