@@ -109,3 +109,64 @@ extensions:
 ## Notes
 - The extension is in active development. Functionality and configuration options may change as Datadog OpenTelemetry monitoring features evolve.
 - Please see [official documentation on Datadog's website](https://docs.datadoghq.com/opentelemetry/integrations/datadog_extension/) for more details.
+
+## SDK product HTTP forwarding (PoC)
+
+The optional `product_proxy` listener forwards explicitly enabled product-specific HTTP
+protocols. Ordinary traces, metrics and logs continue through standard, explicitly
+configured OTLP receivers and exporters. This listener does not accept native Datadog
+traces, implement Remote Configuration, or create pipelines dynamically.
+
+```yaml
+extensions:
+  datadog:
+    api:
+      site: ${env:DD_SITE}
+      key: ${env:DD_API_KEY}
+    hostname: ${env:DD_HOSTNAME}
+    product_proxy:
+      endpoint: localhost:8126
+      default_env: poc
+      tags: [env:poc]
+    products:
+      continuous_profiling: {enabled: true}
+      data_streams_monitoring: {enabled: true}
+      data_jobs_monitoring: {enabled: true}
+      llm_observability: {enabled: true}
+      ci_visibility: {enabled: true}
+      live_debugging: {enabled: true}
+service:
+  extensions: [datadog]
+```
+
+All product switches default to false. Enabled products require explicit
+`product_proxy.endpoint`; omit the entire listener to keep the existing metadata-only
+behavior. Configured product routes return 404 when disabled and are omitted from `/info`.
+`application_security` and `database_monitoring` are pipeline-owned: enabling these proxy
+switches fails validation. Product switches do not disable independent SDK agentless
+traffic or independently configured OTLP pipelines.
+
+The listener uses the standard HTTP server configuration (including TLS/authentication)
+and a default 32 MiB request body limit. Compression is preserved; configure no
+`compression_algorithms` or an empty list. Egress uses this extension's existing HTTP
+client TLS/proxy settings, API site/key and hostname. Optional
+`product_proxy.application_key` supplies the application key only to LLM evaluation API
+routes. Credentials are supplied from Collector configuration, never accepted from the
+SDK. Metadata uses configured hostname, default environment and tags; dynamic Agent
+container metadata lookup is not implemented.
+
+| Switch | Routes |
+| --- | --- |
+| `continuous_profiling` | Native multipart profile upload; backend 202 is returned as SDK-compatible 200 |
+| `data_streams_monitoring` | SDK pipeline statistics; no broker collection |
+| `data_jobs_monitoring` | OpenLineage upload with Bearer authorization; no native Spark trace conversion |
+| `llm_observability` | EVP v2/v4 LLM span and v1/v2 evaluation paths |
+| `ci_visibility` | EVP test events, coverage, settings, test inventories and git metadata; no media/replay paths |
+| `live_debugging` | Debugger snapshot/diagnostic/v2/symbol uploads; no probe installation or Remote Configuration |
+
+The implementation composes the existing HTTP forwarder extension rather than importing
+Trace Agent processing. Its routes and standard HTTP forwarding are independently tested.
+Backend product completeness still requires SDK workload and authenticated backend/UI
+verification. The existing metadata service/serializer remains active independently of
+these switches; use the generic HTTP forwarder and standard pipelines for a vendor-neutral
+distribution.
