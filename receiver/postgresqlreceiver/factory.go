@@ -66,6 +66,9 @@ func createDefaultConfig() component.Config {
 		},
 		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		LogsBuilderConfig:    metadata.DefaultLogsBuilderConfig(),
+		StatementMetrics: StatementMetricsConfig{
+			MaxStatements: 5000,
+		},
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
 		},

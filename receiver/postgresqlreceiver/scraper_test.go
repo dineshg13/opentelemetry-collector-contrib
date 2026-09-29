@@ -2853,6 +2853,10 @@ var queryGuards = []queryGuard{
 	{"replicationMetricsEnabled", (*postgreSQLScraper).replicationMetricsEnabled, []string{
 		"PostgresqlReplicationDataDelay", "PostgresqlWalDelay", "PostgresqlWalLag",
 	}},
+	{"statementMetricsEnabled", (*postgreSQLScraper).statementMetricsEnabled, []string{
+		"PostgresqlStatementCalls", "PostgresqlStatementRows", "PostgresqlStatementExecutionTime",
+		"PostgresqlStatementPlanningTime", "PostgresqlStatementSharedBlocks", "PostgresqlStatementTempBlocks",
+	}},
 }
 
 // notQueryGated lists MetricsConfig fields with no skippable query to guard.

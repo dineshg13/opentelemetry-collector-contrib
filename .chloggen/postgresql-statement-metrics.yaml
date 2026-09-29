@@ -1,0 +1,8 @@
+change_type: enhancement
+component: receiver/postgresql
+note: Add opt-in `postgresql.statement.*` cumulative metrics for each pg_stat_statements entry.
+issues: [17]
+subtext: |
+  Data point start times follow `stats_since` or the global `stats_reset`, so a statistics reset starts a new series.
+  The number of statements per scrape is bounded by `statement_metrics.max_statements`.
+change_logs: [user]

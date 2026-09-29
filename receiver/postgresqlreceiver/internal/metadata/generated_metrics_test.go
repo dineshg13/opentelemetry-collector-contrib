@@ -88,6 +88,12 @@ func TestMetricsBuilder(t *testing.T) {
 			aggMap["postgresql.rollbacks"] = mb.metricPostgresqlRollbacks.config.AggregationStrategy
 			aggMap["postgresql.rows"] = mb.metricPostgresqlRows.config.AggregationStrategy
 			aggMap["postgresql.sequential_scans"] = mb.metricPostgresqlSequentialScans.config.AggregationStrategy
+			aggMap["postgresql.statement.calls"] = mb.metricPostgresqlStatementCalls.config.AggregationStrategy
+			aggMap["postgresql.statement.execution.time"] = mb.metricPostgresqlStatementExecutionTime.config.AggregationStrategy
+			aggMap["postgresql.statement.planning.time"] = mb.metricPostgresqlStatementPlanningTime.config.AggregationStrategy
+			aggMap["postgresql.statement.rows"] = mb.metricPostgresqlStatementRows.config.AggregationStrategy
+			aggMap["postgresql.statement.shared_blocks"] = mb.metricPostgresqlStatementSharedBlocks.config.AggregationStrategy
+			aggMap["postgresql.statement.temp_blocks"] = mb.metricPostgresqlStatementTempBlocks.config.AggregationStrategy
 			aggMap["postgresql.table.count"] = mb.metricPostgresqlTableCount.config.AggregationStrategy
 			aggMap["postgresql.table.size"] = mb.metricPostgresqlTableSize.config.AggregationStrategy
 			aggMap["postgresql.table.vacuum.count"] = mb.metricPostgresqlTableVacuumCount.config.AggregationStrategy
@@ -251,6 +257,42 @@ func TestMetricsBuilder(t *testing.T) {
 			if tt.name == "reaggregate_set" {
 				mb.RecordPostgresqlSequentialScansDataPoint(ts, 3, "db.namespace-val-2", "db.collection.name-val-2")
 			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementCallsDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementCallsDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2")
+			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementExecutionTimeDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementExecutionTimeDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2")
+			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementPlanningTimeDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementPlanningTimeDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2")
+			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementRowsDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementRowsDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2")
+			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementSharedBlocksDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val", AttributePostgresqlBlockOperationHit)
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementSharedBlocksDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2", AttributePostgresqlBlockOperationRead)
+			}
+
+			allMetricsCount++
+			mb.RecordPostgresqlStatementTempBlocksDataPoint(ts, 1, "db.namespace-val", "postgresql.rolname-val", "postgresql.queryid-val", false, "db.query.text-val", AttributePostgresqlBlockOperationHit)
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlStatementTempBlocksDataPoint(ts, 3, "db.namespace-val-2", "postgresql.rolname-val-2", "postgresql.queryid-val-2", true, "db.query.text-val-2", AttributePostgresqlBlockOperationRead)
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableCountDataPoint(ts, 1, "db.namespace-val")
@@ -392,6 +434,12 @@ func TestMetricsBuilder(t *testing.T) {
 				assert.Empty(t, mb.metricPostgresqlRollbacks.aggDataPoints)
 				assert.Empty(t, mb.metricPostgresqlRows.aggDataPoints)
 				assert.Empty(t, mb.metricPostgresqlSequentialScans.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementCalls.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementExecutionTime.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementPlanningTime.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementRows.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementSharedBlocks.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlStatementTempBlocks.aggDataPoints)
 				assert.Empty(t, mb.metricPostgresqlTableCount.aggDataPoints)
 				assert.Empty(t, mb.metricPostgresqlTableSize.aggDataPoints)
 				assert.Empty(t, mb.metricPostgresqlTableVacuumCount.aggDataPoints)
@@ -1480,6 +1528,400 @@ func TestMetricsBuilder(t *testing.T) {
 						_, ok := dp.Attributes().Get("db.namespace")
 						assert.False(t, ok)
 						_, ok = dp.Attributes().Get("db.collection.name")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.calls":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.calls"], "Found a duplicate in the metrics slice: postgresql.statement.calls")
+						validatedMetrics["postgresql.statement.calls"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of times the statement was executed.", mi.Description())
+						assert.Equal(t, "{call}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.calls"], "Found a duplicate in the metrics slice: postgresql.statement.calls")
+						validatedMetrics["postgresql.statement.calls"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of times the statement was executed.", mi.Description())
+						assert.Equal(t, "{call}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.statement.calls"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.execution.time":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.execution.time"], "Found a duplicate in the metrics slice: postgresql.statement.execution.time")
+						validatedMetrics["postgresql.statement.execution.time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total time spent executing the statement.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.execution.time"], "Found a duplicate in the metrics slice: postgresql.statement.execution.time")
+						validatedMetrics["postgresql.statement.execution.time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total time spent executing the statement.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						switch aggMap["postgresql.statement.execution.time"] {
+						case "sum":
+							assert.InDelta(t, float64(4), dp.DoubleValue(), 0.01)
+						case "avg":
+							assert.InDelta(t, float64(2), dp.DoubleValue(), 0.01)
+						case "min":
+							assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						case "max":
+							assert.InDelta(t, float64(3), dp.DoubleValue(), 0.01)
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.planning.time":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.planning.time"], "Found a duplicate in the metrics slice: postgresql.statement.planning.time")
+						validatedMetrics["postgresql.statement.planning.time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total time spent planning the statement. Zero unless pg_stat_statements.track_planning is on.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.planning.time"], "Found a duplicate in the metrics slice: postgresql.statement.planning.time")
+						validatedMetrics["postgresql.statement.planning.time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total time spent planning the statement. Zero unless pg_stat_statements.track_planning is on.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						switch aggMap["postgresql.statement.planning.time"] {
+						case "sum":
+							assert.InDelta(t, float64(4), dp.DoubleValue(), 0.01)
+						case "avg":
+							assert.InDelta(t, float64(2), dp.DoubleValue(), 0.01)
+						case "min":
+							assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						case "max":
+							assert.InDelta(t, float64(3), dp.DoubleValue(), 0.01)
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.rows":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.rows"], "Found a duplicate in the metrics slice: postgresql.statement.rows")
+						validatedMetrics["postgresql.statement.rows"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total number of rows retrieved or affected by the statement.", mi.Description())
+						assert.Equal(t, "{row}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.rows"], "Found a duplicate in the metrics slice: postgresql.statement.rows")
+						validatedMetrics["postgresql.statement.rows"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The total number of rows retrieved or affected by the statement.", mi.Description())
+						assert.Equal(t, "{row}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.statement.rows"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.shared_blocks":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.shared_blocks"], "Found a duplicate in the metrics slice: postgresql.statement.shared_blocks")
+						validatedMetrics["postgresql.statement.shared_blocks"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of shared blocks accessed by the statement, by operation.", mi.Description())
+						assert.Equal(t, "{block}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+						postgresqlBlockOperationAttrVal, ok := dp.Attributes().Get("postgresql.block.operation")
+						assert.True(t, ok)
+						assert.Equal(t, "hit", postgresqlBlockOperationAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.shared_blocks"], "Found a duplicate in the metrics slice: postgresql.statement.shared_blocks")
+						validatedMetrics["postgresql.statement.shared_blocks"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of shared blocks accessed by the statement, by operation.", mi.Description())
+						assert.Equal(t, "{block}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.statement.shared_blocks"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.block.operation")
+						assert.False(t, ok)
+					}
+				case "postgresql.statement.temp_blocks":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.statement.temp_blocks"], "Found a duplicate in the metrics slice: postgresql.statement.temp_blocks")
+						validatedMetrics["postgresql.statement.temp_blocks"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of temporary blocks read or written by the statement.", mi.Description())
+						assert.Equal(t, "{block}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						dbNamespaceAttrVal, ok := dp.Attributes().Get("db.namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "db.namespace-val", dbNamespaceAttrVal.Str())
+						postgresqlRolnameAttrVal, ok := dp.Attributes().Get("postgresql.rolname")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.rolname-val", postgresqlRolnameAttrVal.Str())
+						postgresqlQueryidAttrVal, ok := dp.Attributes().Get("postgresql.queryid")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.queryid-val", postgresqlQueryidAttrVal.Str())
+						postgresqlToplevelAttrVal, ok := dp.Attributes().Get("postgresql.toplevel")
+						assert.True(t, ok)
+						assert.False(t, postgresqlToplevelAttrVal.Bool())
+						dbQueryTextAttrVal, ok := dp.Attributes().Get("db.query.text")
+						assert.True(t, ok)
+						assert.Equal(t, "db.query.text-val", dbQueryTextAttrVal.Str())
+						postgresqlBlockOperationAttrVal, ok := dp.Attributes().Get("postgresql.block.operation")
+						assert.True(t, ok)
+						assert.Equal(t, "hit", postgresqlBlockOperationAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.statement.temp_blocks"], "Found a duplicate in the metrics slice: postgresql.statement.temp_blocks")
+						validatedMetrics["postgresql.statement.temp_blocks"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of temporary blocks read or written by the statement.", mi.Description())
+						assert.Equal(t, "{block}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.statement.temp_blocks"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("db.namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.rolname")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.queryid")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.toplevel")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("db.query.text")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.block.operation")
 						assert.False(t, ok)
 					}
 				case "postgresql.table.count":
