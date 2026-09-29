@@ -1,0 +1,6 @@
+change_type: enhancement
+component: receiver/postgresql
+note: Add the obfuscated `db.query.text` attribute to the `db.server.query_plan` event.
+issues: [17]
+subtext: A consumer can relate a plan to its statement without joining it to the `db.server.top_query` record.
+change_logs: [user]
