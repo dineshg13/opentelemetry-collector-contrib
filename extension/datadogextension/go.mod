@@ -11,6 +11,7 @@ require (
 	github.com/DataDog/datadog-agent/pkg/serializer v0.83.1
 	github.com/DataDog/datadog-agent/pkg/tagset v0.83.1
 	github.com/google/uuid v1.6.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarderextension v0.161.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.161.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/datadog v0.161.0
 	github.com/stretchr/testify v1.12.1
@@ -19,6 +20,7 @@ require (
 	go.opentelemetry.io/collector/component/componenttest v0.161.1-0.20260917142259-65d9c38b188c
 	go.opentelemetry.io/collector/config/confighttp v0.161.1-0.20260917142259-65d9c38b188c
 	go.opentelemetry.io/collector/config/confignet v1.67.1-0.20260917142259-65d9c38b188c
+	go.opentelemetry.io/collector/config/configopaque v1.67.1-0.20260917142259-65d9c38b188c
 	go.opentelemetry.io/collector/config/configtls v1.67.1-0.20260917142259-65d9c38b188c
 	go.opentelemetry.io/collector/confmap v1.67.1-0.20260917142259-65d9c38b188c
 	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.67.1-0.20260917142259-65d9c38b188c
@@ -220,7 +222,6 @@ require (
 	go.opentelemetry.io/collector/config/configauth v1.67.1-0.20260917142259-65d9c38b188c // indirect
 	go.opentelemetry.io/collector/config/configcompression v1.67.1-0.20260917142259-65d9c38b188c // indirect
 	go.opentelemetry.io/collector/config/configmiddleware v1.67.1-0.20260917142259-65d9c38b188c // indirect
-	go.opentelemetry.io/collector/config/configopaque v1.67.1-0.20260917142259-65d9c38b188c // indirect
 	go.opentelemetry.io/collector/config/configoptional v1.67.1-0.20260917142259-65d9c38b188c // indirect
 	go.opentelemetry.io/collector/config/configretry v1.67.1-0.20260917142259-65d9c38b188c // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.161.1-0.20260917142259-65d9c38b188c // indirect
@@ -321,3 +322,5 @@ replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/e
 replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/datadog => ../../internal/datadog
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/sampling => ../../pkg/sampling
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarderextension => ../httpforwarderextension

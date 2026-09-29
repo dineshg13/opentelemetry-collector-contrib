@@ -34,7 +34,7 @@ func TestFactory(t *testing.T) {
 	}
 
 	validEgressConfig := confighttp.NewDefaultClientConfig()
-	validEgressConfig.Endpoint = "localhost:9090"
+	validEgressConfig.Endpoint = "http://localhost:9090"
 
 	tests := []struct {
 		name           string
@@ -52,7 +52,7 @@ func TestFactory(t *testing.T) {
 			name:           "Invalid config",
 			config:         &Config{Egress: invalidEgressConfig},
 			wantErr:        true,
-			wantErrMessage: "enter a valid URL for 'egress.endpoint': parse \"123.456.7.89:9090\": first path segment in URL cannot",
+			wantErrMessage: "egress.endpoint: parse \"123.456.7.89:9090\": first path segment in URL cannot",
 		},
 		{
 			name: "Valid config",
