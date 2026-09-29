@@ -435,6 +435,152 @@ The number of sequential scans.
 | db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
 | db.collection.name | The name of the table within the database. | Any Str | Recommended | - |
 
+### postgresql.statement.calls
+
+The number of times the statement was executed.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {call} | Sum | Int | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+
+### postgresql.statement.execution.time
+
+The total time spent executing the statement.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| s | Sum | Double | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+
+### postgresql.statement.planning.time
+
+The total time spent planning the statement. Zero unless pg_stat_statements.track_planning is on.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| s | Sum | Double | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+
+### postgresql.statement.rows
+
+The total number of rows retrieved or affected by the statement.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row} | Sum | Int | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+
+### postgresql.statement.shared_blocks
+
+The number of shared blocks accessed by the statement, by operation.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {block} | Sum | Int | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+| postgresql.block.operation | The block access recorded by pg_stat_statements. | Str: ``hit``, ``read``, ``dirtied``, ``written`` | Recommended | - |
+
+### postgresql.statement.temp_blocks
+
+The number of temporary blocks read or written by the statement.
+
+One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+`db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+`statement_metrics.max_statements`.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {block} | Sum | Int | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| db.namespace | The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL. | Any Str | Recommended | - |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | Recommended | - |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| postgresql.toplevel | Whether the statement was executed at top level rather than nested inside a function or procedure. | Any Bool | Recommended | - |
+| db.query.text | The text of the database query being executed. | Any Str | Recommended | - |
+| postgresql.block.operation | The block access recorded by pg_stat_statements. | Str: ``hit``, ``read``, ``dirtied``, ``written`` | Recommended | - |
+
 ### postgresql.temp.io
 
 Total amount of data written to temporary files by queries.

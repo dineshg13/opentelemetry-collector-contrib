@@ -162,6 +162,10 @@ attributes:
   postgresql.backend.connection.start:
     description: UTC timestamp (RFC3339) when this backend was started.
     type: string
+  postgresql.block.operation:
+    description: The block access recorded by pg_stat_statements.
+    type: string
+    enum: [hit, read, dirtied, written]
   postgresql.blocking.lock.mode:
     description: The lock mode being requested by the blocked session (e.g. RowExclusiveLock, AccessExclusiveLock). Empty string when not blocked.
     type: string
@@ -250,6 +254,9 @@ attributes:
   postgresql.temp_blks_written:
     description: Total number of temp blocks written by the statement, reported in delta value.
     type: int
+  postgresql.toplevel:
+    description: Whether the statement was executed at top level rather than nested inside a function or procedure.
+    type: bool
   postgresql.total_exec_time:
     description: Total time spent executing the statement, in delta seconds.
     type: double
@@ -598,6 +605,102 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     attributes: [db.namespace, db.collection.name]
+  postgresql.statement.calls:
+    enabled: false
+    description: The number of times the statement was executed.
+    stability: development
+    unit: "{call}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
+  postgresql.statement.execution.time:
+    enabled: false
+    description: The total time spent executing the statement.
+    stability: development
+    unit: "s"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
+  postgresql.statement.planning.time:
+    enabled: false
+    description: The total time spent planning the statement. Zero unless pg_stat_statements.track_planning is on.
+    stability: development
+    unit: "s"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
+  postgresql.statement.rows:
+    enabled: false
+    description: The total number of rows retrieved or affected by the statement.
+    stability: development
+    unit: "{row}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
+  postgresql.statement.shared_blocks:
+    enabled: false
+    description: The number of shared blocks accessed by the statement, by operation.
+    stability: development
+    unit: "{block}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text, postgresql.block.operation]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
+  postgresql.statement.temp_blocks:
+    enabled: false
+    description: The number of temporary blocks read or written by the statement.
+    stability: development
+    unit: "{block}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text, postgresql.block.operation]
+    extended_documentation: |
+      One data point per pg_stat_statements entry. Requires pg_stat_statements with extension API 1.9 or newer on
+      PostgreSQL 14+. Each data point's start time is the entry's `stats_since` when available (extension 1.11),
+      otherwise the last global `stats_reset`, so a statistics reset starts a new cumulative series.
+      `db.query.text` is obfuscated. Cardinality equals the number of tracked statements, bounded by
+      `statement_metrics.max_statements`.
   postgresql.table.count:
     description: Number of user tables in a database.
     stability: development

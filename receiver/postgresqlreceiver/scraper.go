@@ -69,6 +69,7 @@ type postgreSQLScraper struct {
 	serverEndpoint         serverEndpoint
 	lastExecutionTimestamp time.Time
 	dbVersion              string
+	statementServerVersion string
 }
 
 type errsMux struct {
@@ -277,13 +278,17 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectServerScopedLocks(ctx, now, listClient, &errs)
+	statementStarts := p.collectStatementMetrics(ctx, listClient, &errs)
 
+	var rb *metadata.ResourceBuilder
 	if p.useOTelSemconv {
-		rb := p.setupSemconvResourceBuilder(p.mb.NewResourceBuilder())
-		return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
+		rb = p.setupSemconvResourceBuilder(p.mb.NewResourceBuilder())
+	} else {
+		rb = p.setupLegacyResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	}
-	rb := p.setupLegacyResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
-	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
+	md := p.mb.Emit(metadata.WithResource(rb.Emit()))
+	applyStatementStartTimes(md, statementStarts)
+	return md, errs.combine()
 }
 
 func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (plog.Logs, error) {

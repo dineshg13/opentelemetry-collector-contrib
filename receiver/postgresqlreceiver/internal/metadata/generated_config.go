@@ -1114,6 +1114,320 @@ func (ms *PostgresqlSequentialScansMetricConfig) Validate() error {
 	return nil
 }
 
+// PostgresqlStatementCallsMetricAttributeKey specifies the key of an attribute for the postgresql.statement.calls metric.
+type PostgresqlStatementCallsMetricAttributeKey string
+
+const (
+	PostgresqlStatementCallsMetricAttributeKeyDbNamespace        PostgresqlStatementCallsMetricAttributeKey = "db.namespace"
+	PostgresqlStatementCallsMetricAttributeKeyPostgresqlRolname  PostgresqlStatementCallsMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementCallsMetricAttributeKeyPostgresqlQueryid  PostgresqlStatementCallsMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementCallsMetricAttributeKeyPostgresqlToplevel PostgresqlStatementCallsMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementCallsMetricAttributeKeyDbQueryText        PostgresqlStatementCallsMetricAttributeKey = "db.query.text"
+)
+
+// PostgresqlStatementCallsMetricConfig provides config for the postgresql.statement.calls metric.
+type PostgresqlStatementCallsMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                       `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementCallsMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementCallsMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementCallsMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementCallsMetricAttributeKeyDbNamespace, PostgresqlStatementCallsMetricAttributeKeyPostgresqlRolname, PostgresqlStatementCallsMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementCallsMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementCallsMetricAttributeKeyDbQueryText:
+		default:
+			return fmt.Errorf("metric postgresql.statement.calls doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// PostgresqlStatementExecutionTimeMetricAttributeKey specifies the key of an attribute for the postgresql.statement.execution.time metric.
+type PostgresqlStatementExecutionTimeMetricAttributeKey string
+
+const (
+	PostgresqlStatementExecutionTimeMetricAttributeKeyDbNamespace        PostgresqlStatementExecutionTimeMetricAttributeKey = "db.namespace"
+	PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlRolname  PostgresqlStatementExecutionTimeMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlQueryid  PostgresqlStatementExecutionTimeMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlToplevel PostgresqlStatementExecutionTimeMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementExecutionTimeMetricAttributeKeyDbQueryText        PostgresqlStatementExecutionTimeMetricAttributeKey = "db.query.text"
+)
+
+// PostgresqlStatementExecutionTimeMetricConfig provides config for the postgresql.statement.execution.time metric.
+type PostgresqlStatementExecutionTimeMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                               `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementExecutionTimeMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementExecutionTimeMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementExecutionTimeMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementExecutionTimeMetricAttributeKeyDbNamespace, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlRolname, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementExecutionTimeMetricAttributeKeyDbQueryText:
+		default:
+			return fmt.Errorf("metric postgresql.statement.execution.time doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// PostgresqlStatementPlanningTimeMetricAttributeKey specifies the key of an attribute for the postgresql.statement.planning.time metric.
+type PostgresqlStatementPlanningTimeMetricAttributeKey string
+
+const (
+	PostgresqlStatementPlanningTimeMetricAttributeKeyDbNamespace        PostgresqlStatementPlanningTimeMetricAttributeKey = "db.namespace"
+	PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlRolname  PostgresqlStatementPlanningTimeMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlQueryid  PostgresqlStatementPlanningTimeMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlToplevel PostgresqlStatementPlanningTimeMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementPlanningTimeMetricAttributeKeyDbQueryText        PostgresqlStatementPlanningTimeMetricAttributeKey = "db.query.text"
+)
+
+// PostgresqlStatementPlanningTimeMetricConfig provides config for the postgresql.statement.planning.time metric.
+type PostgresqlStatementPlanningTimeMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                              `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementPlanningTimeMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementPlanningTimeMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementPlanningTimeMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementPlanningTimeMetricAttributeKeyDbNamespace, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlRolname, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementPlanningTimeMetricAttributeKeyDbQueryText:
+		default:
+			return fmt.Errorf("metric postgresql.statement.planning.time doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// PostgresqlStatementRowsMetricAttributeKey specifies the key of an attribute for the postgresql.statement.rows metric.
+type PostgresqlStatementRowsMetricAttributeKey string
+
+const (
+	PostgresqlStatementRowsMetricAttributeKeyDbNamespace        PostgresqlStatementRowsMetricAttributeKey = "db.namespace"
+	PostgresqlStatementRowsMetricAttributeKeyPostgresqlRolname  PostgresqlStatementRowsMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementRowsMetricAttributeKeyPostgresqlQueryid  PostgresqlStatementRowsMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementRowsMetricAttributeKeyPostgresqlToplevel PostgresqlStatementRowsMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementRowsMetricAttributeKeyDbQueryText        PostgresqlStatementRowsMetricAttributeKey = "db.query.text"
+)
+
+// PostgresqlStatementRowsMetricConfig provides config for the postgresql.statement.rows metric.
+type PostgresqlStatementRowsMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                      `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementRowsMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementRowsMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementRowsMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementRowsMetricAttributeKeyDbNamespace, PostgresqlStatementRowsMetricAttributeKeyPostgresqlRolname, PostgresqlStatementRowsMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementRowsMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementRowsMetricAttributeKeyDbQueryText:
+		default:
+			return fmt.Errorf("metric postgresql.statement.rows doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// PostgresqlStatementSharedBlocksMetricAttributeKey specifies the key of an attribute for the postgresql.statement.shared_blocks metric.
+type PostgresqlStatementSharedBlocksMetricAttributeKey string
+
+const (
+	PostgresqlStatementSharedBlocksMetricAttributeKeyDbNamespace              PostgresqlStatementSharedBlocksMetricAttributeKey = "db.namespace"
+	PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlRolname        PostgresqlStatementSharedBlocksMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlQueryid        PostgresqlStatementSharedBlocksMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlToplevel       PostgresqlStatementSharedBlocksMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementSharedBlocksMetricAttributeKeyDbQueryText              PostgresqlStatementSharedBlocksMetricAttributeKey = "db.query.text"
+	PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlBlockOperation PostgresqlStatementSharedBlocksMetricAttributeKey = "postgresql.block.operation"
+)
+
+// PostgresqlStatementSharedBlocksMetricConfig provides config for the postgresql.statement.shared_blocks metric.
+type PostgresqlStatementSharedBlocksMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                              `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementSharedBlocksMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementSharedBlocksMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementSharedBlocksMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementSharedBlocksMetricAttributeKeyDbNamespace, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlRolname, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementSharedBlocksMetricAttributeKeyDbQueryText, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlBlockOperation:
+		default:
+			return fmt.Errorf("metric postgresql.statement.shared_blocks doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text, postgresql.block.operation]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// PostgresqlStatementTempBlocksMetricAttributeKey specifies the key of an attribute for the postgresql.statement.temp_blocks metric.
+type PostgresqlStatementTempBlocksMetricAttributeKey string
+
+const (
+	PostgresqlStatementTempBlocksMetricAttributeKeyDbNamespace              PostgresqlStatementTempBlocksMetricAttributeKey = "db.namespace"
+	PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlRolname        PostgresqlStatementTempBlocksMetricAttributeKey = "postgresql.rolname"
+	PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlQueryid        PostgresqlStatementTempBlocksMetricAttributeKey = "postgresql.queryid"
+	PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlToplevel       PostgresqlStatementTempBlocksMetricAttributeKey = "postgresql.toplevel"
+	PostgresqlStatementTempBlocksMetricAttributeKeyDbQueryText              PostgresqlStatementTempBlocksMetricAttributeKey = "db.query.text"
+	PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlBlockOperation PostgresqlStatementTempBlocksMetricAttributeKey = "postgresql.block.operation"
+)
+
+// PostgresqlStatementTempBlocksMetricConfig provides config for the postgresql.statement.temp_blocks metric.
+type PostgresqlStatementTempBlocksMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                            `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []PostgresqlStatementTempBlocksMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *PostgresqlStatementTempBlocksMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *PostgresqlStatementTempBlocksMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case PostgresqlStatementTempBlocksMetricAttributeKeyDbNamespace, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlRolname, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementTempBlocksMetricAttributeKeyDbQueryText, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlBlockOperation:
+		default:
+			return fmt.Errorf("metric postgresql.statement.temp_blocks doesn't have an attribute %v, valid attributes: [db.namespace, postgresql.rolname, postgresql.queryid, postgresql.toplevel, db.query.text, postgresql.block.operation]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
 // PostgresqlTableCountMetricAttributeKey specifies the key of an attribute for the postgresql.table.count metric.
 type PostgresqlTableCountMetricAttributeKey string
 
@@ -1984,6 +2298,12 @@ type MetricsConfig struct {
 	PostgresqlRollbacks                PostgresqlRollbacksMetricConfig                `mapstructure:"postgresql.rollbacks"`
 	PostgresqlRows                     PostgresqlRowsMetricConfig                     `mapstructure:"postgresql.rows"`
 	PostgresqlSequentialScans          PostgresqlSequentialScansMetricConfig          `mapstructure:"postgresql.sequential_scans"`
+	PostgresqlStatementCalls           PostgresqlStatementCallsMetricConfig           `mapstructure:"postgresql.statement.calls"`
+	PostgresqlStatementExecutionTime   PostgresqlStatementExecutionTimeMetricConfig   `mapstructure:"postgresql.statement.execution.time"`
+	PostgresqlStatementPlanningTime    PostgresqlStatementPlanningTimeMetricConfig    `mapstructure:"postgresql.statement.planning.time"`
+	PostgresqlStatementRows            PostgresqlStatementRowsMetricConfig            `mapstructure:"postgresql.statement.rows"`
+	PostgresqlStatementSharedBlocks    PostgresqlStatementSharedBlocksMetricConfig    `mapstructure:"postgresql.statement.shared_blocks"`
+	PostgresqlStatementTempBlocks      PostgresqlStatementTempBlocksMetricConfig      `mapstructure:"postgresql.statement.temp_blocks"`
 	PostgresqlTableCount               PostgresqlTableCountMetricConfig               `mapstructure:"postgresql.table.count"`
 	PostgresqlTableSize                PostgresqlTableSizeMetricConfig                `mapstructure:"postgresql.table.size"`
 	PostgresqlTableVacuumCount         PostgresqlTableVacuumCountMetricConfig         `mapstructure:"postgresql.table.vacuum.count"`
@@ -2122,6 +2442,36 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled:             false,
 			AggregationStrategy: AggregationStrategySum,
 			EnabledAttributes:   []PostgresqlSequentialScansMetricAttributeKey{PostgresqlSequentialScansMetricAttributeKeyDbNamespace, PostgresqlSequentialScansMetricAttributeKeyDbCollectionName},
+		},
+		PostgresqlStatementCalls: PostgresqlStatementCallsMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementCallsMetricAttributeKey{PostgresqlStatementCallsMetricAttributeKeyDbNamespace, PostgresqlStatementCallsMetricAttributeKeyPostgresqlRolname, PostgresqlStatementCallsMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementCallsMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementCallsMetricAttributeKeyDbQueryText},
+		},
+		PostgresqlStatementExecutionTime: PostgresqlStatementExecutionTimeMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementExecutionTimeMetricAttributeKey{PostgresqlStatementExecutionTimeMetricAttributeKeyDbNamespace, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlRolname, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementExecutionTimeMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementExecutionTimeMetricAttributeKeyDbQueryText},
+		},
+		PostgresqlStatementPlanningTime: PostgresqlStatementPlanningTimeMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementPlanningTimeMetricAttributeKey{PostgresqlStatementPlanningTimeMetricAttributeKeyDbNamespace, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlRolname, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementPlanningTimeMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementPlanningTimeMetricAttributeKeyDbQueryText},
+		},
+		PostgresqlStatementRows: PostgresqlStatementRowsMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementRowsMetricAttributeKey{PostgresqlStatementRowsMetricAttributeKeyDbNamespace, PostgresqlStatementRowsMetricAttributeKeyPostgresqlRolname, PostgresqlStatementRowsMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementRowsMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementRowsMetricAttributeKeyDbQueryText},
+		},
+		PostgresqlStatementSharedBlocks: PostgresqlStatementSharedBlocksMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementSharedBlocksMetricAttributeKey{PostgresqlStatementSharedBlocksMetricAttributeKeyDbNamespace, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlRolname, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementSharedBlocksMetricAttributeKeyDbQueryText, PostgresqlStatementSharedBlocksMetricAttributeKeyPostgresqlBlockOperation},
+		},
+		PostgresqlStatementTempBlocks: PostgresqlStatementTempBlocksMetricConfig{
+			Enabled:             false,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []PostgresqlStatementTempBlocksMetricAttributeKey{PostgresqlStatementTempBlocksMetricAttributeKeyDbNamespace, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlRolname, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlQueryid, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlToplevel, PostgresqlStatementTempBlocksMetricAttributeKeyDbQueryText, PostgresqlStatementTempBlocksMetricAttributeKeyPostgresqlBlockOperation},
 		},
 		PostgresqlTableCount: PostgresqlTableCountMetricConfig{
 			Enabled:             true,

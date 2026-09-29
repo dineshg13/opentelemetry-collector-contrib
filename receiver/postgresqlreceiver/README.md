@@ -218,6 +218,63 @@ receivers:
         enabled: true
 ```
 
+### Statement Metrics
+
+The `postgresql.statement.*` metrics report `pg_stat_statements` counters for each
+tracked statement: calls, rows, execution and planning time, and shared and
+temporary block access. They are disabled by default. Each data point carries
+`db.namespace`, `postgresql.rolname`, `postgresql.queryid`, `postgresql.toplevel`
+and the obfuscated `db.query.text`, so the number of series equals the number of
+statements reported. `statement_metrics.max_statements` (default 5000, at most
+100000) limits a scrape to the most frequently called statements.
+
+Collection requires PostgreSQL 14+ with `pg_stat_statements` extension API 1.9 or
+newer, and a role with `pg_monitor`. The metrics are cumulative Sums. Each data
+point's start time is the time its counters last started from zero: the entry's
+`stats_since` with extension API 1.11 (PostgreSQL 17+), otherwise the global
+`stats_reset` from `pg_stat_statements_info`. A statistics reset therefore begins a
+new series. The reset time is read before and after each fetch, and statistics that
+span a reset are not reported. Older extension APIs cannot reveal eviction and
+re-creation of a single entry between scrapes if its counters overtake their
+previous values. PostgreSQL 13 has no reset view; its data points use the
+receiver's start time. Enable the `db.system.version` resource attribute so
+consumers can interpret the statistics for the server's version.
+
+Backends that require delta temporality can use the
+[cumulative-to-delta processor](../../processor/cumulativetodeltaprocessor/README.md).
+With its default `initial_value: auto`, a statement first seen after the processor
+starts, or after a reset, reports its complete count.
+
+```yaml
+receivers:
+  postgresql:
+    collection_interval: 10s
+    statement_metrics:
+      max_statements: 5000
+    resource_attributes:
+      db.system.version:
+        enabled: true
+    metrics:
+      postgresql.statement.calls:
+        enabled: true
+      postgresql.statement.rows:
+        enabled: true
+      postgresql.statement.execution.time:
+        enabled: true
+      postgresql.statement.planning.time:
+        enabled: true
+      postgresql.statement.shared_blocks:
+        enabled: true
+      postgresql.statement.temp_blocks:
+        enabled: true
+processors:
+  cumulativetodelta:
+    include:
+      match_type: regexp
+      metrics: ["^postgresql\\.statement\\..*"]
+    max_staleness: 1h
+```
+
 ### Vector Metrics
 
 The receiver can report [pgvector](https://github.com/pgvector/pgvector) similarity-search and insert activity

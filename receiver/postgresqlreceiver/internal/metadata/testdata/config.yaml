@@ -72,6 +72,24 @@ all_set:
     postgresql.sequential_scans:
       enabled: true
       attributes: ["db.namespace","db.collection.name"]
+    postgresql.statement.calls:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.execution.time:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.planning.time:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.rows:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.shared_blocks:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text","postgresql.block.operation"]
+    postgresql.statement.temp_blocks:
+      enabled: true
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text","postgresql.block.operation"]
     postgresql.table.count:
       enabled: true
       attributes: ["db.namespace"]
@@ -224,6 +242,24 @@ reaggregate_set:
       enabled: true
       attributes: []
     postgresql.sequential_scans:
+      enabled: true
+      attributes: []
+    postgresql.statement.calls:
+      enabled: true
+      attributes: []
+    postgresql.statement.execution.time:
+      enabled: true
+      attributes: []
+    postgresql.statement.planning.time:
+      enabled: true
+      attributes: []
+    postgresql.statement.rows:
+      enabled: true
+      attributes: []
+    postgresql.statement.shared_blocks:
+      enabled: true
+      attributes: []
+    postgresql.statement.temp_blocks:
       enabled: true
       attributes: []
     postgresql.table.count:
@@ -380,6 +416,24 @@ none_set:
     postgresql.sequential_scans:
       enabled: false
       attributes: ["db.namespace","db.collection.name"]
+    postgresql.statement.calls:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.execution.time:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.planning.time:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.rows:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text"]
+    postgresql.statement.shared_blocks:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text","postgresql.block.operation"]
+    postgresql.statement.temp_blocks:
+      enabled: false
+      attributes: ["db.namespace","postgresql.rolname","postgresql.queryid","postgresql.toplevel","db.query.text","postgresql.block.operation"]
     postgresql.table.count:
       enabled: false
       attributes: ["db.namespace"]
