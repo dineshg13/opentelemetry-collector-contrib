@@ -746,6 +746,10 @@ var topQueryColumns = []string{
 	tempBlksWrittenColumnName,
 	"query",
 	queryidColumnName,
+	"dbid",
+	"userid",
+	"toplevel",
+	"stats_since",
 	"rolname",
 	rowsColumnName,
 	totalExecTimeColumnName,
@@ -852,62 +856,76 @@ func TestScrapeQuerySampleSemconv(t *testing.T) {
 }
 
 func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
-	cfg := createDefaultConfig().(*Config)
-	cfg.Databases = []string{}
-	cfg.LogsBuilderConfig.Events.DbServerQuerySample.Enabled = true
-	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-	require.NoError(t, err)
+	for _, source := range []string{"application_name", "sql_comment"} {
+		t.Run(source, func(t *testing.T) {
+			cfg := createDefaultConfig().(*Config)
+			cfg.Databases = []string{}
+			cfg.LogsBuilderConfig.Events.DbServerQuerySample.Enabled = true
+			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			require.NoError(t, err)
 
-	defer db.Close()
+			defer db.Close()
 
-	factory := mockSimpleClientFactory{
-		db: db,
+			factory := mockSimpleClientFactory{
+				db: db,
+			}
+
+			settings := receivertest.NewNopSettings(metadata.Type)
+			logger, err := zap.NewProduction()
+			require.NoError(t, err)
+			settings.TelemetrySettings = component.TelemetrySettings{
+				Logger: logger,
+			}
+
+			scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+			require.NoError(t, scraperErr)
+			scraper.newestQueryTimestamp = 123440.111
+
+			traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+			application := traceparent
+			query := "select * from pg_stat_activity where id = 32"
+			if source == "sql_comment" {
+				application = "dbm-workload"
+				query = "/*service='workload',traceparent='" + traceparent + "'*/ " + query
+			}
+			mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newSQLMockRows(querySampleColumns, map[string]any{
+				querySampleColumnDatname:              "postgres",
+				querySampleColumnUsename:              "otelu",
+				querySampleColumnClientAddr:           "11.4.5.14",
+				querySampleColumnClientHostname:       "otel",
+				querySampleColumnClientPort:           "114514",
+				querySampleColumnQueryStart:           "2025-02-12T16:37:54.843+08:00",
+				querySampleColumnQueryID:              "123131231231",
+				querySampleColumnPID:                  "1450",
+				querySampleColumnApplicationName:      application,
+				querySampleColumnQueryStartTimestamp:  "123445.123",
+				querySampleColumnState:                "idle",
+				querySampleColumnQuery:                query,
+				querySampleColumnDurationMilliseconds: "1.2",
+				querySampleColumnBlockingPIDs:         "{}",
+			}))
+			actualLogs, err := scraper.scrapeQuerySamples(t.Context(), 30)
+			require.NoError(t, err)
+
+			require.Equal(t, 1, actualLogs.ResourceLogs().Len())
+			rl := actualLogs.ResourceLogs().At(0)
+			require.Equal(t, 1, rl.ScopeLogs().Len())
+			sl := rl.ScopeLogs().At(0)
+			require.Equal(t, 1, sl.LogRecords().Len())
+			lr := sl.LogRecords().At(0)
+
+			require.Equal(t, "4bf92f3577b34da6a3ce929d0e0e4736", lr.TraceID().String())
+			require.Equal(t, "00f067aa0ba902b7", lr.SpanID().String())
+
+			applicationName, ok := lr.Attributes().Get("postgresql.application_name")
+			require.True(t, ok)
+			require.Equal(t, application, applicationName.Str())
+			queryText, ok := lr.Attributes().Get("db.query.text")
+			require.True(t, ok)
+			require.NotContains(t, queryText.Str(), traceparent)
+			require.NotContains(t, queryText.Str(), "32")
+		})
 	}
-
-	settings := receivertest.NewNopSettings(metadata.Type)
-	logger, err := zap.NewProduction()
-	require.NoError(t, err)
-	settings.TelemetrySettings = component.TelemetrySettings{
-		Logger: logger,
-	}
-
-	scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
-	require.NoError(t, scraperErr)
-	scraper.newestQueryTimestamp = 123440.111
-
-	traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
-	mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newSQLMockRows(querySampleColumns, map[string]any{
-		querySampleColumnDatname:              "postgres",
-		querySampleColumnUsename:              "otelu",
-		querySampleColumnClientAddr:           "11.4.5.14",
-		querySampleColumnClientHostname:       "otel",
-		querySampleColumnClientPort:           "114514",
-		querySampleColumnQueryStart:           "2025-02-12T16:37:54.843+08:00",
-		querySampleColumnQueryID:              "123131231231",
-		querySampleColumnPID:                  "1450",
-		querySampleColumnApplicationName:      traceparent,
-		querySampleColumnQueryStartTimestamp:  "123445.123",
-		querySampleColumnState:                "idle",
-		querySampleColumnQuery:                "select * from pg_stat_activity where id = 32",
-		querySampleColumnDurationMilliseconds: "1.2",
-		querySampleColumnBlockingPIDs:         "{}",
-	}))
-	actualLogs, err := scraper.scrapeQuerySamples(t.Context(), 30)
-	require.NoError(t, err)
-
-	require.Equal(t, 1, actualLogs.ResourceLogs().Len())
-	rl := actualLogs.ResourceLogs().At(0)
-	require.Equal(t, 1, rl.ScopeLogs().Len())
-	sl := rl.ScopeLogs().At(0)
-	require.Equal(t, 1, sl.LogRecords().Len())
-	lr := sl.LogRecords().At(0)
-
-	require.Equal(t, "4bf92f3577b34da6a3ce929d0e0e4736", lr.TraceID().String())
-	require.Equal(t, "00f067aa0ba902b7", lr.SpanID().String())
-
-	applicationName, ok := lr.Attributes().Get("postgresql.application_name")
-	require.True(t, ok)
-	require.Equal(t, traceparent, applicationName.Str())
 }
 
 func TestQuerySampleTemplateRendering(t *testing.T) {
@@ -923,6 +941,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(50),
 				"newestQueryTimestamp": 999999.555,
+				"monitoring":           false,
 				"excludedDatabases":    "",
 			},
 		},
@@ -931,6 +950,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(10),
 				"newestQueryTimestamp": float64(0),
+				"monitoring":           false,
 				"excludedDatabases":    "",
 			},
 		},
@@ -939,6 +959,7 @@ func TestQuerySampleTemplateRendering(t *testing.T) {
 			params: map[string]any{
 				"limit":                int64(10),
 				"newestQueryTimestamp": float64(0),
+				"monitoring":           false,
 				"excludedDatabases":    quoteDatabaseList([]string{"rdsadmin", "template0"}),
 			},
 			// COALESCE keeps NULL datname rows (background workers) that a bare NOT IN would drop.
@@ -1005,6 +1026,8 @@ func TestTopQueryTemplateRendering(t *testing.T) {
 
 			rendered := buf.String()
 			assert.Contains(t, rendered, "LIMIT 10;")
+			assert.Contains(t, rendered, "COALESCE(to_jsonb(pg_stat_statements)->>'stats_since', '') AS stats_since")
+			assert.NotContains(t, rendered, "pg_stat_statements.stats_since", "older extension APIs must not require the column")
 
 			if tc.expectedClause == "" {
 				assert.NotContains(t, rendered, "datname NOT IN (", "no database filter should be emitted without excludes")
@@ -1351,21 +1374,18 @@ func TestScrapeTopQueries(t *testing.T) {
 	queryid := "114514"
 	scraper, scraperErr := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
 	require.NoError(t, scraperErr)
-	scraper.cache.Add(queryid+totalExecTimeColumnName, 10)
-	scraper.cache.Add(queryid+totalPlanTimeColumnName, 11)
-	scraper.cache.Add(queryid+callsColumnName, 120)
-	scraper.cache.Add(queryid+rowsColumnName, 20)
-
-	scraper.cache.Add(queryid+sharedBlksDirtiedColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksHitColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksWrittenColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksWrittenColumnName, 1110)
+	identity := topQueryIdentity{databaseID: "1", userID: "2", queryID: queryid, topLevel: "true"}
+	scraper.cache.Add(identity, topQueryCounters{
+		integers:  [8]int64{120, 20, 1110, 1110, 1110, 1110, 1110, 1110},
+		durations: [2]float64{10, 11},
+	})
 
 	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(newSQLMockRows(topQueryColumns, map[string]any{
 		callsColumnName:             "123",
 		"datname":                   "postgres",
+		"dbid":                      "1",
+		"userid":                    "2",
+		"toplevel":                  "true",
 		sharedBlksDirtiedColumnName: "1111",
 		sharedBlksHitColumnName:     "1112",
 		sharedBlksReadColumnName:    "1113",
@@ -1393,17 +1413,11 @@ func TestScrapeTopQueries(t *testing.T) {
 	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreResourceAttributeValue("server.address"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
-	// Verify the cache has updated with latest counter
-
-	calls, callsExists := scraper.cache.Get(queryid + callsColumnName)
-	assert.True(t, callsExists)
-	assert.Equal(t, float64(123), calls)
-	execTime, execTimeExists := scraper.cache.Get(queryid + totalExecTimeColumnName)
-	assert.True(t, execTimeExists)
-	assert.Equal(t, float64(11), execTime)
-	planTime, planTimeExists := scraper.cache.Get(queryid + totalPlanTimeColumnName)
-	assert.True(t, planTimeExists)
-	assert.Equal(t, float64(12), planTime)
+	// The latest cumulative values are kept together as the next baseline.
+	counters, exists := scraper.cache.Get(identity)
+	require.True(t, exists)
+	assert.Equal(t, int64(123), counters.integers[0])
+	assert.Equal(t, [2]float64{11, 12}, counters.durations)
 }
 
 // A database dropped while its stats linger in pg_stat_statements surfaces a row
@@ -1518,7 +1532,7 @@ func TestScrapeTopQueriesCollectsOnlyWhenIntervalHasElapsed(t *testing.T) {
 	cfg.Databases = []string{}
 	cfg.LogsBuilderConfig.Events.DbServerTopQuery.Enabled = true
 	cfg.TopQueryCollection.CollectionInterval = 600 * time.Second
-	db, _, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	assert.NoError(t, err)
 
 	defer db.Close()
@@ -1538,6 +1552,7 @@ func TestScrapeTopQueriesCollectsOnlyWhenIntervalHasElapsed(t *testing.T) {
 	require.NoError(t, scraperErr)
 
 	assert.True(t, scraper.lastExecutionTimestamp.IsZero(), "lastExecutionTimestamp should be zero before first collection")
+	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(topQueryColumns))
 	logs1, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33, time.Minute)
 	assert.NotNil(t, logs1)
 	assert.NoError(t, err)

@@ -1,0 +1,6 @@
+change_type: enhancement
+component: receiver/postgresql
+note: Add opt-in bounded query statistics and activity snapshots as versioned OTLP log events.
+issues: [17]
+subtext: The `query_monitoring` setting enables `db.server.query_metrics` and `db.server.activity`.
+change_logs: [user]
